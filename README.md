@@ -24,7 +24,7 @@
 | :---: | :---: |
 | Del Aguila Del Aguila, Olenka Priscilla | U202411669 |
 | Espinoza Cruz, Angela Milagros | U202415495 |
-| Mora Rivera, Joel Fernando | U20241B2027 |
+| Mora Rivera, Joel Fernando | U20241B227 |
 | Soto Palacios, Brandon Wilder | U202315640 |
 | Villarreal Bazan, Angel Martin | U202417857 |
 
