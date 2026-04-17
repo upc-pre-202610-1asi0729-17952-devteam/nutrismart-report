@@ -93,6 +93,23 @@ El Diagrama de Contexto (Nivel 1 del modelo C4) representa a NutriSmart como un 
 
 ### 4.6.3. Software Architecture Container Diagrams
 
+El Diagrama de Contenedores (Nivel 2 del modelo C4) desglosa el sistema NutriSmart en sus principales unidades lógicas de ejecución. En este nivel, se especifican las responsabilidades de cada contenedor, las tecnologías elegidas para su implementación y los protocolos de comunicación que permiten la interacción entre ellos y con los sistemas externos.
+
+**Elementos:**
+
+ - **Web Application:** Frontend donde los usuarios interactúan con la plataforma, gestionan sus metas y visualizan sus progresos.
+    - **Tecnología:** `Angular (con Angular Material para UI y RxJS para la gestión de servicios)`.
+ - **API Application:** Backend que maneja la lógica de negocio, el motor de recomendaciones, el procesamiento de imágenes y la integración con servicios externos.
+    - **Tecnología:** `Spring Boot (Java)`.
+ - **Database:** Almacena la información de usuarios, registros nutricionales, historial de métricas y datos de facturación.
+    - **Tecnología:** `PostgreSQL`.
+ - **External Systems:** APIs de terceros que se integran con el backend para extender las capacidades del sistema.
+    - **Tecnología:** `JSON/HTTPS (REST)`.
+
+![Container Diagram](../assets/img/artifacts/nutrismart-ContainerDiagram.png)
+
+![Container Diagram Summarized](../assets/img/artifacts/nutrismart-ContainerDiagram1.png)
+
 ### 4.6.4. Software Architecture Components Diagrams
 
 ## 4.7. Software Object-Oriented Design
