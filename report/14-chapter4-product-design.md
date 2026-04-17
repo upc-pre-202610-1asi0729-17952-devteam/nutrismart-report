@@ -48,6 +48,17 @@
 
 ## 4.7. Software Object-Oriented Design
 
+Tras definir la estructura arquitectónica de contenedores y componentes, se procede al diseño orientado a objetos del software. En esta etapa, se detallan las clases, sus responsabilidades y las relaciones que darán vida a NutriSmart, permitiendo una transición fluida desde la arquitectura lógica hacia la implementación técnica.
+
+El diseño se fundamenta en los pilares fundamentales de la Programación Orientada a Objetos (POO) para garantizar un sistema modular, escalable y de fácil mantenimiento:
+
+- **Encapsulamiento:** Para proteger la integridad de los datos sensibles de salud, asegurando que el estado de los objetos solo sea accesible mediante modificadores de acceso.
+- **Abstracción:** Para simplificar procesos complejos, como la integración con múltiples APIs externas de visión artificial y clima, mediante el uso de interfaces de Spring y clases abstractas.
+- **Herencia y Polimorfismo:** Para promover la reutilización de código y la flexibilidad del sistema, permitiendo que diferentes tipos de registros nutricionales o planes de suscripción compartan comportamientos base pero se especialicen según sus reglas de negocio.
+- **Modularidad:** Estructurando las clases de acuerdo con los 7 Bounded Contexts identificados, asegurando que el diseño esté estrictamente alineado con los requerimientos funcionales del dominio.
+
+A continuación, se presentan los diagramas de clases que reflejan la estructura lógica del software, incluyendo sus atributos, métodos y multiplicidad de relaciones.
+
 ### 4.7.1. Class Diagrams
 
 ## 4.8. Database Design
