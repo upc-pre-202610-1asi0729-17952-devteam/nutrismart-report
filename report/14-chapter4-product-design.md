@@ -53,6 +53,27 @@ A continuación, se identifican y describen los contextos delimitados que compon
 
 ### 4.6.1. Design-Level EventStorming
 
+En esta sección se presenta el modelado del comportamiento del sistema mediante la técnica de EventStorming a nivel de diseño. Este proceso permitió identificar los eventos de dominio y los comandos que disparan la lógica de negocio en cada Bounded Context, estableciendo las reglas de reacción del sistema ante acciones del usuario o políticas automaticas.
+
+A continuación, se detalla la matriz de interdependencias que asegura la reactividad y sincronización de datos entre los distintos módulos:
+| Origen (Evento) | Destino (Comando) | Descripción |
+| :--- | :--- | :--- |
+| **Identity:** User Registered | **Body Metrics:** Register Body Metrics | Inicializa el perfil de salud y metas al crear la cuenta. |
+| **Nutrition:** Consumption Updated (Created/Updated/Deleted) | **Analytics:** Generate Progress Insights | Sincroniza indicadores y gráficas de consumo diario ante cualquier cambio en el log. |
+| **Nutrition:** Consumption Updated (Created/Updated/Deleted) | **Smart Recs:** Generate Recommendation | Ajusta las sugerencias alimenticias en tiempo real según los macros consumidos y el déficit calórico del día. |
+| **Activity:** Caloric Balance Adjusted | **Analytics:** Generate Progress Insights | Refleja el gasto energético por actividad física o sincronización con wearable en los reportes de progreso. |
+| **Body Metrics:** TDEE Calculated | **Analytics:** Generate Progress Insights | Compara objetivos metabólicos teóricos frente al progreso real registrado. |
+| **Body Metrics:** TDEE Calculated | **Smart Recs:** Generate Recommendation | Personaliza las porciones y sugerencias de comida según el perfil físico y la meta calórica actualizada del usuario. |
+| **Subscriptions:** Benefits Enabled | **Smart Recs:** Unlock Premium Features | Habilita el acceso a algoritmos de recomendación avanzada y análisis detallado por IA. |
+| **Subscriptions:** Benefits Disabled | **Smart Recs:** Lock Premium Features | Restringe el acceso a funcionalidades avanzadas tras la expiración o cancelación del plan. |
+
+**EventStorming**
+
+![EventStorming Diagram](../assets/img/artifacts/eventStorming.png)
+
+Para poder apreciar mejor el EventStorming le recomendamos ingresar al siguiente link:
+<br>[Visualizar EventStorming en Miro](https://miro.com/welcomeonboard/Zk9jQkduaGl2SFVTVndDZGhtUFB6NlZMdnZlWThrRFo3WTN0U2p0eURJOGdUdU90S3hKakdidFVFSlBWN1hFTnBoYWtMYU10N09pYjllcUVoWHhoNFRqSXhvNThQV28wWnlBTXZDMFE5SXJKU0wvbGJsWWhleWl1SUg2SHh3WEdNakdSWkpBejJWRjJhRnhhb1UwcS9BPT0hdjE=?share_link_id=724175682554)
+
 ### 4.6.2. Software Architecture Context Diagram
 
 ### 4.6.3. Software Architecture Container Diagrams
