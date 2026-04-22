@@ -229,6 +229,109 @@ Diseño Inclusivo
 
 ### 4.3.2. Landing Page Mock-up
 
+**Desktop Web Browser**
+
+**Main & Features**
+
+<center>
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="../assets/img/mockup/landing/desktop/main.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+      <td><img src="../assets/img/mockup/landing/desktop/features.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+    </tr>
+  </table>
+</div>
+</center>
+
+Elementos de Diseño
+
+| Elemento | Justificación |
+|---|---|
+| **Colour** | Se aplica una paleta de tonos cálidos con fondo salmón/rosado como color dominante en ambas páginas, complementado con un verde oscuro en el navbar y footer. Esta combinación transmite salud, calidez y naturalidad, alineada con el propósito nutricional de la plataforma. Las tarjetas de funcionalidades usan fondo blanco para generar contraste sobre el fondo salmón y destacar el contenido. |
+| **Texture** | En la landing, las secciones de Smart Scan, Global Nutrition y Your Weather usan imágenes fotográficas reales de alimentos y dispositivos móviles como fondo, introduciendo textura orgánica que contrasta con las secciones de fondo plano. Esto genera profundidad visual y contextualiza cada funcionalidad con evidencia visual real. |
+| **Shape** | Los íconos de cada funcionalidad son ilustraciones de línea fina con estilo outline consistente, reemplazando los placeholders del wireframe. Las tarjetas mantienen esquinas redondeadas. Los botones de objetivo ("I want to gain muscle mass") adoptan formas redondeadas con fondo gris oscuro que los distingue como elementos interactivos. |
+| **Colour (contraste)** | El plan Premium incluye un fondo verde oscuro que lo diferencia visualmente de los planes Basic y Pro en fondo blanco, reforzando su etiqueta "Recommended" y dirigiendo la atención del usuario hacia la opción de mayor valor sin necesidad de texto adicional. |
+
+Heurísticas de Nielsen
+
+| Heurística | Justificación |
+|---|---|
+| **Consistencia y estándares (H4)** | El navbar verde oscuro con logo a la izquierda y links a la derecha se mantiene idéntico en ambas páginas. El footer replica la misma estructura de columnas con enlaces, redes sociales reales (Gmail, Facebook, Instagram, LinkedIn) y selector de idioma, estableciendo un patrón reconocible en toda la plataforma. |
+| **Reconocer antes que recordar (H6)** | Los íconos outline de cada funcionalidad son metáforas visuales directas de su función: una cámara para Smart Scan, un avión para Travel Mode, un tenedor y plato para Meal Logging. El usuario reconoce la funcionalidad por el ícono antes de leer el título, reduciendo la carga cognitiva. |
+| **Relación entre el sistema y el mundo real (H2)** | Las imágenes fotográficas reales de alimentos frescos, dispositivos móviles con la app activa y fondos con salpicaduras de color conectan el sistema con el mundo real del usuario. Esto hace que la plataforma se perciba como una herramienta tangible y no como un producto abstracto. |
+| **Diseño estético y minimalista (H8)** | La sección de funcionalidades en la landing muestra solo 6 tarjetas con ícono, nombre y descripción breve, redirigiendo al usuario a la página de funcionalidades para ver el listado completo. Esto evita saturar la landing con información que compite con el llamado a la acción principal. |
+
+Arquitectura de la Información (AI)
+
+| Principio AI | Justificación |
+|---|---|
+| **Exemplars** | Las secciones de Smart Scan, Global Nutrition y Your Weather usan imágenes reales de la app en uso sobre dispositivos móviles como ejemplos concretos de cada funcionalidad. Esto aplica el principio de mostrar ejemplares que ilustren el contenido de cada categoría antes de que el usuario profundice. |
+| **Choices** | La sección "Join us and transform your life" presenta dos opciones de objetivo con íconos ilustrativos (figura muscular vs. figura delgada), haciendo que la elección sea visualmente significativa y no solo textual, facilitando la toma de decisión del usuario. |
+| **Disclosure** | La landing muestra una vista previa de 6 funcionalidades en la sección "Features to enjoy" sin detallar todas las capacidades de cada una. El usuario que quiera profundizar puede navegar a la página de funcionalidades, donde encuentra las 10 tarjetas completas con descripciones detalladas. |
+| **Objects** | El logo de NutriSense en navbar y footer incorpora un ícono de hoja y el tagline "Smart Nutrition Platform", tratando la marca como un objeto vivo con identidad visual propia. Esto refuerza la coherencia entre todas las páginas y hace que la marca sea reconocible como entidad independiente. |
+
+Diseño Inclusivo
+
+| Principio | Justificación |
+|---|---|
+| **Agrega valor (P7)** | Los íconos outline temáticos reemplazan los placeholders genéricos del wireframe, agregando valor semántico real a cada tarjeta. Un ícono de cámara para Smart Scan o un avión para Travel Mode comunica la función de forma inmediata, mejorando la experiencia de usuarios con distintos niveles de alfabetización digital. |
+| **Priorizar el contenido (P6)** | El plan Premium se distingue visualmente con fondo verde oscuro y la etiqueta "Recommended" destacada, priorizando la opción más completa sin ocultar las alternativas. El usuario puede comparar los tres planes de forma simultánea sin necesidad de navegar entre páginas. |
+| **Ofrecer opciones (P5)** | El footer incluye íconos de redes sociales reales (Gmail, Facebook, Instagram, LinkedIn) como canales alternativos de contacto e información. El selector de idioma permite cambiar el idioma de la interfaz, ampliando el acceso a usuarios hispanohablantes y angloparlantes. |
+| **Proporciona experiencias comparables (P1)** | Los íconos outline de línea fina tienen un estilo visual consistente y reconocible que funciona correctamente en distintas resoluciones de pantalla. Esto garantiza que la experiencia de reconocimiento visual de funcionalidades sea equivalente para usuarios en monitores de alta y baja densidad de píxeles. |
+
+**Contact, About-us & Terms**
+
+<center>
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="../assets/img/mockup/landing/desktop/contact.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+      <td><img src="../assets/img/mockup/landing/desktop/about-us.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+      <td><img src="../assets/img/mockup/landing/desktop/terms.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+    </tr>
+  </table>
+</div>
+</center>
+
+Elementos de Diseño
+
+| Elemento | Justificación |
+|---|---|
+| **Colour** | La paleta salmón/rosado como fondo dominante se extiende consistentemente en las tres páginas, unificando la identidad visual de toda la plataforma. En Contacto, los bordes de los campos del formulario usan un tono rosado que los diferencia sutilmente del fondo blanco. El botón "Submit" adopta el mismo tono salmón, integrándolo como elemento de acción dentro de la paleta general. |
+| **Texture** | En About Us, el hero incorpora manchas de acuarela en tonos rosado y verde azulado como elementos decorativos de fondo, introduciendo una textura orgánica y artesanal que humaniza la marca. En Contacto, la fotografía de una mano sosteniendo un teléfono retro sobre fondo azul verdoso aporta textura fotográfica real que contrasta con el fondo blanco del formulario. |
+| **Shape** | Las tarjetas de Misión y Visión en About Us usan esquinas redondeadas con fondo verde oscuro y un ícono circular superpuesto en la parte superior, con ilustraciones outline temáticas: una diana para Misión y un foco para Visión. Esto reemplaza los placeholders del wireframe con formas con significado semántico directo. En Contacto, el bloque "Contact Us" en el hero adopta forma rectangular con fondo rosado pastel, destacándolo sobre la fotografía de personas. |
+| **Colour (contraste tipográfico)** | En Términos y Condiciones, el título de la página y los títulos de sección numerados son negros sobre fondo salmón y blanco respectivamente, generando contraste suficiente para la lectura de texto legal extenso. El texto dentro de la tarjeta blanca usa negro sobre blanco, la combinación de mayor legibilidad disponible. |
+
+Heurísticas de Nielsen
+
+| Heurística | Justificación |
+|---|---|
+| **Consistencia y estándares (H4)** | El navbar verde oscuro con logo NutriSense a la izquierda y links a la derecha se replica de forma idéntica en las tres páginas. El footer mantiene la misma estructura de cuatro columnas con logo, enlaces, redes sociales con íconos de color real y selector de idioma, estableciendo un patrón reconocible en toda la plataforma. |
+| **Relación entre el sistema y el mundo real (H2)** | La fotografía del hero en Contacto muestra un grupo de personas diversas sonrientes, comunicando cercanía y accesibilidad humana antes de llegar al formulario. La imagen de la mano con teléfono retro refuerza la metáfora de comunicación de forma visual e inmediata, sin necesidad de texto explicativo. |
+| **Prevención de errores (H5)** | Los campos del formulario de contacto tienen bordes rosados visibles que los delimitan claramente, reduciendo el riesgo de que el usuario interactúe con el área incorrecta. Las etiquetas (Name, Email, Phone, Message) están posicionadas fuera de los campos, evitando que desaparezcan al comenzar a escribir. |
+| **Diseño estético y minimalista (H8)** | La página de Términos y Condiciones concentra todo el contenido legal en una sola tarjeta blanca sobre fondo salmón, sin imágenes decorativas ni elementos visuales adicionales. La decisión de eliminar todo ornamento en esta página respeta el principio de no añadir elementos que compitan con la lectura comprensiva de información legal. |
+
+Arquitectura de la Información (AI)
+
+| Principio AI | Justificación |
+|---|---|
+| **Objects** | El logo de NutriSense en navbar y footer es ahora un objeto visual completo: ilustración de manos sosteniendo una hoja, nombre de marca y tagline "Smart Nutrition Platform". Este objeto se comporta de forma consistente en todas las páginas como elemento de identidad vivo, no como un simple placeholder. |
+| **Exemplars** | En About Us, el ícono circular que acompaña el bloque introductorio muestra la ilustración del logo de NutriSense a color, funcionando como un ejemplar visual de la identidad de marca antes de que el usuario llegue a las tarjetas de Misión y Visión. |
+| **Disclosure** | La página de Términos y Condiciones organiza el contenido en cinco secciones numeradas y claramente tituladas (Service Description, Medical and Ethical Responsibility, Plans and Billing, Privacy and Technology, Limitations), permitiendo al usuario identificar rápidamente la sección de su interés sin leer el documento completo. |
+| **Front Doors** | En Contacto, el número de teléfono real (+51 984231995) aparece en el hero de forma prominente junto al ícono de llamada, actuando como puerta de entrada directa para usuarios que prefieren contacto inmediato sobre el formulario escrito. |
+
+Diseño Inclusivo
+
+| Principio | Justificación |
+|---|---|
+| **Agrega valor (P7)** | Las manchas de acuarela en el hero de About Us agregan valor estético que humaniza la página institucional, diferenciándola de un bloque de texto corporativo genérico. Los íconos temáticos de diana (Misión) y foco (Visión) agregan valor semántico que refuerza el significado de cada concepto más allá del título. |
+| **Proporciona experiencias comparables (P1)** | Los íconos de redes sociales en el footer usan sus colores de marca oficiales (rojo para Gmail, azul para Facebook, gradiente para Instagram, azul para LinkedIn), permitiendo que usuarios con distintos niveles de familiaridad digital identifiquen los canales por color y forma sin depender únicamente del texto. |
+| **Priorizar el contenido (P6)** | En About Us, las tarjetas de Misión y Visión usan fondo verde oscuro con texto blanco, destacándolas visualmente sobre el fondo blanco de la página. Esto prioriza el contenido institucional más relevante de la página mediante contraste cromático deliberado. |
+| **Considera la situación del usuario (P2)** | La fotografía del hero en Contacto muestra personas de distintas etnias y géneros, reconociendo que NutriSense es una plataforma dirigida a una audiencia diversa. Esta decisión visual comunica inclusión desde el primer elemento visible de la página de contacto. |
+
+
+
 ## 4.4. Web Applications UX/UI Design
 
 ### 4.4.1. Web Applications Wireframes
