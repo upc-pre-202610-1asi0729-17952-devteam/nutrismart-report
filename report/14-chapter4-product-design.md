@@ -223,7 +223,7 @@ Diseño Inclusivo
 | Principio | Justificación |
 |---|---|
 | **Proporciona experiencias comparables (P1)** | Los campos del formulario de contacto en mobile están dimensionados con altura suficiente para ser accionables con el dedo, ofreciendo una experiencia de llenado equivalente a la versión desktop sin requerir precisión de cursor. |
-| **Priorizar el contenido (P6)** | En About Us mobile, el título "We are NutriSense!" ocupa la parte superior visible de la pantalla sin necesidad de scroll, priorizando el mensaje de identidad de marca antes que cualquier otro contenido. Las tarjetas de Misión y Visión destacan sus títulos en negrita sobre fondo oscuro para facilitar el escaneo. |
+| **Priorizar el contenido (P6)** | En About Us mobile, el título "We are NutriSmart!" ocupa la parte superior visible de la pantalla sin necesidad de scroll, priorizando el mensaje de identidad de marca antes que cualquier otro contenido. Las tarjetas de Misión y Visión destacan sus títulos en negrita sobre fondo oscuro para facilitar el escaneo. |
 | **Ser consistente (P3)** | El footer mantiene la misma estructura de dos columnas en las tres páginas móviles, con los mismos enlaces (Features, Contact, Terms and Conditions, About Us) y el selector de idioma en la misma posición. Esta consistencia permite al usuario ubicar recursos secundarios sin esfuerzo cognitivo adicional. |
 | **Considera la situación del usuario (P2)** | La página de Términos y Condiciones en mobile adapta el texto legal a columna única con interlineado generoso, reconociendo que el usuario puede estar leyendo en condiciones de movilidad o con pantalla de tamaño reducido, donde la densidad de texto dificulta la lectura. |
 
@@ -269,7 +269,7 @@ Arquitectura de la Información (AI)
 | **Exemplars** | Las secciones de Smart Scan, Global Nutrition y Your Weather usan imágenes reales de la app en uso sobre dispositivos móviles como ejemplos concretos de cada funcionalidad. Esto aplica el principio de mostrar ejemplares que ilustren el contenido de cada categoría antes de que el usuario profundice. |
 | **Choices** | La sección "Join us and transform your life" presenta dos opciones de objetivo con íconos ilustrativos (figura muscular vs. figura delgada), haciendo que la elección sea visualmente significativa y no solo textual, facilitando la toma de decisión del usuario. |
 | **Disclosure** | La landing muestra una vista previa de 6 funcionalidades en la sección "Features to enjoy" sin detallar todas las capacidades de cada una. El usuario que quiera profundizar puede navegar a la página de funcionalidades, donde encuentra las 10 tarjetas completas con descripciones detalladas. |
-| **Objects** | El logo de NutriSense en navbar y footer incorpora un ícono de hoja y el tagline "Smart Nutrition Platform", tratando la marca como un objeto vivo con identidad visual propia. Esto refuerza la coherencia entre todas las páginas y hace que la marca sea reconocible como entidad independiente. |
+| **Objects** | El logo de NutriSmart en navbar y footer incorpora un ícono de hoja y el tagline "Smart Nutrition Platform", tratando la marca como un objeto vivo con identidad visual propia. Esto refuerza la coherencia entre todas las páginas y hace que la marca sea reconocible como entidad independiente. |
 
 Diseño Inclusivo
 
@@ -307,7 +307,7 @@ Heurísticas de Nielsen
 
 | Heurística | Justificación |
 |---|---|
-| **Consistencia y estándares (H4)** | El navbar verde oscuro con logo NutriSense a la izquierda y links a la derecha se replica de forma idéntica en las tres páginas. El footer mantiene la misma estructura de cuatro columnas con logo, enlaces, redes sociales con íconos de color real y selector de idioma, estableciendo un patrón reconocible en toda la plataforma. |
+| **Consistencia y estándares (H4)** | El navbar verde oscuro con logo NutriSmart a la izquierda y links a la derecha se replica de forma idéntica en las tres páginas. El footer mantiene la misma estructura de cuatro columnas con logo, enlaces, redes sociales con íconos de color real y selector de idioma, estableciendo un patrón reconocible en toda la plataforma. |
 | **Relación entre el sistema y el mundo real (H2)** | La fotografía del hero en Contacto muestra un grupo de personas diversas sonrientes, comunicando cercanía y accesibilidad humana antes de llegar al formulario. La imagen de la mano con teléfono retro refuerza la metáfora de comunicación de forma visual e inmediata, sin necesidad de texto explicativo. |
 | **Prevención de errores (H5)** | Los campos del formulario de contacto tienen bordes rosados visibles que los delimitan claramente, reduciendo el riesgo de que el usuario interactúe con el área incorrecta. Las etiquetas (Name, Email, Phone, Message) están posicionadas fuera de los campos, evitando que desaparezcan al comenzar a escribir. |
 | **Diseño estético y minimalista (H8)** | La página de Términos y Condiciones concentra todo el contenido legal en una sola tarjeta blanca sobre fondo salmón, sin imágenes decorativas ni elementos visuales adicionales. La decisión de eliminar todo ornamento en esta página respeta el principio de no añadir elementos que compitan con la lectura comprensiva de información legal. |
@@ -316,8 +316,8 @@ Arquitectura de la Información (AI)
 
 | Principio AI | Justificación |
 |---|---|
-| **Objects** | El logo de NutriSense en navbar y footer es ahora un objeto visual completo: ilustración de manos sosteniendo una hoja, nombre de marca y tagline "Smart Nutrition Platform". Este objeto se comporta de forma consistente en todas las páginas como elemento de identidad vivo, no como un simple placeholder. |
-| **Exemplars** | En About Us, el ícono circular que acompaña el bloque introductorio muestra la ilustración del logo de NutriSense a color, funcionando como un ejemplar visual de la identidad de marca antes de que el usuario llegue a las tarjetas de Misión y Visión. |
+| **Objects** | El logo de NutriSmart en navbar y footer es ahora un objeto visual completo: ilustración de manos sosteniendo una hoja, nombre de marca y tagline "Smart Nutrition Platform". Este objeto se comporta de forma consistente en todas las páginas como elemento de identidad vivo, no como un simple placeholder. |
+| **Exemplars** | En About Us, el ícono circular que acompaña el bloque introductorio muestra la ilustración del logo de NutriSmart a color, funcionando como un ejemplar visual de la identidad de marca antes de que el usuario llegue a las tarjetas de Misión y Visión. |
 | **Disclosure** | La página de Términos y Condiciones organiza el contenido en cinco secciones numeradas y claramente tituladas (Service Description, Medical and Ethical Responsibility, Plans and Billing, Privacy and Technology, Limitations), permitiendo al usuario identificar rápidamente la sección de su interés sin leer el documento completo. |
 | **Front Doors** | En Contacto, el número de teléfono real (+51 984231995) aparece en el hero de forma prominente junto al ícono de llamada, actuando como puerta de entrada directa para usuarios que prefieren contacto inmediato sobre el formulario escrito. |
 
@@ -328,9 +328,109 @@ Diseño Inclusivo
 | **Agrega valor (P7)** | Las manchas de acuarela en el hero de About Us agregan valor estético que humaniza la página institucional, diferenciándola de un bloque de texto corporativo genérico. Los íconos temáticos de diana (Misión) y foco (Visión) agregan valor semántico que refuerza el significado de cada concepto más allá del título. |
 | **Proporciona experiencias comparables (P1)** | Los íconos de redes sociales en el footer usan sus colores de marca oficiales (rojo para Gmail, azul para Facebook, gradiente para Instagram, azul para LinkedIn), permitiendo que usuarios con distintos niveles de familiaridad digital identifiquen los canales por color y forma sin depender únicamente del texto. |
 | **Priorizar el contenido (P6)** | En About Us, las tarjetas de Misión y Visión usan fondo verde oscuro con texto blanco, destacándolas visualmente sobre el fondo blanco de la página. Esto prioriza el contenido institucional más relevante de la página mediante contraste cromático deliberado. |
-| **Considera la situación del usuario (P2)** | La fotografía del hero en Contacto muestra personas de distintas etnias y géneros, reconociendo que NutriSense es una plataforma dirigida a una audiencia diversa. Esta decisión visual comunica inclusión desde el primer elemento visible de la página de contacto. |
+| **Considera la situación del usuario (P2)** | La fotografía del hero en Contacto muestra personas de distintas etnias y géneros, reconociendo que NutriSmart es una plataforma dirigida a una audiencia diversa. Esta decisión visual comunica inclusión desde el primer elemento visible de la página de contacto. |
 
+**Mobile Web Browser**
 
+**Main & Features**
+
+<center>
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="../assets/img/mockup/landing/mobile/main.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+      <td><img src="../assets/img/mockup/landing/mobile/features.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+      <td><img src="../assets/img/mockup/landing/mobile/main-menu.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+    </tr>
+  </table>
+</div>
+</center>
+
+Elementos de Diseño
+
+| Elemento | Justificación |
+|---|---|
+| **Colour** | La paleta salmón/rosado como fondo dominante y el verde oscuro del navbar se mantienen consistentes con la versión desktop, garantizando coherencia de identidad visual entre plataformas. El panel de navegación hamburguesa adopta el mismo verde oscuro del navbar, y los círculos decorativos del fondo del panel combinan el rosado y el blanco de la paleta general. |
+| **Texture** | El hero de la landing mobile incorpora una fotografía de alimentos frescos como banda superior y manchas de acuarela en verde azulado como elementos decorativos alrededor de las imágenes de producto. Esta textura orgánica se adapta al ancho reducido de pantalla sin perder la riqueza visual presente en la versión desktop. |
+| **Shape** | Las tarjetas de funcionalidades en la página de features adoptan el mismo patrón ícono-título-descripción con esquinas redondeadas, pero en layout de columna única que ocupa el ancho completo de la pantalla. El botón "Go to app" usa forma de píldora con fondo rosado pastel, diferenciándolo del texto circundante como elemento de acción primaria. |
+| **Size** | El título "Smart Nutrition" ocupa casi el ancho completo de la pantalla en dos líneas con una jerarquía tipográfica dominante. Los íconos outline en las tarjetas de funcionalidades tienen un tamaño generoso respecto al ancho de la tarjeta, haciéndolos reconocibles en pantallas de densidad variable sin necesidad de ampliar. |
+
+Heurísticas de Nielsen
+
+| Heurística | Justificación |
+|---|---|
+| **Consistencia y estándares (H4)** | El menú hamburguesa despliega un panel con el mismo conjunto de ítems de navegación (About Us, Features, Contact, Links, Log in) que la versión desktop, manteniendo consistencia en el contenido accesible independientemente del dispositivo. El botón "✕" para cerrar el panel sigue la convención estándar de cierre en interfaces móviles. |
+| **Relación entre el sistema y el mundo real (H2)** | Las imágenes de la app activa sobre dispositivos móviles reales en las secciones Smart Scan y Global Nutrition muestran el producto en su contexto de uso natural. Las manchas de acuarela y fotografías de alimentos conectan la plataforma con el mundo real de la nutrición cotidiana del usuario. |
+| **Reconocer antes que recordar (H6)** | Los íconos outline temáticos en las tarjetas de funcionalidades mobile (cámara para Smart Scan, avión para Travel Mode, gorro de chef para Recipe Suggestions) permiten al usuario identificar la función visualmente antes de leer el título, reduciendo la carga de memoria en una interfaz de consumo vertical y rápido. |
+| **Diseño estético y minimalista (H8)** | La versión mobile de la página de funcionalidades presenta las tarjetas en columna única con solo ícono, título en negrita y una línea de descripción, eliminando cualquier elemento visual que no aporte información funcional directa. El fondo salmón liso entre tarjetas actúa como separador neutro sin añadir ruido visual. |
+
+Arquitectura de la Información (AI)
+
+| Principio AI | Justificación |
+|---|---|
+| **Disclosure** | En la landing mobile, cada sección de funcionalidad principal (Smart Scan, Global Nutrition) muestra la imagen del producto en contexto y una descripción breve antes de invitar al usuario a profundizar. La información se revela progresivamente a medida que el usuario hace scroll, sin sobrecargar la pantalla inicial. |
+| **Objects** | Las imágenes de la app activa sobre smartphones tratan el producto como un objeto vivo con comportamientos propios: el teléfono muestra la interfaz de Smart Scan en uso real, comunicando que la app es un objeto funcional y no una representación abstracta. |
+| **Focused Navigation** | El panel hamburguesa agrupa la navegación como una acción deliberada del usuario, manteniendo los ítems definidos por su contenido. Los indicadores de carrusel (puntos) debajo de la banda de imagen del hero comunican que existe contenido navegable horizontalmente, orientando al usuario sobre las posibilidades de exploración disponibles. |
+| **Growth** | El layout de tarjetas apiladas en la página de funcionalidades mobile permite incorporar nuevas funcionalidades simplemente añadiendo tarjetas al final de la lista sin rediseñar la estructura, escalando de forma natural con el crecimiento del producto. |
+
+Diseño Inclusivo
+
+| Principio | Justificación |
+|---|---|
+| **Considera la situación del usuario (P2)** | El botón "Go to app" tiene forma de píldora con área táctil generosa, diseñado para ser accionable con el pulgar en una sola mano. Las tarjetas de funcionalidades tienen altura suficiente para evitar toques accidentales en elementos adyacentes, reconociendo que el usuario móvil interactúa con el dedo en condiciones de movimiento. |
+| **Proporciona experiencias comparables (P1)** | La versión mobile presenta el mismo contenido disponible en desktop (funcionalidades, secciones de producto, navegación completa), reorganizado en columna única. El usuario móvil accede a información equivalente sin versiones reducidas, garantizando paridad de experiencia entre dispositivos. |
+| **Priorizar el contenido (P6)** | El título "Smart Nutrition" y el botón "Go to app" ocupan la parte superior visible de la pantalla sin necesidad de scroll, priorizando el mensaje principal y la acción de conversión. En la página de funcionalidades, cada tarjeta posiciona el título en negrita antes que la descripción, facilitando el escaneo rápido del contenido. |
+| **Ser consistente (P3)** | El patrón de tarjeta en la página de funcionalidades mobile replica exactamente la misma estructura que la versión desktop (ícono a la izquierda, título a la derecha, descripción abajo), estableciendo un modelo de lectura familiar para usuarios que hayan interactuado previamente con la versión de escritorio. |
+
+**Contact, About-us & Terms**
+
+<center>
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="../assets/img/mockup/landing/mobile/contact.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+      <td><img src="../assets/img/mockup/landing/mobile/about-us.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+      <td><img src="../assets/img/mockup/landing/mobile/terms.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+    </tr>
+  </table>
+</div>
+</center>
+
+Elementos de Diseño
+
+| Elemento | Justificación |
+|---|---|
+| **Colour** | Los bordes rosados de los campos del formulario en Contacto y el botón "Submit" en el mismo tono salmón mantienen la paleta cromática de la plataforma incluso en los elementos interactivos más funcionales. En About Us, las manchas de acuarela rosada y verde azulado sobre el fondo blanco del hero replican el lenguaje visual decorativo de la versión desktop adaptado al ancho móvil. |
+| **Texture** | En Contacto, la fotografía del hero muestra un grupo de personas diversas y sonrientes ocupando el ancho completo de la pantalla, introduciendo textura fotográfica humana que contextualiza la página antes del formulario. En About Us, las manchas de acuarela aportan textura orgánica al encabezado, diferenciando visualmente la página institucional de las demás. |
+| **Shape** | Las tarjetas de Misión y Visión en About Us mobile conservan las esquinas redondeadas con fondo verde oscuro y el ícono circular superpuesto en la parte superior, manteniendo la forma orgánica de la versión desktop en columna única. El logo de NutriSmart en el footer combina una forma circular ilustrada con texto, funcionando como un objeto visual compacto adaptado al espacio reducido. |
+| **Size** | En Términos y Condiciones, el título "Terms and conditions" ocupa las dos primeras líneas visibles con un tamaño notablemente mayor al cuerpo del texto, estableciendo jerarquía inmediata en una página de contenido denso. Los íconos de redes sociales en el footer tienen un tamaño táctil generoso que los hace accionables sin requerir precisión. |
+
+Heurísticas de Nielsen
+
+| Heurística | Justificación |
+|---|---|
+| **Consistencia y estándares (H4)** | El navbar con logo y hamburguesa, y el footer con estructura de dos columnas, íconos de redes sociales a color y selector de idioma se replican de forma idéntica en las tres páginas móviles, manteniendo el patrón establecido en la landing mobile y generando predictibilidad en la navegación. |
+| **Prevención de errores (H5)** | Los campos del formulario de Contacto tienen bordes rosados claramente visibles sobre fondo blanco, delimitando el área de interacción y reduciendo el riesgo de que el usuario toque fuera del campo. El campo de mensaje tiene altura generosa para evitar que el usuario envíe mensajes incompletos por falta de espacio visual. |
+| **Visibilidad del estado del sistema (H1)** | El número de teléfono real (+51 984231995) aparece superpuesto sobre la fotografía del hero en Contacto junto al ícono de llamada, comunicando de forma inmediata que existe un canal de contacto directo disponible antes de que el usuario llegue al formulario. |
+| **Diseño estético y minimalista (H8)** | La página de Términos y Condiciones en mobile presenta el contenido legal en una sola tarjeta blanca sin imágenes, íconos ni elementos decorativos adicionales. Esta decisión respeta el principio de eliminar todo lo que no contribuya directamente a la comprensión del contenido legal en pantalla reducida. |
+
+Arquitectura de la Información (AI)
+
+| Principio AI | Justificación |
+|---|---|
+| **Objects** | El logo de NutriSmart en navbar y footer de las tres páginas mobile es un objeto visual completo con ilustración, nombre de marca y tagline, comportándose de forma consistente como elemento de identidad en todas las vistas. Las tarjetas de Misión y Visión tratan cada concepto como un objeto independiente con ícono, título y descripción propios. |
+| **Disclosure** | En About Us mobile, el párrafo introductorio aparece antes de las tarjetas de Misión y Visión, revelando el propósito general de la empresa antes de profundizar en sus valores institucionales. En Términos y Condiciones, los títulos de sección numerados permiten al usuario anticipar la estructura del documento sin leerlo completo. |
+| **Front Doors** | La página de Contacto mobile ofrece dos puertas de entrada al mismo objetivo: el número telefónico visible en el hero y el formulario escrito debajo. Esto garantiza que usuarios que lleguen directamente a esta página desde cualquier canal encuentren siempre una vía de acción inmediata adecuada a su preferencia. |
+| **Focused Navigation** | El footer en las tres páginas mobile presenta los mismos enlaces de navegación (Features, Contact, Terms and Conditions, About Us) definidos por su contenido, permitiendo al usuario reorientarse dentro de la plataforma desde cualquier página sin necesidad de volver al inicio. |
+
+Diseño Inclusivo
+
+| Principio | Justificación |
+|---|---|
+| **Considera la situación del usuario (P2)** | Los campos del formulario de Contacto tienen altura suficiente para ser accionables con el dedo en condiciones de movilidad, y el botón "Submit" está posicionado debajo del último campo con espacio de separación que evita envíos accidentales al terminar de escribir el mensaje. |
+| **Proporciona experiencias comparables (P1)** | Los íconos de redes sociales en el footer usan sus colores de marca oficiales (rojo Gmail, azul Facebook, gradiente Instagram, azul LinkedIn), permitiendo que usuarios con distintos niveles de alfabetización digital identifiquen los canales por color y forma sin depender únicamente del texto en pantalla reducida. |
+| **Priorizar el contenido (P6)** | En About Us mobile, las tarjetas de Misión y Visión con fondo verde oscuro y texto blanco destacan visualmente sobre el fondo salmón de la página, priorizando el contenido institucional más relevante mediante contraste cromático deliberado incluso en formato de columna única. |
+| **Ser consistente (P3)** | La estructura del footer se replica de forma idéntica en las tres páginas mobile con los mismos bloques (logo + enlaces + redes sociales + selector de idioma), estableciendo un patrón reconocible que permite al usuario ubicar recursos secundarios sin esfuerzo cognitivo adicional independientemente de la página en que se encuentre. |
 
 ## 4.4. Web Applications UX/UI Design
 
