@@ -436,6 +436,113 @@ Diseño Inclusivo
 
 ### 4.4.1. Web Applications Wireframes
 
+**Login, Dashboard, Analytics, Daily log & Balance progress**
+
+<center>
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="../assets/img/wireframe/webapp/login.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+      <td><img src="../assets/img/wireframe/webapp/dashboard.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+      <td><img src="../assets/img/wireframe/webapp/analytics.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+    </tr>
+    <tr>
+      <td><img src="../assets/img/wireframe/webapp/dailylog.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+      <td><img src="../assets/img/wireframe/webapp/balanceprogress.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+    </tr>
+  </table>
+</div>
+</center>
+
+Elementos de Diseño
+
+| Elemento | Justificación |
+|---|---|
+| **Shape** | La barra lateral de navegación usa un layout rectangular fijo con ítems de texto e ícono alineados verticalmente. Las tarjetas de métricas (calorías, IMC, BMR, TDEE) son rectangulares con esquinas redondeadas y jerarquía numérica prominente. El ítem activo del menú lateral se resalta con un fondo diferenciado que indica la sección actual. En Login, los campos de entrada usan forma de píldora con bordes redondeados, diferenciándolos visualmente de los campos rectangulares del wireframe de la landing. |
+| **Space** | El layout de la aplicación divide la pantalla en dos zonas fijas: sidebar izquierdo de navegación y área de contenido principal. Dentro del área de contenido, las tarjetas de métricas se distribuyen en una fila horizontal superior, seguidas de bloques de contenido secundario en grid de dos columnas. Este uso del espacio establece una jerarquía clara entre datos primarios y secundarios. |
+| **Direction** | En Dashboard y Analytics, la lectura sigue un patrón en Z: de izquierda a derecha en la fila de métricas superiores, luego diagonal hacia el bloque principal de contenido y finalmente al panel lateral derecho. En Daily Log, la dirección es vertical descendente dentro de cada bloque de comidas, con el panel de búsqueda fijo a la derecha. |
+| **Size** | Los valores numéricos clave (1340 kcal, 70.2 kg, 24.1 IMC) se muestran en un tamaño notablemente mayor al de sus etiquetas y unidades de medida, estableciendo una jerarquía tipográfica que permite al usuario escanear los datos más relevantes sin leer el contexto completo. |
+
+Heurísticas de Nielsen
+
+| Heurística | Justificación |
+|---|---|
+| **Visibilidad del estado del sistema (H1)** | El Dashboard saluda al usuario por nombre ("Good morning, Ana") con fecha actual, comunicando que el sistema está activo y contextualizado en tiempo real. Las barras de progreso en Daily Log muestran el porcentaje de cada macronutriente consumido respecto a la meta diaria. En Body Progress, la fecha de logro estimada ("~August 14, 2026") informa al usuario sobre su proyección actual. |
+| **Reconocer antes que recordar (H6)** | El menú lateral muestra todos los ítems de navegación visibles de forma permanente, divididos en secciones PRINCIPAL y TOOLS. El ítem activo está resaltado, eliminando la necesidad de que el usuario recuerde en qué sección se encuentra. En Daily Log, cada comida muestra nombre, cantidad, calorías y macros en la misma fila, evitando que el usuario deba navegar para recordar qué registró. |
+| **Flexibilidad y eficiencia en el uso (H7)** | En Body Progress, los filtros de tiempo "7 days", "30 days" y "90 days" permiten al usuario experto cambiar el rango del gráfico con un solo clic sin necesidad de configurar fechas manualmente. En Analytics, el botón "Export to PDF" y los mismos filtros de rango ofrecen atajos directos para usuarios avanzados. |
+| **Prevención de errores (H5)** | En Body Progress, el campo "Log weight" muestra el peso actual como placeholder ("E.g.: 70.2") y lo confirma debajo del campo ("Current weight: 70.2 kg"), permitiendo al usuario verificar el valor antes de guardar. El campo "Update height" incluye la nota "BMI is automatically recalculated", informando las consecuencias de la acción antes de ejecutarla. |
+
+Arquitectura de la Información (AI)
+
+| Principio AI | Justificación |
+|---|---|
+| **Objects** | Cada entrada del Daily Log trata la comida como un objeto con atributos propios: nombre, cantidad, calorías y macros (P, C, G). Cada registro del Log History en Body Progress tiene fecha, peso y variación como atributos independientes. Estos objetos se comportan como entidades vivas que acumulan historial y generan proyecciones. |
+| **Multiple Classification** | La navegación lateral organiza el contenido en dos categorías diferenciadas: PRINCIPAL (Dashboard, Daily log, Smart Scan, Recommendations, Body progress) y TOOLS (Pantry, Wearable, Analytics, Subscription). Esta clasificación permite al usuario acceder al contenido tanto por flujo de uso habitual como por tipo de herramienta. |
+| **Choices** | En Analytics, los filtros "7 days", "30 days" y "90 days" ofrecen tres perspectivas temporales significativas del progreso del usuario. En Login, el enlace "Forgot your password?" y "Create account" ofrecen rutas alternativas sin obligar al usuario a abandonar el flujo principal. |
+| **Growth** | La estructura de Daily Log organiza las comidas por categoría (Breakfast, Lunch, Snack, Dinner) con entradas expandibles dentro de cada bloque. Esto permite que el número de alimentos registrados por comida crezca sin romper la jerarquía visual, añadiendo filas dentro del bloque correspondiente. |
+
+Diseño Inclusivo
+
+| Principio | Justificación |
+|---|---|
+| **Priorizar el contenido (P6)** | En Dashboard, las tres tarjetas superiores (Calories Consumed, Calories Remaining, Net Balance) presentan los datos más relevantes para el seguimiento diario del usuario en la parte más visible de la pantalla, antes que cualquier otro contenido. Los valores numéricos en tamaño grande priorizan el dato sobre su contexto. |
+| **Proporciona experiencias comparables (P1)** | El panel de búsqueda de alimentos en Daily Log incluye un campo de texto con placeholder descriptivo ("E.g.: rice, chicken breast, yogurt...") que orienta al usuario sobre el tipo de entrada esperada, ofreciendo una experiencia de búsqueda accesible tanto para usuarios que conocen los nombres exactos como para quienes buscan por categoría general. |
+| **Deja al usuario mandar (P4)** | En Body Progress, el usuario puede editar su meta de peso y actualizar su altura en cualquier momento desde el panel lateral. En Analytics, el botón "Export to PDF" da al usuario control sobre sus propios datos, permitiéndole exportarlos cuando lo considere necesario. |
+| **Agrega valor (P7)** | El bloque "Active Streak" en Dashboard muestra el número de días consecutivos con registro completo, agregando valor motivacional más allá del simple registro de datos. La integración con Google Fit que descuenta calorías activas del balance diario ("Active (Google Fit): -300 kcal") agrega valor contextual que una app de nutrición estándar no ofrece. |
+
+**Recommendations, SmartScan, Suscription & Pantry**
+
+<center>
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="../assets/img/wireframe/webapp/recommendations.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+      <td><img src="../assets/img/wireframe/webapp/smartscan.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+      <td><img src="../assets/img/wireframe/webapp/suscription.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+    </tr>
+    <tr>
+      <td><img src="../assets/img/wireframe/webapp/pantry.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+    </tr>
+  </table>
+</div>
+</center>
+
+Elementos de Diseño
+
+| Elemento | Justificación |
+|---|---|
+| **Shape** | En Smart Scan, las zonas de carga de imagen usan bordes punteados para indicar áreas de arrastrar y soltar, diferenciándose visualmente de los bordes sólidos de las tarjetas de contenido. En Recommendations, las etiquetas de atributos (320 kcal, P 32g, Light) usan forma de píldora redondeada para distinguirse del texto corrido. En Subscription, los indicadores de características de cada plan usan círculos rellenos como bullets, estableciendo una lista visual reconocible. |
+| **Space** | En Recommendations, el panel lateral derecho con "Active filters" y "Daily balance" ocupa aproximadamente un tercio del ancho de la pantalla, dejando dos tercios para las tarjetas de recomendaciones. Este balance espacial prioriza el contenido principal sin eliminar el contexto secundario relevante. En Pantry, el layout de dos columnas separa la gestión de ingredientes de las recetas sugeridas, organizando el flujo de causa-efecto de izquierda a derecha. |
+| **Direction** | En Recommendations, la lectura sigue una dirección horizontal de izquierda a derecha dentro de cada tarjeta de plato: imagen → nombre → descripción → etiquetas → botón de acción. Esta dirección guía al usuario hacia el punto de conversión ("+Add to log") de forma natural. En Subscription, las tres tarjetas de plan se alinean horizontalmente permitiendo comparación visual simultánea. |
+| **Size** | En Subscription, el precio de cada plan ($9.99, $14.99, $19.99) se muestra en un tamaño notablemente mayor al del nombre del plan y la descripción, facilitando la comparación económica inmediata sin necesidad de leer el contenido completo de cada tarjeta. |
+
+Heurísticas de Nielsen
+
+| Heurística | Justificación |
+|---|---|
+| **Visibilidad del estado del sistema (H1)** | En Recommendations, el banner superior indica el contexto actual de forma explícita: ciudad, temperatura, condición climática y hace cuánto se actualizó ("Updated 5 mins ago"). En Smart Scan, el botón en la esquina superior derecha indica el plan actual del usuario ("Plan Premium"), informando qué funcionalidades tiene disponibles antes de que intente usarlas. |
+| **Prevención de errores (H5)** | En Recommendations, el panel "Active filters" muestra los filtros activos aplicados a todas las sugerencias (Lactose-free, Seafood-free) con botón de eliminación por filtro. Esto previene que el usuario reciba recomendaciones que no puede consumir sin necesidad de revisar su perfil. En Pantry, el resumen calórico al final de la lista de ingredientes indica explícitamente cuántas calorías quedan disponibles para las recetas sugeridas. |
+| **Reconocer antes que recordar (H6)** | En Pantry, cada ingrediente de la lista incluye su categoría debajo del nombre (Grain, Animal protein, Fruit, Vegetable, Seasoning), permitiendo al usuario reconocer el tipo de ingrediente sin necesidad de recordarlo. En Smart Scan, las dos opciones (Scan food dish / Scan restaurant menu) están separadas en tarjetas distintas con título y descripción, evitando que el usuario deba recordar qué opción usar según su contexto. |
+| **Libertad y control del usuario (H3)** | En Recommendations, los filtros activos tienen un botón "x" individual que permite al usuario eliminar cada restricción de forma independiente sin necesidad de ir a la configuración del perfil. En Smart Scan, cada opción ofrece dos métodos de entrada alternativos ("Take photo" y "Upload image"), dando al usuario control sobre cómo interactúa con la funcionalidad. |
+
+Arquitectura de la Información (AI)
+
+| Principio AI | Justificación |
+|---|---|
+| **Objects** | En Recommendations, cada plato sugerido es un objeto con atributos propios: nombre, descripción contextual, calorías, proteínas, etiqueta de intensidad y acción de registro. En Pantry, cada ingrediente es un objeto con nombre y categoría, que al combinarse con otros objetos genera un nuevo objeto: la receta sugerida con sus propios atributos nutricionales. |
+| **Choices** | En Smart Scan, la pantalla presenta exactamente dos opciones claramente diferenciadas: escanear un plato individual o escanear un menú de restaurante. Esta bifurcación binaria reduce la carga de decisión del usuario y encamina el flujo según su contexto de uso real. En Subscription, las tres tarjetas de plan ofrecen opciones con distintos niveles de funcionalidad y precio para diferentes perfiles de usuario. |
+| **Exemplars** | En Pantry, la receta sugerida "Chicken and Cucumber Salad" muestra un ejemplo concreto del resultado que el usuario puede obtener a partir de sus ingredientes disponibles, ilustrando el valor de la funcionalidad antes de que el usuario agregue más ingredientes. |
+| **Multiple Classification** | En Recommendations, cada plato puede clasificarse simultáneamente por múltiples atributos: calorías, contenido proteico y nivel de intensidad (Light). Esto permite al usuario evaluar cada opción desde distintos criterios de decisión sin navegar a una vista de detalle. |
+
+Diseño Inclusivo
+
+| Principio | Justificación |
+|---|---|
+| **Considera la situación del usuario (P2)** | En Recommendations, el contexto climático y de ubicación detectado automáticamente ("It's hot in Lima — 31°C · Sunny") adapta las sugerencias al entorno físico real del usuario en ese momento, reconociendo que las necesidades nutricionales varían según la situación contextual y no solo según los objetivos declarados. |
+| **Ofrecer opciones (P5)** | En Smart Scan, la zona de carga de imagen ofrece tres métodos alternativos de entrada: arrastrar y soltar, tomar foto y subir imagen. Esto contempla distintos contextos de uso: usuario en escritorio con archivo guardado, usuario con cámara web disponible, o usuario que prefiere cargar desde galería. |
+| **Priorizar el contenido (P6)** | En Subscription, el contenido de cada plan se organiza jerárquicamente: precio como dato primario en tamaño grande, descripción resumida en una línea, y lista de características detalladas como contenido secundario. Esto permite al usuario tomar una decisión preliminar por precio antes de leer los detalles. |
+| **Agrega valor (P7)** | En Pantry, el sistema cruza los ingredientes disponibles del usuario con su déficit calórico restante y sus restricciones activas para generar recetas personalizadas etiquetadas con el objetivo del usuario ("Weight-loss"). Este cruce de variables agrega un valor que ninguna app de recetas estándar ofrece, mejorando directamente la experiencia de usuarios con metas nutricionales específicas. |
+
 ### 4.4.2. Web Applications Wireflow Diagrams
 
 ### 4.4.2. Web Applications Mock-ups
