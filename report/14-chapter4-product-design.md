@@ -116,61 +116,61 @@ Los adaptadores de infraestructura modelan la comunicación con servicios extern
 
 **Identity & Access Management**
 
-![IAM Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/frontend/iam.puml)
+![IAM Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/iam.puml)
 
 **Nutrition**
 
-![Nutrition Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/frontend/nutrition.puml)
+![Nutrition Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/nutrition.puml)
 
 **Body-metrics**
 
-![Body-metrics Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/frontend/body-metrics.puml)
+![Body-metrics Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/body-metrics.puml)
 
 **Recommendations**
 
-![Recommendations Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/frontend/recommendations.puml)
+![Recommendations Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/recommendations.puml)
 
 **Activity**
 
-![Activity Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/frontend/activity.puml)
+![Activity Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/activity.puml)
 
 **Analytics**
 
-![Analytics Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/frontend/analytics.puml)
+![Analytics Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/analytics.puml)
 
 **Billing**
 
-![Activity Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/frontend/billing.puml)
+![Activity Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/billing.puml)
 
 **Backend**
 
 **Identity & Access Management**
 
-![IAM Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/backend/iam.puml)
+![IAM Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/iam.puml)
 
 **Nutrition**
 
-![Nutrition Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/backend/nutrition.puml)
+![Nutrition Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/nutrition.puml)
 
 **Body-metrics**
 
-![Body-metrics Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/backend/body-metrics.puml)
+![Body-metrics Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/body-metrics.puml)
 
 **Recommendations**
 
-![Recommendations Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/backend/recommendations.puml)
+![Recommendations Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/recommendations.puml)
 
 **Activity**
 
-![Activity Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/backend/activity.puml)
+![Activity Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/activity.puml)
 
 **Analytics**
 
-![Analytics Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/backend/analytics.puml)
+![Analytics Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/analytics.puml)
 
 **Billing**
 
-![Activity Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/backend/billing.puml)
+![Activity Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/billing.puml)
 
 ## 4.8. Database Design
 
