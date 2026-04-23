@@ -18,7 +18,7 @@ Somos **DevTeam**, un startup integrado por estudiantes de la facultad de Ingeni
 | :--- | :--- |
 | | |
 | | | 
-| | |
+| ![Joel](../assets/img/chapter1/mora.png) | **Nombres y Apellidos:** Joel Fernando Mora Rivera<br> **Código:** U20241B227<br> **Carrera:** Ingeniería de Software<br> Soy una persona responsable, organizada y comprometida, con una actitud competitiva positiva que me impulsa a superar retos con constancia. Cuento con formación en C++, Python, Java y gestión de bases de datos relacionales y no relacionales, enfocándome en la innovación y optimización de procesos tecnológicos. Me apasiona el aprendizaje continuo y resolver desafíos técnicos que pongan a prueba mis habilidades. Además, priorizo el trabajo en equipo y la comunicación efectiva como motores fundamentales para alcanzar el éxito en cualquier proyecto. |
 | ![Brandon](../assets/img/chapter1/Brandon-Soto.jpg) | **Nombres y Apellidos:** Brandon Wilder Soto Palacios<br> **Código:** U202315640<br> **Carrera:** Ingeniería de Software<br> Soy estudiante de la carrera de Ingeniería de Software en la Universidad Peruana de Ciencias Aplicadas. Tengo intereses en la tecnología y su constante evolución. Tengo conocimientos de programación en lenguajes como C++, Python, JavaScript, HTML y CSS. Soy un poco reservado, pero con muchas de ganas de aprender nuevas cosas. |
 | | |
 
