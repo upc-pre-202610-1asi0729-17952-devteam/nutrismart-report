@@ -12,6 +12,8 @@
 
 ## 5.2. Landing Page, Services & Applications Implementation
 
+La implementación del Landing Page, los servicios web y las aplicaciones representa la etapa crítica donde el equipo consolida el desarrollo de NutriSmart. Este proceso permite materializar el diseño y las funcionalidades planificadas, transformando los requisitos en un producto tangible y operativo. En esta fase se traduce cada especificación técnica en código fuente, construyendo la infraestructura necesaria para satisfacer las necesidades identificadas de los segmentos objetivo.
+
 ### 5.2.1. Sprint 1
 
 #### 5.2.1.1. Sprint Planning 1
