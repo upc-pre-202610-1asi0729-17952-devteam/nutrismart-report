@@ -32,30 +32,159 @@ Para comprender de manera integral las necesidades, comportamientos y motivacion
 ### 2.3.2. User Task Matrix
 
 **Segmento 1: Pérdida de peso**
-
-| Task | Jorge Del Aguila   | Anthony López   | Evelyn Díaz   |
-| :---   :--- | :--- | :--- | :--- | :--- | :--- |
-| | **Frequency** | **Importance** | **Frequency** | **Importance** | **Frequency** | **Importance** |
-| Control the amount of food consumed daily | Normally | High | Sometimes | Medium | Normally | High |
-| Estimate the calories of food before consuming them | Normally | High | Sometimes | Medium | Normally | High |
-| Decide what to eat when away from home | Sometimes | Medium | Normally | High | Sometimes | Medium |
-| Evaluate progress in relation to weight | Normally | High | Sometimes | Medium | Normally | High |
-| Avoid foods perceived as unhealthy | Normally | High | Sometimes | Medium | Normally | High |
-| Adapt eating habits according to daily routine | Normally | High | Normally | High | Normally | High |
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2">Task</th>
+      <th colspan="2">Jorge Del Aguila</th>
+      <th colspan="2">Anthony López</th>
+      <th colspan="2">Evelyn Díaz</th>
+    </tr>
+    <tr>
+      <th>Frequency</th>
+      <th>Importance</th>
+      <th>Frequency</th>
+      <th>Importance</th>
+      <th>Frequency</th>
+      <th>Importance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Control the amount of food consumed daily</td>
+      <td>Normally</td>
+      <td>High</td>
+      <td>Sometimes</td>
+      <td>Medium</td>
+      <td>Normally</td>
+      <td>High</td>
+    </tr>
+    <tr>
+      <td>Estimate the calories of food before consuming them</td>
+      <td>Normally</td>
+      <td>High</td>
+      <td>Sometimes</td>
+      <td>Medium</td>
+      <td>Normally</td>
+      <td>High</td>
+    </tr>
+    <tr>
+      <td>Decide what to eat when away from home</td>
+      <td>Sometimes</td>
+      <td>Medium</td>
+      <td>Normally</td>
+      <td>High</td>
+      <td>Sometimes</td>
+      <td>Medium</td>
+    </tr>
+    <tr>
+      <td>Evaluate progress in relation to weight</td>
+      <td>Normally</td>
+      <td>High</td>
+      <td>Sometimes</td>
+      <td>Medium</td>
+      <td>Normally</td>
+      <td>High</td>
+    </tr>
+    <tr>
+      <td>Avoid foods perceived as unhealthy</td>
+      <td>Normally</td>
+      <td>High</td>
+      <td>Sometimes</td>
+      <td>Medium</td>
+      <td>Normally</td>
+      <td>High</td>
+    </tr>
+    <tr>
+      <td>Adapt eating habits according to daily routine</td>
+      <td>Normally</td>
+      <td>High</td>
+      <td>Normally</td>
+      <td>High</td>
+      <td>Normally</td>
+      <td>High</td>
+    </tr>
+  </tbody>
+</table>
 
 <br>
 
 **Segmento 2: Ganancia de masa muscular**
 
-| Task | Daphne Vergaray | | David Ramos | | Maria Roque | |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| | **Frequency** | **Importance** | **Frequency** | **Importance** | **Frequency** | **Importance** |
-| Calculate the amount of protein consumed daily | Normally | High | Sometimes | Medium | Normally | High |
-| Plan meals according to muscle gain physical goals | Normally | High | Normally | High | Normally | High |
-| Adjust nutrition according to physical activity | Normally | High | Normally | High | Normally | High |
-| Search for suitable options when eating away from home | Normally | High | Normally | High | Sometimes | Medium |
-| Maintain consistency in nutrition over time | Sometimes | Medium | Normally | High | Normally | High |
-| Evaluate if foods meet nutritional requirements | Normally | High | Normally | High | Sometimes | Medium |
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2">Task</th>
+      <th colspan="2">Daphne Vergaray</th>
+      <th colspan="2">David Ramos</th>
+      <th colspan="2">Maria Espinoza</th>
+    </tr>
+    <tr>
+      <th>Frequency</th>
+      <th>Importance</th>
+      <th>Frequency</th>
+      <th>Importance</th>
+      <th>Frequency</th>
+      <th>Importance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Calculate the amount of protein consumed daily</td>
+      <td>Normally</td>
+      <td>High</td>
+      <td>Sometimes</td>
+      <td>Medium</td>
+      <td>Normally</td>
+      <td>High</td>
+    </tr>
+    <tr>
+      <td>Plan meals according to muscle gain physical goals</td>
+      <td>Normally</td>
+      <td>High</td>
+      <td>Normally</td>
+      <td>High</td>
+      <td>Normally</td>
+      <td>High</td>
+    </tr>
+    <tr>
+      <td>Adjust nutrition according to physical activity</td>
+      <td>Normally</td>
+      <td>High</td>
+      <td>Normally</td>
+      <td>High</td>
+      <td>Normally</td>
+      <td>High</td>
+    </tr>
+    <tr>
+      <td>Search for suitable options when eating away from home</td>
+      <td>Normally</td>
+      <td>High</td>
+      <td>Normally</td>
+      <td>High</td>
+      <td>Sometimes</td>
+      <td>Medium</td>
+    </tr>
+    <tr>
+      <td>Maintain consistency in nutrition over time</td>
+      <td>Sometimes</td>
+      <td>Medium</td>
+      <td>Normally</td>
+      <td>High</td>
+      <td>Normally</td>
+      <td>High</td>
+    </tr>
+    <tr>
+      <td>Evaluate if foods meet nutritional requirements</td>
+      <td>Normally</td>
+      <td>High</td>
+      <td>Normally</td>
+      <td>High</td>
+      <td>Sometimes</td>
+      <td>Medium</td>
+    </tr>
+  </tbody>
+</table>
 
 ### 2.3.3. User Journey Mapping
 
