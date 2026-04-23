@@ -30,6 +30,21 @@
 
 ### 4.4.2. Web Applications Wireflow Diagrams
 
+### WireFlow 1 — Dashboard
+| | |
+|---|---|
+| **User Goal N°1** | Como buscador saludable, quiero visualizar un resumen de mi progreso nutricional diario y recibir alertas cuando supere mis límites calóricos, para mantener el control de mi alimentación. |
+
+| **Task Flow** |
+|---|
+| 1. El buscador saludable accede al Dashboard. |
+| 2. El buscador saludable visualiza sus calorías consumidas, quemadas y el balance neto del día. |
+| 3. El buscador saludable registra sus comidas a lo largo del día. |
+| 4. El buscador saludable completa su registro diario. |
+| 5. El buscador saludable visualiza su racha activa de 7 días consecutivos completada. |
+
+
+
 ### 4.4.2. Web Applications Mock-ups
 
 ### 4.4.3. Web Applications User Flow Diagrams
