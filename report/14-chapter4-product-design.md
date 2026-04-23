@@ -89,7 +89,7 @@ El Diagrama de Contexto (Nivel 1 del modelo C4) representa a NutriSmart como un 
 	- `OpenWeatherMap:` Provee datos climáticos para ajustar las sugerencias de comidas.
 	- `Stripe:` Gestiona de forma segura los pagos y el estado de las suscripciones.
 
-![Context Diagram](../assets/img/artifacts/nutrismart-SystemContext.png)
+![Context Diagram]()
 
 ### 4.6.3. Software Architecture Container Diagrams
 
@@ -106,9 +106,9 @@ El Diagrama de Contenedores (Nivel 2 del modelo C4) desglosa el sistema NutriSma
  - **External Systems:** APIs de terceros que se integran con el backend para extender las capacidades del sistema.
     - **Tecnología:** `JSON/HTTPS (REST)`.
 
-![Container Diagram](../assets/img/artifacts/nutrismart-ContainerDiagram.png)
+![Container Diagram]()
 
-![Container Diagram Summarized](../assets/img/artifacts/nutrismart-ContainerDiagram1.png)
+![Container Diagram Summarized]()
 
 ### 4.6.4. Software Architecture Components Diagrams
 
@@ -129,9 +129,9 @@ Este contenedor se organiza para garantizar una interfaz reactiva siguiendo el p
  - **HTTP Client:** Encargado de orquestar las peticiones asíncronas y la comunicación con el servidor de API.
     - **Tecnología:** `HttpClient (Angular)`.
 
-![Web Component Diagram](../assets/img/artifacts/nutrismart-WebComponentsDiagram.png)
+![Web Component Diagram]()
 
-![Web Component Diagram Summarized](../assets/img/artifacts/nutrismart-WebComponentsDiagram1.png)
+![Web Component Diagram Summarized]()
 
 **B. API Application Components (Backend)**
 
@@ -146,9 +146,9 @@ El backend se divide en módulos que representan los 7 Bounded Contexts del domi
  - **Integrations Hub:** Orquestador de la comunicación con las APIs externas (Stripe, Google Fit, Weather, Vision).
     - **Tecnología:** `HttpClient (Java)`.
 
-![API Component Diagram](../assets/img/artifacts/nutrismart-APIComponentsDiagram.png)
+![API Component Diagram]()
 
-![API Component Diagram Summarized](../assets/img/artifacts/nutrismart-APIComponentsDiagram1.png)
+![API Component Diagram Summarized]()
 
 ## 4.7. Software Object-Oriented Design
 
