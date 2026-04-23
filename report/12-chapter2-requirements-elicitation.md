@@ -33,8 +33,8 @@ Para comprender de manera integral las necesidades, comportamientos y motivacion
 
 **Segmento 1: Pérdida de peso**
 
-| Task | Jorge Del Aguila | | Anthony López | | Evelyn Díaz | |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Task | Jorge Del Aguila   | Anthony López   | Evelyn Díaz   |
+| :---   :--- | :--- | :--- | :--- | :--- | :--- |
 | | **Frequency** | **Importance** | **Frequency** | **Importance** | **Frequency** | **Importance** |
 | Control the amount of food consumed daily | Normally | High | Sometimes | Medium | Normally | High |
 | Estimate the calories of food before consuming them | Normally | High | Sometimes | Medium | Normally | High |
