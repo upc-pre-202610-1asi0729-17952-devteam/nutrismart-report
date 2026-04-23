@@ -4,6 +4,8 @@ El proceso de construcción, verificación y puesta en marcha de NutriSmart repr
 
 ## 5.1. Software Configuration Management
 
+La gestión de configuración de software (SCM) en NutriSmart garantiza la integridad y trazabilidad de todos los artefactos del proyecto durante su ciclo de vida. Este apartado detalla los procesos para administrar los cambios en el código fuente y la documentación, asegurando versiones reproducibles y una colaboración estructurada que minimice conflictos y optimice la calidad de las entregas finales.
+
 ### 5.1.1. Software Development Environment Configuration
 
 ### 5.1.2. Source Code Management
