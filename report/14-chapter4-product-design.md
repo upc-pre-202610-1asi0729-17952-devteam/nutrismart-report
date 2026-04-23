@@ -89,7 +89,7 @@ El Diagrama de Contexto (Nivel 1 del modelo C4) representa a NutriSmart como un 
 	- `OpenWeatherMap:` Provee datos climáticos para ajustar las sugerencias de comidas.
 	- `Stripe:` Gestiona de forma segura los pagos y el estado de las suscripciones.
 
-![Context Diagram]()
+![Context Diagram](../assets/img/artifacts/nutrismart-SystemContext.png)
 
 ### 4.6.3. Software Architecture Container Diagrams
 
@@ -108,9 +108,9 @@ El Diagrama de Contenedores (Nivel 2 del modelo C4) desglosa el sistema NutriSma
  - **External Systems:** APIs de terceros que se integran con el backend para extender las capacidades del sistema.
     - **Tecnología:** `JSON/HTTPS (REST)`.
 
-![Container Diagram]()
+![Container Diagram](../assets/img/artifacts/nutrismart-ContainerDiagram.png)
 
-![Container Diagram Summarized]()
+![Container Diagram Summarized](../assets/img/artifacts/nutrismart-ContainerDiagram1.png)
 
 ### 4.6.4. Software Architecture Components Diagrams
 
@@ -131,9 +131,9 @@ Este contenedor se organiza para garantizar una interfaz reactiva siguiendo el p
  - **HTTP Client:** Encargado de orquestar las peticiones asíncronas y la comunicación con el servidor de API.
     - **Tecnología:** `HttpClient (Angular)`.
 
-![Web Component Diagram]()
+![Web Component Diagram](../assets/img/artifacts/nutrismart-WebComponentsDiagram.png)
 
-![Web Component Diagram Summarized]()
+![Web Component Diagram Summarized](../assets/img/artifacts/nutrismart-WebComponentsDiagram1.png)
 
 **B. API Application Components (Backend)**
 
@@ -146,9 +146,9 @@ El backend se divide en módulos que representan los 7 Bounded Contexts del domi
  - **Data Access Layer (Repository):** Componente que centraliza la persistencia de la información mediante el uso de abstracciones de datos.
     - **Tecnología:** `Spring Data JPA / Hibernate`.
 
-![API Component Diagram]()
+![API Component Diagram](../assets/img/artifacts/nutrismart-APIComponentsDiagram.png)
 
-![API Component Diagram Summarized]()
+![API Component Diagram Summarized](../assets/img/artifacts/nutrismart-APIComponentsDiagram1.png)
 
 ## 4.7. Software Object-Oriented Design
 
