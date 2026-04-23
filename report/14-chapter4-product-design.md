@@ -97,7 +97,9 @@ El Diagrama de Contenedores (Nivel 2 del modelo C4) desglosa el sistema NutriSma
 
 **Elementos:**
 
- - **Web Application:** Frontend donde los usuarios interactúan con la plataforma, gestionan sus metas y visualizan sus progresos.
+ - **Web Application:** Servidor web que entrega los archivos estáticos al navegador del usuario para inicializar la aplicación.
+    - **Tecnología:** `Nginx`.
+ - **Single Page Application:** Frontend donde los usuarios interactúan con la plataforma, gestionan sus metas y visualizan sus progresos. Se ejecuta completamente en el navegador del usuario.
     - **Tecnología:** `Angular (con Angular Material para UI y RxJS para la gestión de servicios)`.
  - **API Application:** Backend que maneja la lógica de negocio, el motor de recomendaciones, el procesamiento de imágenes y la integración con servicios externos.
     - **Tecnología:** `Spring Boot (Java)`.
