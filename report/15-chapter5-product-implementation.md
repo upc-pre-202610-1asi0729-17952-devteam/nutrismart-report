@@ -130,17 +130,17 @@ Para garantizar la integridad y el control total sobre las modificaciones del so
 
 La solución se ha segmentado en repositorios independientes para mantener una arquitectura limpia y una separación de responsabilidades clara:
 
-- **nutrismart-landing:** Repositorio dedicado al sitio de presentación estática (Landing Page).
+- **nutrismart-website:** Repositorio dedicado al sitio de presentación estática (Landing Page).
 
-    [Link del repositorio nutrismart-landing](https://github.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-landing)
+    [Link del repositorio nutrismart-website](https://github.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-website)
 
-- **nutrismart-backend:** Contiene el núcleo de la solución (Backend), desarrollado como una API RESTful en Java con Spring Boot. Este repositorio aloja la lógica de negocio, los servicios de dominio y las suites de pruebas automatizadas.
+- **nutrismart-platform:** Contiene el núcleo de la solución (Backend), desarrollado como una API RESTful en Java con Spring Boot. Este repositorio aloja la lógica de negocio, los servicios de dominio y las suites de pruebas automatizadas.
 
-    [Link del repositorio nutrismart-backend](https://github.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-backend)
+    [Link del repositorio nutrismart-platform](https://github.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-platform)
 
-- **nutrismart-frontend:** Espacio reservado para el código del cliente web (Frontend) construido en Angular.
+- **nutrismart-webapp:** Espacio reservado para el código del cliente web (Frontend) construido en Angular.
 
-    [Link del repositorio nutrismart-frontend](https://github.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-frontend)
+    [Link del repositorio nutrismart-webapp](https://github.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp)
 
 - **nutrismart-report:** Repositorio de soporte utilizado para la gestión de la documentación técnica y los informes del proyecto.
 
