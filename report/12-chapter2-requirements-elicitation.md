@@ -33,8 +33,9 @@ Para comprender de manera integral las necesidades, comportamientos y motivacion
 
 **Segmento 1: Pérdida de peso**
 
-| Task | Jorge Del Aguila Frequency | Jorge Del Aguila Importance | Anthony López Frequency | Anthony López Importance | Evelyn Díaz Frequency | Evelyn Díaz Importance |
-|------|---------------------------|----------------------------|------------------------|-------------------------|-----------------------|------------------------|
+| Task | Jorge Del Aguila | | Anthony López | | Evelyn Díaz | |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| | **Frequency** | **Importance** | **Frequency** | **Importance** | **Frequency** | **Importance** |
 | Control the amount of food consumed daily | Normally | High | Sometimes | Medium | Normally | High |
 | Estimate the calories of food before consuming them | Normally | High | Sometimes | Medium | Normally | High |
 | Decide what to eat when away from home | Sometimes | Medium | Normally | High | Sometimes | Medium |
@@ -42,11 +43,13 @@ Para comprender de manera integral las necesidades, comportamientos y motivacion
 | Avoid foods perceived as unhealthy | Normally | High | Sometimes | Medium | Normally | High |
 | Adapt eating habits according to daily routine | Normally | High | Normally | High | Normally | High |
 
+<br>
 
 **Segmento 2: Ganancia de masa muscular**
 
-| Task | Daphne Vergaray Frequency | Daphne Vergaray Importance | David Ramos Frequency | David Ramos Importance | Maria Roque Frequency | Maria Roque Importance |
-|------|--------------------------|---------------------------|----------------------|------------------------|--------------------------|---------------------------|
+| Task | Daphne Vergaray | | David Ramos | | Maria Roque | |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| | **Frequency** | **Importance** | **Frequency** | **Importance** | **Frequency** | **Importance** |
 | Calculate the amount of protein consumed daily | Normally | High | Sometimes | Medium | Normally | High |
 | Plan meals according to muscle gain physical goals | Normally | High | Normally | High | Normally | High |
 | Adjust nutrition according to physical activity | Normally | High | Normally | High | Normally | High |
