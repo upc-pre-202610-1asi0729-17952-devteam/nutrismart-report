@@ -137,7 +137,7 @@ Este contenedor se organiza para garantizar una interfaz reactiva siguiendo el p
 
 **B. API Application Components (Backend)**
 
-El backend se divide en módulos que representan los 7 Bounded Contexts del dominio, asegurando una arquitectura desacoplada y escalable.
+El backend se divide en módulos que representan los 7 Bounded Contexts del dominio, asegurando una arquitectura desacoplada y escalable. Adicionalmente, cuenta con un Data Access Layer que centraliza la persistencia de datos mediante el patrón Repository, gestionando todas las operaciones de lectura y escritura hacia la base de datos.
 
 **Elementos:**
 
@@ -145,8 +145,6 @@ El backend se divide en módulos que representan los 7 Bounded Contexts del domi
     - **Tecnología:** `Java / Spring Boot (Services & Controllers)`.
  - **Data Access Layer (Repository):** Componente que centraliza la persistencia de la información mediante el uso de abstracciones de datos.
     - **Tecnología:** `Spring Data JPA / Hibernate`.
- - **Integrations Hub:** Orquestador de la comunicación con las APIs externas (Stripe, Google Fit, Weather, Vision).
-    - **Tecnología:** `HttpClient (Java)`.
 
 ![API Component Diagram]()
 
