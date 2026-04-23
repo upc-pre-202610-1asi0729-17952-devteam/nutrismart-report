@@ -3,8 +3,6 @@ skinparam monochrome false
 skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 
-' ─── DOMAIN ───────────────────────────────────────────────────────────────────
-
 package "activity/domain/model" {
   class ActivityLog {
     + date: string
@@ -31,8 +29,6 @@ package "activity/domain/model" {
   }
 }
 
-' ─── APPLICATION ──────────────────────────────────────────────────────────────
-
 package "activity/application/services" {
   class ActivityService {
     - api: ActivityApiService
@@ -47,8 +43,6 @@ package "activity/application/services" {
   }
 }
 
-' ─── INFRASTRUCTURE ───────────────────────────────────────────────────────────
-
 package "activity/infrastructure/http" {
   class ActivityApiService {
     - http: HttpClient
@@ -62,8 +56,6 @@ package "activity/infrastructure/http" {
     + durationMinutes: number
   }
 }
-
-' ─── PRESENTATION ─────────────────────────────────────────────────────────────
 
 package "activity/presentation/components" {
   class "«Component»\nActivityDashboardComponent" as ActivityDashboardComponent {
@@ -101,8 +93,6 @@ package "activity/presentation/components" {
     + progressPercent: Signal<number>
   }
 }
-
-' ─── RELATIONSHIPS ────────────────────────────────────────────────────────────
 
 ActivityService --> ActivityApiService : uses >
 ActivityService --> "1" ActivityLog : holds >
