@@ -236,3 +236,85 @@ Para poder apreciar mejor el Big Picture Event Storming, le recomendamos ingresa
 
 
 ## 2.5. Ubiquitous Language
+
+El presente Ubiquitous Language establece un conjunto estructurado de términos y conceptos clave propios del dominio de nuestra plataforma, con el propósito de definir un lenguaje común, preciso y libre de ambigüedades entre los distintos stakeholders y el equipo de desarrollo. Este glosario se fundamenta en los principios de Domain Driven Design, permitiendo alinear la comprensión del negocio de la nutrición personalizada, el seguimiento de métricas de salud y la generación de recomendaciones contextuales. Cada término ha sido definido considerando su significado específico dentro del dominio, garantizando consistencia semántica, trazabilidad conceptual y una comunicación efectiva que facilite el análisis, diseño e implementación de la solución.
+
+**User & Profile**
+
+| Término | Definición |
+| :--- | :--- |
+| **User (Usuario)** | The person using the platform to manage their nutrition, physical activity, and health goals. |
+| **User Profile (Perfil de Usuario)** | The set of personal and health data for the user, such as age, sex, weight, height, activity level, and dietary restrictions. |
+| **Goal (Meta)** | The user's primary objective related to their physical state: losing weight, gaining muscle mass, or maintaining their current condition. |
+| **Dietary Restrictions (Restricciones Alimentarias)** | Limitations on the user's diet due to allergies, intolerances, or medical conditions. |
+| **Subscription Plan (Plan de Suscripción)** | Access level contracted by the user (Basic, Pro, Premium) that determines available features. |
+
+**Body & Health Metrics**
+
+| Término | Definición |
+| :--- | :--- |
+| **Weight (Peso)** | Body measurement of the user recorded periodically to evaluate progress. |
+| **Height (Altura)** | Physical measurement used alongside weight to calculate health indicators. |
+| **BMI / Body Mass Index (IMC / Índice de Masa Corporal)** | An indicator that relates weight and height to estimate the user's physical status. |
+| **BMR / Basal Metabolic Rate (TMB / Tasa Metabólica Basal)** | The amount of calories the body needs at rest for vital functions. |
+| **TDEE / Total Daily Energy Expenditure (Gasto Calórico Diario Total)** | The total calories the user burns in a day, considering their physical activity. |
+| **Daily Calorie Target (Objetivo Calórico Diario)** | The number of calories the user should consume daily according to their goal. |
+
+**Nutrition Tracking**
+
+| Término | Definición |
+| :--- | :--- |
+| **Meal (Comida)** | Food intake recorded at specific times of the day: breakfast, lunch, dinner, or snack. |
+| **Food Item (Alimento)** | Individual product consumed by the user with associated nutritional information. |
+| **Nutrition Log (Registro Nutricional)** | History of food consumed by the user, organized by day. |
+| **Calories (Calorías)** | The unit of energy provided by the consumed food. |
+| **Macronutrients / Macros (Macronutrientes)** | The primary components of food: proteins, carbohydrates, and fats. |
+| **Daily Intake (Consumo Diario)** | Total calories and macronutrients consumed by the user in a day. |
+
+**Smart Scan**
+
+| Término | Definición |
+| :--- | :--- |
+| **Smart Scan (Escaneo Inteligente)** | A feature that analyzes images of food or menus to estimate their nutritional value. |
+| **Dish Photo (Foto de Plato)** | An image of food taken by the user to identify its components and calories. |
+| **Menu Photo (Foto de Menú)** | An image of a restaurant menu used to recommend healthy options. |
+| **Food Analysis (Análisis de Alimento)** | The process of estimating calories and macronutrients from an image. |
+| **Manual Confirmation (Confirmación Manual)** | User validation of the analysis results before saving them. |
+
+**Recommendations**
+
+| Término | Definición |
+| :--- | :--- |
+| **Recommendation (Recomendación)** | Personalized suggestion of foods or meals based on the user's profile. |
+| **Context Aware Recommendation (Recomendación Contextual)** | A recommendation that considers factors such as weather, location, and user status. |
+| **Weather Condition (Condición Climática)** | The state of the weather (heat, cold, etc.) that influences dietary recommendations. |
+| **Travel Mode (Modo Viaje)** | A feature that adapts recommendations based on the city or country where the user is located. |
+| **Pantry (Despensa)** | A list of ingredients available at home as recorded by the user. |
+| **Recipe Suggestion (Sugerencia de Receta)** | A recommendation for food preparation based on available ingredients and nutritional needs. |
+| **Macro Deficit (Déficit de Macronutrientes)** | The difference between the macronutrients consumed and those required for the day. |
+
+**Activity & Energy Balance**
+
+| Término | Definición |
+| :--- | :--- |
+| **Physical Activity (Actividad Física)** | Exercise performed by the user that contributes to daily caloric expenditure. |
+| **Active Calories (Calorías Activas)** | Calories burned through physical activity. |
+| **Energy Balance (Balance Calórico)** | The relationship between calories consumed and calories burned in a day. |
+
+**Progress & Analytics**
+
+| Término | Definición |
+| :--- | :--- |
+| **Progress (Progreso)** | The user's evolution regarding their goal, based on body metrics and consumption. |
+| **Daily Summary (Resumen Diario)** | An overview of calorie and macronutrient consumption against the daily target. |
+| **Streak (Racha)** | The number of consecutive days in which the user records their full information. |
+| **Alert (Alerta)** | A notification when the user exceeds or falls short of their nutritional goals. |
+| **Trend (Tendencia)** | The pattern of change in metrics such as weight or consumption over time. |
+
+**Domain Concepts Clave**
+
+| Término | Definición |
+| :--- | :--- |
+| **Personalized Nutrition (Nutrición Personalizada)** | An approach that adapts dietary recommendations to the user's characteristics and context. |
+| **Health Goal Achievement (Logro de Objetivos de Salud)** | The fulfillment of physical goals through monitoring and recommendations. |
+| **Contextual Awareness (Conciencia Contextual)** | The system's ability to consider external factors such as weather and location. |
