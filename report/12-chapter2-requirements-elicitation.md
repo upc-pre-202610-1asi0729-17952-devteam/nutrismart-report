@@ -240,7 +240,6 @@ Para poder apreciar mejor el Big Picture Event Storming, le recomendamos ingresa
 El presente Ubiquitous Language establece un conjunto estructurado de términos y conceptos clave propios del dominio de nuestra plataforma, con el propósito de definir un lenguaje común, preciso y libre de ambigüedades entre los distintos stakeholders y el equipo de desarrollo. Este glosario se fundamenta en los principios de Domain Driven Design, permitiendo alinear la comprensión del negocio de la nutrición personalizada, el seguimiento de métricas de salud y la generación de recomendaciones contextuales. Cada término ha sido definido considerando su significado específico dentro del dominio, garantizando consistencia semántica, trazabilidad conceptual y una comunicación efectiva que facilite el análisis, diseño e implementación de la solución.
 
 **User & Profile**
-
 | Término | Definición |
 | :--- | :--- |
 | **User (Usuario)** | The person using the platform to manage their nutrition, physical activity, and health goals. |
@@ -250,10 +249,9 @@ El presente Ubiquitous Language establece un conjunto estructurado de términos 
 | **Subscription Plan (Plan de Suscripción)** | Access level contracted by the user (Basic, Pro, Premium) that determines available features. |
 
 **Body & Health Metrics**
-
 | Término | Definición |
 | :--- | :--- |
-| **Weight (Peso)** | Body measurement of the user recorded periodically to evaluate progress. |
+| **Weight (Peso)** | Body measurement of the user recorded periodically to evaluate progress. . |
 | **Height (Altura)** | Physical measurement used alongside weight to calculate health indicators. |
 | **BMI / Body Mass Index (IMC / Índice de Masa Corporal)** | An indicator that relates weight and height to estimate the user's physical status. |
 | **BMR / Basal Metabolic Rate (TMB / Tasa Metabólica Basal)** | The amount of calories the body needs at rest for vital functions. |
@@ -272,7 +270,6 @@ El presente Ubiquitous Language establece un conjunto estructurado de términos 
 | **Daily Intake (Consumo Diario)** | Total calories and macronutrients consumed by the user in a day. |
 
 **Smart Scan**
-
 | Término | Definición |
 | :--- | :--- |
 | **Smart Scan (Escaneo Inteligente)** | A feature that analyzes images of food or menus to estimate their nutritional value. |
@@ -282,11 +279,10 @@ El presente Ubiquitous Language establece un conjunto estructurado de términos 
 | **Manual Confirmation (Confirmación Manual)** | User validation of the analysis results before saving them. |
 
 **Recommendations**
-
 | Término | Definición |
 | :--- | :--- |
 | **Recommendation (Recomendación)** | Personalized suggestion of foods or meals based on the user's profile. |
-| **Context Aware Recommendation (Recomendación Contextual)** | A recommendation that considers factors such as weather, location, and user status. |
+| **Context Aware Recommendation (Recomendación Contextual)** | A recommendation that considers factors such as weather, location, and user status.. |
 | **Weather Condition (Condición Climática)** | The state of the weather (heat, cold, etc.) that influences dietary recommendations. |
 | **Travel Mode (Modo Viaje)** | A feature that adapts recommendations based on the city or country where the user is located. |
 | **Pantry (Despensa)** | A list of ingredients available at home as recorded by the user. |
@@ -294,7 +290,6 @@ El presente Ubiquitous Language establece un conjunto estructurado de términos 
 | **Macro Deficit (Déficit de Macronutrientes)** | The difference between the macronutrients consumed and those required for the day. |
 
 **Activity & Energy Balance**
-
 | Término | Definición |
 | :--- | :--- |
 | **Physical Activity (Actividad Física)** | Exercise performed by the user that contributes to daily caloric expenditure. |
@@ -302,7 +297,6 @@ El presente Ubiquitous Language establece un conjunto estructurado de términos 
 | **Energy Balance (Balance Calórico)** | The relationship between calories consumed and calories burned in a day. |
 
 **Progress & Analytics**
-
 | Término | Definición |
 | :--- | :--- |
 | **Progress (Progreso)** | The user's evolution regarding their goal, based on body metrics and consumption. |
@@ -312,9 +306,8 @@ El presente Ubiquitous Language establece un conjunto estructurado de términos 
 | **Trend (Tendencia)** | The pattern of change in metrics such as weight or consumption over time. |
 
 **Domain Concepts Clave**
-
 | Término | Definición |
 | :--- | :--- |
 | **Personalized Nutrition (Nutrición Personalizada)** | An approach that adapts dietary recommendations to the user's characteristics and context. |
 | **Health Goal Achievement (Logro de Objetivos de Salud)** | The fulfillment of physical goals through monitoring and recommendations. |
-| **Contextual Awareness (Conciencia Contextual)** | The system's ability to consider external factors such as weather and location. |
+| **Contextual Awareness (Conciencia Contextual)** | The system's ability to consider external factors such as weather and location. . |
