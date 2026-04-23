@@ -142,6 +142,36 @@ Los adaptadores de infraestructura modelan la comunicación con servicios extern
 
 ![Activity Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/frontend/billing.puml)
 
+**Backend**
+
+**Identity & Access Management**
+
+![IAM Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/backend/iam.puml)
+
+**Nutrition**
+
+![Nutrition Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/backend/nutrition.puml)
+
+**Body-metrics**
+
+![Body-metrics Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/backend/body-metrics.puml)
+
+**Recommendations**
+
+![Recommendations Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/backend/recommendations.puml)
+
+**Activity**
+
+![Activity Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/backend/activity.puml)
+
+**Analytics**
+
+![Analytics Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/backend/analytics.puml)
+
+**Billing**
+
+![Activity Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/feature/chapter4-class-diagrams/docs/class-diagrams/backend/billing.puml)
+
 ## 4.8. Database Design
 
 ### 4.8.1. Database Diagrams
