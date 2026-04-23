@@ -14,14 +14,13 @@ Somos **DevTeam**, un startup integrado por estudiantes de la facultad de Ingeni
 
 ### 1.1.2. Perfiles de integrantes del equipo
 
-| Integrantes | Foto | Descripción del Perfil |
-| :--- | :---: | :--- |
-| | | |
-| | | |
-| | | |
-| Soto Palacios, Brandon Wilder | ![Brandon_Soto](../assets/img/Brandon-Soto.jpg) | Soy estudiante de la carrera de Ingeniería de Software en la Universidad Peruana de Ciencias Aplicadas. Tengo intereses en la tecnología y su constante evolución. Tengo conocimientos de programación en lenguajes como C++, Python, JavaScript, HTML y CSS. Soy un poco reservado, pero con muchas de ganas de aprender nuevas cosas.|
-| | | |
-| | | |
+| Integrantes | Descripción |
+| :--- | :--- |
+| | |
+| | | 
+| | |
+| ![Brandon](../assets/img/chapter1/Brandon-Soto.jpg) | **Nombres y Apellidos:** Brandon Wilder Soto Palacios<br> **Código:** U202315640<br> **Carrera:** Ingeniería de Software<br> Soy estudiante de la carrera de Ingeniería de Software en la Universidad Peruana de Ciencias Aplicadas. Tengo intereses en la tecnología y su constante evolución. Tengo conocimientos de programación en lenguajes como C++, Python, JavaScript, HTML y CSS. Soy un poco reservado, pero con muchas de ganas de aprender nuevas cosas. |
+| | |
 
 ## 1.1. Solution Profile
 
