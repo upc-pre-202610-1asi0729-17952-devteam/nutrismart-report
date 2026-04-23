@@ -1,0 +1,226 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "bodymetrics.domain.model.aggregates" {
+  class BodyProfile {
+    - id: BodyProfileId
+    - userId: UUID
+    - currentWeight: Weight
+    - height: Height
+    - birthDate: LocalDate
+    - biologicalSex: BiologicalSex
+    - activityLevel: ActivityLevel
+    - goal: FitnessGoal
+    - targetWeight: Weight
+    - updatedAt: Instant
+    + BodyProfile(userId: UUID, weight: Weight, height: Height, birthDate: LocalDate, sex: BiologicalSex)
+    + updateWeight(weight: Weight): void
+    + setGoal(goal: FitnessGoal, targetWeight: Weight): void
+    + calculateBMI(): double
+    + calculateTDEE(): double
+    + calculateDailyCalorieTarget(): double
+    + getAge(): int
+    + getId(): BodyProfileId
+  }
+  class WeightRecord {
+    - id: WeightRecordId
+    - userId: UUID
+    - weight: Weight
+    - recordedAt: LocalDate
+    - note: String
+    + WeightRecord(userId: UUID, weight: Weight, recordedAt: LocalDate)
+    + getWeight(): Weight
+    + getRecordedAt(): LocalDate
+  }
+}
+
+package "bodymetrics.domain.model.valueobjects" {
+  class BodyProfileId <<ValueObject>> {
+    - value: UUID
+    + getValue(): UUID
+  }
+  class WeightRecordId <<ValueObject>> {
+    - value: UUID
+    + getValue(): UUID
+  }
+  class Weight <<ValueObject>> {
+    - value: double
+    - unit: WeightUnit
+    + Weight(value: double, unit: WeightUnit)
+    + toKilograms(): double
+    + toPounds(): double
+  }
+  class Height <<ValueObject>> {
+    - value: double
+    - unit: HeightUnit
+    + Height(value: double, unit: HeightUnit)
+    + toCentimeters(): double
+  }
+  class FitnessGoal <<ValueObject>> {
+    - type: GoalType
+    - targetCalorieDeficit: int
+    + FitnessGoal(type: GoalType)
+    + getCalorieAdjustment(): int
+  }
+}
+
+package "bodymetrics.domain.model.enums" {
+  enum BiologicalSex {
+    MALE
+    FEMALE
+  }
+  enum ActivityLevel {
+    SEDENTARY
+    LIGHTLY_ACTIVE
+    MODERATELY_ACTIVE
+    VERY_ACTIVE
+    EXTRA_ACTIVE
+    + getTdeeMultiplier(): double
+  }
+  enum GoalType {
+    LOSE_WEIGHT
+    GAIN_MUSCLE
+  }
+  enum WeightUnit {
+    KG
+    LB
+  }
+  enum HeightUnit {
+    CM
+    INCH
+  }
+}
+
+package "bodymetrics.domain.model.events" {
+  class BodyMetricsInitialized <<DomainEvent>> {
+    + userId: UUID
+    + dailyCalorieTarget: double
+    + occurredOn: Instant
+  }
+  class WeightUpdated <<DomainEvent>> {
+    + userId: UUID
+    + newWeight: double
+    + occurredOn: Instant
+  }
+}
+
+package "bodymetrics.domain.repositories" {
+  interface BodyProfileRepository {
+    + findByUserId(userId: UUID): Optional<BodyProfile>
+    + save(profile: BodyProfile): BodyProfile
+  }
+  interface WeightRecordRepository {
+    + findByUserIdOrderByDate(userId: UUID): List<WeightRecord>
+    + save(record: WeightRecord): WeightRecord
+    + findLatestByUserId(userId: UUID): Optional<WeightRecord>
+  }
+}
+
+package "bodymetrics.application.internal.commandservices" {
+  class BodyProfileCommandService {
+    - profileRepository: BodyProfileRepository
+    - weightRecordRepository: WeightRecordRepository
+    + handle(command: InitializeBodyProfileCommand): BodyProfile
+    + handle(command: LogWeightCommand): WeightRecord
+    + handle(command: UpdateGoalCommand): BodyProfile
+  }
+  class InitializeBodyProfileCommand <<Command>> {
+    + userId: UUID
+    + weightKg: double
+    + heightCm: double
+    + birthDate: LocalDate
+    + biologicalSex: String
+    + activityLevel: String
+  }
+  class LogWeightCommand <<Command>> {
+    + userId: UUID
+    + weightKg: double
+    + note: String
+  }
+  class UpdateGoalCommand <<Command>> {
+    + userId: UUID
+    + goalType: String
+    + targetWeightKg: double
+  }
+}
+
+package "bodymetrics.application.internal.queryservices" {
+  class BodyProfileQueryService {
+    - profileRepository: BodyProfileRepository
+    - weightRecordRepository: WeightRecordRepository
+    + handle(query: GetBodyProfileQuery): Optional<BodyProfile>
+    + handle(query: GetWeightHistoryQuery): List<WeightRecord>
+  }
+  class GetBodyProfileQuery <<Query>> {
+    + userId: UUID
+  }
+  class GetWeightHistoryQuery <<Query>> {
+    + userId: UUID
+  }
+}
+
+package "bodymetrics.interfaces.rest.resources" {
+  class BodyProfileResource {
+    + userId: UUID
+    + weightKg: double
+    + heightCm: double
+    + bmi: double
+    + tdee: double
+    + dailyCalorieTarget: double
+    + goal: String
+    + targetWeightKg: double
+  }
+  class LogWeightResource {
+    + weightKg: double
+    + note: String
+  }
+  class WeightRecordResource {
+    + weightKg: double
+    + recordedAt: String
+    + note: String
+  }
+}
+
+package "bodymetrics.interfaces.rest.assemblers" {
+  class BodyProfileAssembler {
+    + toResourceFromEntity(profile: BodyProfile): BodyProfileResource
+  }
+  class WeightRecordAssembler {
+    + toResourceFromEntity(record: WeightRecord): WeightRecordResource
+  }
+}
+
+package "bodymetrics.interfaces.rest.controllers" {
+  class BodyProfileController {
+    - commandService: BodyProfileCommandService
+    - queryService: BodyProfileQueryService
+    + getProfile(userId: UUID): ResponseEntity<BodyProfileResource>
+    + initializeProfile(userId: UUID, command: InitializeBodyProfileCommand): ResponseEntity<BodyProfileResource>
+    + updateGoal(userId: UUID, command: UpdateGoalCommand): ResponseEntity<BodyProfileResource>
+    + logWeight(userId: UUID, resource: LogWeightResource): ResponseEntity<WeightRecordResource>
+    + getWeightHistory(userId: UUID): ResponseEntity<List<WeightRecordResource>>
+  }
+}
+
+BodyProfile "1" *--> "1" Weight : currentWeight >
+BodyProfile "1" *--> "1" Height : has >
+BodyProfile "1" *--> "1" FitnessGoal : has >
+BodyProfile "1" *--> "1" ActivityLevel : has >
+BodyProfile "1" *--> "1" BiologicalSex : has >
+BodyProfile ..> BodyMetricsInitialized : publishes >
+BodyProfile ..> WeightUpdated : publishes >
+WeightRecord "1" *--> "1" Weight : records >
+
+BodyProfileCommandService --> BodyProfileRepository : uses >
+BodyProfileCommandService --> WeightRecordRepository : uses >
+BodyProfileQueryService --> BodyProfileRepository : uses >
+BodyProfileQueryService --> WeightRecordRepository : uses >
+
+BodyProfileController --> BodyProfileCommandService : uses >
+BodyProfileController --> BodyProfileQueryService : uses >
+BodyProfileController --> BodyProfileAssembler : uses >
+BodyProfileController --> WeightRecordAssembler : uses >
+
+@enduml
