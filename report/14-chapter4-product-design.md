@@ -129,7 +129,7 @@ Todas las páginas incluyen `charset="UTF-8"`, `robots: index, follow`, etiqueta
 
 ### 4.2.4. Searching Systems
 
-El sistema de búsqueda de NutriSense está presente principalmente dentro de la Web Application, en los módulos donde el volumen de datos podría abrumar al usuario si no se ofrecen medios de filtrado eficientes.
+El sistema de búsqueda de NutriSmart está presente principalmente dentro de la Web Application, en los módulos donde el volumen de datos podría abrumar al usuario si no se ofrecen medios de filtrado eficientes.
 
 **Nutrition Log**
 
@@ -151,6 +151,19 @@ Los resultados se presentan como tarjetas con: nombre de la receta, imagen refer
 En la pantalla de análisis, el usuario puede filtrar su historial por: rango de fechas (última semana, último mes, rango personalizado), métrica a visualizar (calorías, proteínas, carbohidratos, grasas, peso corporal) y tipo de vista (gráfico de líneas, gráfico de barras, tabla de datos). Los filtros aplicados se muestran como chips activos sobre el gráfico, con opción de eliminarlos individualmente.
 
 ### 4.2.5. Navigation Systems
+
+
+La navegación del Landing Page se articula mediante una barra fija en la parte superior (sticky navbar) que permanece visible durante el scroll, con las secciones principales (About Us, Features, Contact) y el acceso directo a Log In.
+
+<div align="center">
+  <img src="../assets/img/information-architecture/landing.png" alt="nav-system of landing"/>
+</div>
+
+La Web Application utiliza una barra lateral de navegación persistente (sidebar) que organiza los módulos en dos bloques: acciones principales en la parte superior (Dashboard, Nutrition Log, Smart Scan, Recommendations, Pantry, Body Tracking) y configuración en la parte inferior (Analytics, Wearable, Profile, Subscriptions), permitiendo al usuario acceder a cualquier módulo en un solo clic desde cualquier pantalla. 
+
+<div align="center">
+  <img src="../assets/img/information-architecture/webapp.png" alt="nav-system of webapp"/>
+</div>
 
 ## 4.3. Landing Page UI Design
 
