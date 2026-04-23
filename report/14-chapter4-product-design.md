@@ -46,6 +46,35 @@ Ambos flujos guían al usuario paso a paso para evitar errores y reducir la carg
 
 ### 4.2.2. Labeling Systems
 
+
+Las etiquetas empleadas en NutriSense priorizan la brevedad y la claridad, evitando tecnicismos que puedan confundir a usuarios no especializados.
+
+**Landing Page**
+
+| Etiqueta | Contenido que representa |
+|---|---|
+| About Us | Misión, visión y equipo de NutriSense |
+| Features | Catálogo completo de funcionalidades |
+| Contact | Formulario y canales de contacto |
+| Log In | Acceso a la Web Application |
+
+**Web Application**
+
+| Etiqueta | Contenido que representa |
+|---|---|
+| Dashboard | Resumen diario de calorías y macros |
+| Nutrition Log | Registro de comidas por momento del día |
+| Smart Scan | Análisis visual de platos y menús |
+| Recommendations | Sugerencias contextuales (clima, viaje) |
+| Pantry | Ingredientes disponibles y recetas |
+| Body Tracking | Registro de peso, talla, BMI y TDEE |
+| Wearable| Conexión con Google Fit |
+| Analytics | Historial y reportes de progreso |
+| Profile| Datos personales, restricciones, suscripción |
+| Subscriptions | Planes y facturación |
+
+Las etiquetas de encabezado dentro de cada módulo siguen la misma lógica de concisión: "Today's Summary", "Log a Meal", "Scan a Dish", "My Pantry", "Weekly Report". En todas las vistas se usan atributos `alt` descriptivos en imágenes e íconos para garantizar accesibilidad con lectores de pantalla.
+
 ### 4.2.3. SEO Tags and Meta Tags
 
 ### 4.2.4. Searching Systems
