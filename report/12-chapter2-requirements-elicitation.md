@@ -12,6 +12,14 @@
 
 Las entrevistas fueron diseñadas con preguntas diferenciadas según cada segmento objetivo, organizadas en bloques temáticos que permiten recopilar información sobre el perfil del usuario, sus hábitos actuales y la validación de las funcionalidades propuestas.
 
+<center>
+
+|Enlace del video|
+|---|
+|https://upcedupe-my.sharepoint.com/:v:/g/personal/u202411669_upc_edu_pe/IQAaTWbVFrGSQJbryk1mXrvuAaOFuJ0aZVDyTHY-va1m7t0?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=SjFO2r|
+
+</center>
+
 ##### Segmento 1 — Pérdida de Peso (Adultos de 25 a 60 años)
 
 **Bloque 1: Perfil y biografía**
