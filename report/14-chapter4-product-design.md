@@ -116,7 +116,7 @@ El Diagrama de Contenedores (Nivel 2 del modelo C4) desglosa el sistema NutriSma
 
 El Diagrama de Componentes (Nivel 3 del modelo C4) describe la estructura interna de los contenedores principales de NutriSmart. En esta sección se detallan los módulos lógicos, sus responsabilidades específicas y las tecnologías utilizadas para la implementación de cada componente.
 
-**A. Web Application Components (Frontend)**
+**A. Single Page Application Components (Frontend)**
 
 Este contenedor se organiza para garantizar una interfaz reactiva siguiendo el patrón de arquitectura de Angular.
 
