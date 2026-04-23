@@ -47,13 +47,13 @@ Ambos flujos guían al usuario paso a paso para evitar errores y reducir la carg
 ### 4.2.2. Labeling Systems
 
 
-Las etiquetas empleadas en NutriSense priorizan la brevedad y la claridad, evitando tecnicismos que puedan confundir a usuarios no especializados.
+Las etiquetas empleadas en NutriSmart priorizan la brevedad y la claridad, evitando tecnicismos que puedan confundir a usuarios no especializados.
 
 **Landing Page**
 
 | Etiqueta | Contenido que representa |
 |---|---|
-| About Us | Misión, visión y equipo de NutriSense |
+| About Us | Misión, visión y equipo de NutriSmart |
 | Features | Catálogo completo de funcionalidades |
 | Contact | Formulario y canales de contacto |
 | Log In | Acceso a la Web Application |
@@ -76,6 +76,56 @@ Las etiquetas empleadas en NutriSense priorizan la brevedad y la claridad, evita
 Las etiquetas de encabezado dentro de cada módulo siguen la misma lógica de concisión: "Today's Summary", "Log a Meal", "Scan a Dish", "My Pantry", "Weekly Report". En todas las vistas se usan atributos `alt` descriptivos en imágenes e íconos para garantizar accesibilidad con lectores de pantalla.
 
 ### 4.2.3. SEO Tags and Meta Tags
+
+
+A continuación se detallan los valores asignados a las principales páginas de la experiencia.
+
+**Landing Page**
+
+| Tag | Valor |
+|---|---|
+| Title | NutriSmart: Smart Nutrition, Your Way |
+| Description | NutriSmart is the smart nutrition platform that adapts meal recommendations to your location, weather, and health profile. Lose weight or gain muscle, on your terms. |
+| Keywords | nutrition app, calorie tracker, smart nutrition, weight loss, muscle gain, meal planner, food tracker, NutriSmart, diet app, healthy eating |
+| Author | NutriSmart Team |
+
+**Features Page**
+
+| Tag | Valor |
+|---|---|
+| Title | Features: NutriSmart |
+| Description | Explore all NutriSmart features: Smart Scan food analysis, weather-based recommendations, travel mode, pantry recipes, wearable sync, and more. |
+| Keywords | NutriSmart features, smart scan, calorie tracker, travel mode, weather nutrition, meal logging, wearable sync, recipe ideas, menu analysis |
+| Author | NutriSmart Team |
+
+**About Us Page**
+
+| Tag | Valor |
+|---|---|
+| Title | About Us: NutriSmart |
+| Description | Learn about the NutriSmart team and our mission to empower people to eat better through visual food analysis and context-aware smart recommendations. |
+| Keywords | NutriSmart team, about NutriSmart, nutrition mission, healthy eating platform, Latin America nutrition app |
+| Author | NutriSmart Team |
+
+**Contact Page**
+
+| Tag | Valor |
+|---|---|
+| Title | Contact: NutriSmart |
+| Description | Get in touch with the NutriSmart team. Send us a message for questions, feedback, or partnership inquiries. |
+| Keywords | NutriSmart contact, nutrition app support, feedback, partnership, customer service |
+| Author | NutriSmart Team |
+
+**Web Application**
+
+| Tag | Valor |
+|---|---|
+| Title | NutriSmart App – Your Smart Nutrition Assistant |
+| Description | Log your meals, analyze dishes with your camera, and receive personalized recommendations based on your weather and location. Reach your goal with NutriSmart. |
+| Keywords | nutrition log, calorie tracking, smart scan, weather recommendations, travel mode, wearable sync, NutriSmart app, meal tracker, healthy eating assistant |
+| Author | NutriSmart Team |
+
+Todas las páginas incluyen `charset="UTF-8"`, `robots: index, follow`, etiqueta canónica (`rel="canonical"`) y Open Graph tags para compartir en redes sociales.
 
 ### 4.2.4. Searching Systems
 
