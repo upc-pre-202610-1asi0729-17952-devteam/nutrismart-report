@@ -221,4 +221,18 @@ En conjunto, estos hallazgos orientan el desarrollo de nuestra plataforma hacia 
 
 ## 2.4. Big Picture EventStorming
 
+En esta sección se desarrolla el modelado del dominio del sistema mediante la técnica de Big Picture Event Storming, con el propósito de construir una visión integral del negocio de nuestra plataforma bajo los principios de Domain Driven Design. Este proceso permitió identificar los eventos de dominio más relevantes, estableciendo su secuencia temporal y las relaciones de causalidad que definen el comportamiento del sistema a nivel global.
+
+El análisis realizado permitió, además, delimitar los actores que interactúan con el dominio, así como los comandos que representan las intenciones de cambio de estado y los sistemas externos que participan en la ejecución de los procesos de negocio. Esto evidencia una arquitectura orientada a eventos, caracterizada por un alto nivel de desacoplamiento y consistencia eventual entre los distintos componentes del sistema. 
+
+Asimismo, se identificaron eventos de alta relevancia que actúan como mecanismos de propagación, especialmente aquellos asociados al registro de consumo nutricional, los cuales desencadenan procesos en múltiples bounded contexts como analítica, recomendaciones inteligentes y gestión de métricas de salud.
+
+Finalmente, la estructuración del Big Picture Event Storming organiza los elementos del dominio en flujos de negocio coherentes, permitiendo visualizar las interdependencias entre bounded contexts, la secuencia lógica de ejecución y los principales puntos de integración. Este enfoque contribuye a la alineación entre el modelo de dominio y los procesos del negocio, además de facilitar la identificación de oportunidades de mejora en la arquitectura del sistema.
+
+**Big Picture Event Storming**
+
+
+Para poder apreciar mejor el Big Picture Event Storming, le recomendamos ingresar al siguiente link: [Tablero de Miro: Big Picture Event Storming](https://miro.com/app/board/uXjVGnTlN0E=/?share_link_id=736747337916)
+
+
 ## 2.5. Ubiquitous Language
