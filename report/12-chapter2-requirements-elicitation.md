@@ -43,6 +43,14 @@ Para comprender de manera integral las necesidades, comportamientos y motivacion
 
 ### 2.3.4. Empathy Mapping
 
+**Segmento 1: Pérdida de peso**
+
+![nombre](../assets/img/chapter2-neeedfinding-images/JorgeDelAguila_EM(1).png)
+
+**Segmento 2: Ganancia de masa muscular**
+
+![nombre](../assets/img/chapter2-neeedfinding-images/DaphneFaustorVergaray_EM(1).png)
+
 ## 2.4. Big Picture EventStorming
 
 ## 2.5. Ubiquitous Language
