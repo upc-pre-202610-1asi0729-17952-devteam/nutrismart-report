@@ -31,6 +31,29 @@ Para comprender de manera integral las necesidades, comportamientos y motivacion
 
 ### 2.3.2. User Task Matrix
 
+**Segmento 1: Pérdida de peso**
+
+| Task | Jorge Del Aguila Frequency | Jorge Del Aguila Importance | Anthony López Frequency | Anthony López Importance | Evelyn Díaz Frequency | Evelyn Díaz Importance |
+|------|---------------------------|----------------------------|------------------------|-------------------------|-----------------------|------------------------|
+| Control the amount of food consumed daily | Normally | High | Sometimes | Medium | Normally | High |
+| Estimate the calories of food before consuming them | Normally | High | Sometimes | Medium | Normally | High |
+| Decide what to eat when away from home | Sometimes | Medium | Normally | High | Sometimes | Medium |
+| Evaluate progress in relation to weight | Normally | High | Sometimes | Medium | Normally | High |
+| Avoid foods perceived as unhealthy | Normally | High | Sometimes | Medium | Normally | High |
+| Adapt eating habits according to daily routine | Normally | High | Normally | High | Normally | High |
+
+
+**Segmento 2: Ganancia de masa muscular**
+
+| Task | Daphne Vergaray Frequency | Daphne Vergaray Importance | David Ramos Frequency | David Ramos Importance | Maria Roque Frequency | Maria Roque Importance |
+|------|--------------------------|---------------------------|----------------------|------------------------|--------------------------|---------------------------|
+| Calculate the amount of protein consumed daily | Normally | High | Sometimes | Medium | Normally | High |
+| Plan meals according to muscle gain physical goals | Normally | High | Normally | High | Normally | High |
+| Adjust nutrition according to physical activity | Normally | High | Normally | High | Normally | High |
+| Search for suitable options when eating away from home | Normally | High | Normally | High | Sometimes | Medium |
+| Maintain consistency in nutrition over time | Sometimes | Medium | Normally | High | Normally | High |
+| Evaluate if foods meet nutritional requirements | Normally | High | Normally | High | Sometimes | Medium |
+
 ### 2.3.3. User Journey Mapping
 
 **Segmento 1: Pérdida de peso**
