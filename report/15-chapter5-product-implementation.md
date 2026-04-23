@@ -124,6 +124,67 @@ Con el propósito de garantizar la accesibilidad de la propuesta de valor inicia
 
 ### 5.1.2. Source Code Management
 
+Para garantizar la integridad y el control total sobre las modificaciones del software, el equipo ha seleccionado GitHub como plataforma centralizada de gestión de versiones. Este sistema permite una colaboración distribuida y asíncrona, facilitando la auditoría de cambios y la integración de las diferentes capas de la aplicación NutriSmart.
+
+**Repositorios del Proyecto**
+
+La solución se ha segmentado en repositorios independientes para mantener una arquitectura limpia y una separación de responsabilidades clara:
+
+- **nutrismart-landing:** Repositorio dedicado al sitio de presentación estática (Landing Page).
+
+    [Link del repositorio nutrismart-landing](https://github.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-landing)
+
+- **nutrismart-backend:** Contiene el núcleo de la solución (Backend), desarrollado como una API RESTful en Java con Spring Boot. Este repositorio aloja la lógica de negocio, los servicios de dominio y las suites de pruebas automatizadas.
+
+    [Link del repositorio nutrismart-backend](https://github.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-backend)
+
+- **nutrismart-frontend:** Espacio reservado para el código del cliente web (Frontend) construido en Angular.
+
+    [Link del repositorio nutrismart-frontend](https://github.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-frontend)
+
+- **nutrismart-report:** Repositorio de soporte utilizado para la gestión de la documentación técnica y los informes del proyecto.
+
+    [Link del repositorio nutrismart-report](https://github.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report)
+
+**Implementación de GitFlow**
+
+Para la organización y administración de la base de código, el equipo ha adoptado el esquema de ramificación GitFlow. Este flujo de trabajo se fundamenta en el modelo estratégico propuesto por Vincent Driessen en su publicación "A successful Git branching model", el cual proporciona una estructura robusta para gestionar el ciclo de vida del software mediante roles específicos para cada rama:
+
+- **Main Branch:** Resguarda el código fuente definitivo que se encuentra en el entorno de producción. Es la versión oficial y estable de NutriSmart; cualquier cambio aquí representa una versión liberada al usuario.
+    - **Notación:** `main o master`.
+- **Develop Branch:** Actúa como la rama matriz para la integración de todas las capacidades técnicas en desarrollo. Es el espacio donde se consolidan las funcionalidades antes de ser enviadas a la fase de publicación.
+    - **Notación:** `develop`.
+- **Feature Branches:** Segmentos temporales creados para trabajar en requerimientos específicos o historias de usuario del backlog. Se originan a partir de develop y deben reintegrarse a esta misma rama una vez finalizada y validada la tarea.
+    - **Notación:** `feature/US-nombre`.
+- **Release Branches:** Utilizadas para preparar un lanzamiento oficial de la plataforma. Permiten realizar auditorías finales, ajustes de configuración y correcciones menores sin interrumpir el desarrollo de nuevas funciones en la rama matriz.
+    - **Notación:** `release/vX.Y.Z`.
+- **Hotfix Branches:** Ramas de corrección urgente creadas directamente desde main para resolver errores críticos detectados en producción. Una vez corregido el problema, se fusionan tanto en main como en develop para mantener la consistencia del código en todas las ramas activas.
+    - **Notación:** `hotfix/nombre-del-error`.
+
+**Conventional Commits**
+
+Se adopta esta convención para estandarizar el historial de cambios y facilitar la generación automática de bitácoras (changelogs). Este estándar permite identificar rápidamente la intención de cada modificación mediante una estructura semántica clara.
+
+El formato mandatorio es: `<tipo>[alcance]: <descripción>`, el cual incluye un encabezado obligatorio y, de ser necesario, un cuerpo técnico y pie de página para referencias.
+
+Los tipos de confirmación permitidos para este proyecto son:
+
+- **feat:** Incorporación de una nueva funcionalidad o capacidad al sistema.
+- **fix:** Resolución de un error técnico, bug o comportamiento no deseado.
+- **docs:** Modificaciones exclusivas en la documentación, manuales o archivos README.
+- **style:** Ajustes relacionados con el formato, indentación o estética del código sin alterar su lógica funcional.
+- **chore:** Labores de mantenimiento, actualizaciones de dependencias o ajustes en la configuración del entorno de compilación.
+- **refactor:** Cambios en la estructura del código destinados a mejorar su legibilidad o eficiencia interna.
+- **test:** Inclusión, corrección o actualización de escenarios de pruebas unitarias o de integración.
+
+**Semantic Versioning**
+
+Se emplea la versión 2.0.0 de Semantic Versioning bajo el esquema vX.Y.Z:
+
+- **X (MAYOR):** Cambios grandes o incompatibles con versiones anteriores.
+- **Y (MINOR):** Nuevas funcionalidades compatibles con versiones anteriores.
+- **Z (PATCH):** Correcciones menores o parches que no afectan la funcionalidad.
+
 ### 5.1.3. Source Code Style Guide & Conventions
 
 ### 5.1.4. Software Deployment Configuration
