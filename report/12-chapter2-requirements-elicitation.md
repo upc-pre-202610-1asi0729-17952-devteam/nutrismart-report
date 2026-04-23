@@ -20,6 +20,15 @@ Para comprender de manera integral las necesidades, comportamientos y motivacion
 
 ### 2.3.1. User Personas
 
+**Segmento 1: Pérdida de peso**
+
+![nombre](../assets/img/chapter2-neeedfinding-images/JorgeDelAguilaVacalla(2).png)
+
+**Segmento 2: Ganancia de masa muscular**
+
+![nombre](../assets/img/chapter2-neeedfinding-images/DaphneFaustorVergaray(1).png)
+
+
 ### 2.3.2. User Task Matrix
 
 ### 2.3.3. User Journey Mapping
