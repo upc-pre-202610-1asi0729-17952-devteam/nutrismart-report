@@ -206,6 +206,44 @@ El Sprint 1 tuvo como único alcance la implementación del sitio web estático 
 
 #### 5.2.1.7. Software Deployment Evidence for Sprint Review
 
+Durante este sprint se realizó el despliegue de la landing page de NutriSmart en GitHub Pages. El proceso abarcó la configuración del repositorio remoto, la integración del flujo Gitflow con la rama `main` como fuente de despliegue, y la habilitación del servicio de hosting estático de GitHub. A continuación se describen los pasos realizados.
+
+##### Creación del repositorio en GitHub
+
+Se creó el repositorio público `nutrismart-website` bajo la organización `upc-pre-202610-1asi0729-17952-devteam` en GitHub. Este repositorio centraliza todo el código fuente de la landing page y sirve como base para el despliegue continuo.
+
+##### Configuración de ramas bajo Gitflow
+
+Se estableció la estructura de ramas siguiendo Gitflow:
+
+- `main` > rama de producción (fuente de despliegue)
+- `develop` > rama de integración
+- `feature/*` > ramas de desarrollo por funcionalidad
+
+Todo el trabajo fue integrado mediante Pull Requests desde las ramas `feature/*` hacia `develop`, y finalmente desde `develop` hacia `main` como parte del release `v1.0.0`.
+
+##### Merge a main y creación del tag de release
+
+Una vez completadas todas las features del sprint, se realizó el merge de `develop` a `main` mediante un Pull Request en GitHub, etiquetando el commit resultante como `v1.0.0`.
+
+##### Configuración de GitHub Pages
+
+Para habilitar el despliegue se siguieron los pasos:
+
+1. Ingresar al repositorio en GitHub
+2. Ir a **Settings** > **Pages**
+3. En la sección **Build and deployment**, seleccionar:
+   - **Source:** Deploy from a branch
+   - **Branch:** `main`
+   - **Folder:** `/ (root)`
+4. Hacer click en **Save**
+
+GitHub Pages procesó el contenido de la rama `main` y generó automáticamente la URL de despliegue.
+
+##### URL de despliegue
+
+La landing page quedó disponible públicamente en: [Landing Page](https://upc-pre-202610-1asi0729-17952-devteam.github.io/nutrismart-website/)
+
 #### 5.2.1.8. Team Collaboration Insights during Sprint
 
 ## 5.3. Validation Interviews
