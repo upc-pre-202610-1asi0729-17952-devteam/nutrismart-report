@@ -541,6 +541,10 @@ La landing page quedó disponible públicamente en: [Landing Page](https://upc-p
 
 #### 5.2.1.8. Team Collaboration Insights during Sprint
 
+Durante el Sprint, todos los miembros del equipo participaron activamente en las actividades de implementación, tal como se refleja en los analíticos de colaboración de GitHub. Como se puede observar en la gráfica de contribuciones, los integrantes Nevatrix, xJoelFMRx, olenkisha14, Emy127 y Brandon1677 realizaron commits de manera constante. Cada miembro aportó al desarrollo del Sprint.
+
+![Insight](../assets/img/sprint1/insight.png)
+
 ## 5.3. Validation Interviews
 
 ### 5.3.1. Diseño de Entrevistas
