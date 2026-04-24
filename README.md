@@ -36,6 +36,7 @@ Abril, 2026
 
 | Versión | Fecha | Autor | Descripción de modificación |
 | :---: | :---: | :---: | :---: |
+| v1.0.0| 23/04/2025 |  Del Aguila Del Aguila, Olenka Priscilla<br>Espinoza Cruz, Angela Milagros<br>Mora Rivera, Joel Fernando<br>Soto Palacios, Brandon Wilder<br> Villarreal Bazan, Angel Martin  | Se agregó: <br>Capitulo I<br>Capitulo II<br>Capitulo III<br>Capitulo IV<br>Capitulo V<br>5.2.1. Sprint 1 |
 
 <div style="page-break-after: always"></div>
 

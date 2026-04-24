@@ -646,7 +646,6 @@ Diseño Inclusivo
 <div align="center">
   <table>
     <tr>
-      <td><img src="../assets/img/wireframe/webapp/login.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
       <td><img src="../assets/img/wireframe/webapp/dashboard.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
       <td><img src="../assets/img/wireframe/webapp/analytics.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
     </tr>
@@ -874,7 +873,6 @@ Diseño Inclusivo
 <div align="center">
   <table>
     <tr>
-      <td><img src="../assets/img/mockup/webapp/login.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
       <td><img src="../assets/img/mockup/webapp/dashboard.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
       <td><img src="../assets/img/mockup/webapp/analytics.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
     </tr>
@@ -929,8 +927,7 @@ Diseño Inclusivo
   <table>
     <tr>
       <td><img src="../assets/img/mockup/webapp/recommendations.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
-      <td><img src="../assets/img/mockup/webapp/smartscan.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
-      <td><img src="../assets/img/mockup/webapp/suscription.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
+      <td><img src="../assets/img/mockup/webapp/smartscan.png" style="max-width:100%; max-height:300px; object-fit:contain;" />
     </tr>
     <tr>
       <td><img src="../assets/img/mockup/webapp/pantry.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
