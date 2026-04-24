@@ -464,31 +464,31 @@ Durante el Sprint 1, el equipo completó la implementación y despliegue públic
 A continuación se presentan screenshots de las principales vistas implementadas durante el sprint.
 
 **Hero Section (Call to Action)**
-![Hero](../assets/img/hero.png)
+![Hero](../assets/img/sprint1/sprint1/hero.png)
 
 **Main Features Section y enlace a subpágina completa**
-![Main features](../assets/img/main.png)
+![Main features](../assets/img/sprint1/main.png)
 
 **Subscription Plans Comparison Table**
-![Suscriptions](../assets/img/suscriptions.png)
+![Suscriptions](../assets/img/sprint1/suscriptions.png)
 
 **About Us**
-![About-us](../assets/img/about-us.png)
+![About-us](../assets/img/sprint1/about-us.png)
 
 **FAQ accordion**
-![FAQ](../assets/img/faq.png)
+![FAQ](../assets/img/sprint1/faq.png)
 
 **Contact page con formulario y validación**
-![Contact](../assets/img/contact.png)
+![Contact](../assets/img/sprint1/contact.png)
 
 **Terms and Conditions subpage**
-![Terms](../assets/img/terms.png)
+![Terms](../assets/img/sprint1/terms.png)
 
 **Footer con redes sociales, selector de idioma y enlace legal**
-![Footer](../assets/img/footer.png)
+![Footer](../assets/img/sprint1/footer.png)
 
 **Cambio de idioma activo**
-![Language](../assets/img/language.png)
+![Language](../assets/img/sprint1/language.png)
 
 El video de demostración del Sprint 1 ilustra la navegación completa por todas las secciones de la Landing Page, el cambio de idioma entre inglés y español, la validación del formulario de contacto y el acceso al punto de entrada de la aplicación web desde la página de inicio.
 
@@ -540,6 +540,10 @@ GitHub Pages procesó el contenido de la rama `main` y generó automáticamente 
 La landing page quedó disponible públicamente en: [Landing Page](https://upc-pre-202610-1asi0729-17952-devteam.github.io/nutrismart-website/)
 
 #### 5.2.1.8. Team Collaboration Insights during Sprint
+
+Durante el Sprint, todos los miembros del equipo participaron activamente en las actividades de implementación, tal como se refleja en los analíticos de colaboración de GitHub. Como se puede observar en la gráfica de contribuciones, los integrantes Nevatrix, xJoelFMRx, olenkisha14, Emy127 y Brandon1677 realizaron commits de manera constante. Cada miembro aportó al desarrollo del Sprint.
+
+![Insight](../assets/img/sprint1/insight.png)
 
 ## 5.3. Validation Interviews
 
