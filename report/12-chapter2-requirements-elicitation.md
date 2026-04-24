@@ -229,6 +229,7 @@ Asimismo, se identificaron eventos de alta relevancia que actúan como mecanismo
 
 Finalmente, la estructuración del Big Picture Event Storming organiza los elementos del dominio en flujos de negocio coherentes, permitiendo visualizar las interdependencias entre bounded contexts, la secuencia lógica de ejecución y los principales puntos de integración. Este enfoque contribuye a la alineación entre el modelo de dominio y los procesos del negocio, además de facilitar la identificación de oportunidades de mejora en la arquitectura del sistema.
 
+
 **Big Picture Event Storming**
 
 ![Big Picture Event Storming](../assets/img/chapter2-neeedfinding-images/BigPictureEventStorming.jpg)
