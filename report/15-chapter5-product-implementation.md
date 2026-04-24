@@ -464,31 +464,31 @@ Durante el Sprint 1, el equipo completó la implementación y despliegue públic
 A continuación se presentan screenshots de las principales vistas implementadas durante el sprint.
 
 **Hero Section (Call to Action)**
-![Hero](../assets/img/hero.png)
+![Hero](../assets/img/sprint1/hero.png)
 
 **Main Features Section y enlace a subpágina completa**
-![Main features](../assets/img/main.png)
+![Main features](../assets/img/sprint1/main.png)
 
 **Subscription Plans Comparison Table**
-![Suscriptions](../assets/img/suscriptions.png)
+![Suscriptions](../assets/img/sprint1/suscriptions.png)
 
 **About Us**
-![About-us](../assets/img/about-us.png)
+![About-us](../assets/img/sprint1/about-us.png)
 
 **FAQ accordion**
-![FAQ](../assets/img/faq.png)
+![FAQ](../assets/img/sprint1/faq.png)
 
 **Contact page con formulario y validación**
-![Contact](../assets/img/contact.png)
+![Contact](../assets/img/sprint1/contact.png)
 
 **Terms and Conditions subpage**
-![Terms](../assets/img/terms.png)
+![Terms](../assets/img/sprint1/terms.png)
 
 **Footer con redes sociales, selector de idioma y enlace legal**
-![Footer](../assets/img/footer.png)
+![Footer](../assets/img/sprint1/footer.png)
 
 **Cambio de idioma activo**
-![Language](../assets/img/language.png)
+![Language](../assets/img/sprint1/language.png)
 
 El video de demostración del Sprint 1 ilustra la navegación completa por todas las secciones de la Landing Page, el cambio de idioma entre inglés y español, la validación del formulario de contacto y el acceso al punto de entrada de la aplicación web desde la página de inicio.
 
