@@ -1,0 +1,223 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "iam.domain.model.aggregates" {
+  class User {
+    - id: UserId
+    - email: Email
+    - passwordHash: PasswordHash
+    - profile: UserProfile
+    - role: UserRole
+    - createdAt: Instant
+    - updatedAt: Instant
+    + User(email: Email, passwordHash: PasswordHash, role: UserRole)
+    + updateProfile(profile: UserProfile): void
+    + changePassword(newHash: PasswordHash): void
+    + getId(): UserId
+    + getEmail(): Email
+    + getRole(): UserRole
+    + getProfile(): UserProfile
+  }
+}
+
+package "iam.domain.model.valueobjects" {
+  class UserId <<ValueObject>> {
+    - value: UUID
+    + UserId(value: UUID)
+    + getValue(): UUID
+  }
+  class Email <<ValueObject>> {
+    - value: String
+    + Email(value: String)
+    + getValue(): String
+    + isValid(): boolean
+  }
+  class PasswordHash <<ValueObject>> {
+    - hash: String
+    + PasswordHash(hash: String)
+    + getHash(): String
+  }
+  class UserProfile <<ValueObject>> {
+    - firstName: String
+    - lastName: String
+    - avatarUrl: String
+    + UserProfile(firstName: String, lastName: String)
+    + getFullName(): String
+    + getAvatarUrl(): String
+  }
+}
+
+package "iam.domain.model.enums" {
+  enum UserRole {
+    USER
+    ADMIN
+  }
+}
+
+package "iam.domain.model.events" {
+  class UserRegistered <<DomainEvent>> {
+    + userId: UUID
+    + email: String
+    + occurredOn: Instant
+    + UserRegistered(userId: UUID, email: String)
+  }
+  class UserProfileUpdated <<DomainEvent>> {
+    + userId: UUID
+    + fullName: String
+    + occurredOn: Instant
+  }
+}
+
+package "iam.domain.services" {
+  interface UserDomainService {
+    + hashPassword(raw: String): PasswordHash
+    + validateCredentials(email: Email, raw: String, hash: PasswordHash): boolean
+  }
+}
+
+package "iam.domain.repositories" {
+  interface UserRepository {
+    + findById(id: UserId): Optional<User>
+    + findByEmail(email: Email): Optional<User>
+    + save(user: User): User
+    + existsByEmail(email: Email): boolean
+  }
+}
+
+package "iam.application.internal.commandservices" {
+  class UserCommandService {
+    - userRepository: UserRepository
+    - userDomainService: UserDomainService
+    + handle(command: RegisterUserCommand): User
+    + handle(command: UpdateProfileCommand): User
+    + handle(command: ChangePasswordCommand): void
+  }
+}
+
+package "iam.application.internal.queryservices" {
+  class UserQueryService {
+    - userRepository: UserRepository
+    + handle(query: GetUserByIdQuery): Optional<User>
+    + handle(query: GetUserByEmailQuery): Optional<User>
+  }
+}
+
+package "iam.application.internal.commandservices" {
+  class RegisterUserCommand <<Command>> {
+    + email: String
+    + password: String
+    + firstName: String
+    + lastName: String
+  }
+  class UpdateProfileCommand <<Command>> {
+    + userId: UUID
+    + firstName: String
+    + lastName: String
+    + avatarUrl: String
+  }
+  class ChangePasswordCommand <<Command>> {
+    + userId: UUID
+    + currentPassword: String
+    + newPassword: String
+  }
+}
+
+package "iam.application.internal.queryservices" {
+  class GetUserByIdQuery <<Query>> {
+    + userId: UUID
+  }
+  class GetUserByEmailQuery <<Query>> {
+    + email: String
+  }
+}
+
+package "iam.infrastructure.persistence.jpa.repositories" {
+  class UserRepositoryImpl {
+    - jpaRepository: UserJpaRepository
+    + findById(id: UserId): Optional<User>
+    + findByEmail(email: Email): Optional<User>
+    + save(user: User): User
+    + existsByEmail(email: Email): boolean
+  }
+}
+
+package "iam.infrastructure.tokens" {
+  class JwtTokenProvider {
+    - secret: String
+    - expirationMs: long
+    + generateToken(userId: UUID, role: String): String
+    + validateToken(token: String): boolean
+    + getUserIdFromToken(token: String): UUID
+  }
+}
+
+package "iam.interfaces.rest.resources" {
+  class RegisterUserResource {
+    + email: String
+    + password: String
+    + firstName: String
+    + lastName: String
+  }
+  class AuthenticateUserResource {
+    + email: String
+    + password: String
+  }
+  class UserProfileResource {
+    + id: UUID
+    + email: String
+    + fullName: String
+    + role: String
+    + avatarUrl: String
+  }
+}
+
+package "iam.interfaces.rest.assemblers" {
+  class UserResourceAssembler {
+    + toResourceFromEntity(user: User): UserProfileResource
+  }
+  class UserCommandAssembler {
+    + toCommandFromResource(resource: RegisterUserResource): RegisterUserCommand
+  }
+}
+
+package "iam.interfaces.rest.controllers" {
+  class AuthController {
+    - userCommandService: UserCommandService
+    - userQueryService: UserQueryService
+    - jwtTokenProvider: JwtTokenProvider
+    + register(resource: RegisterUserResource): ResponseEntity<UserProfileResource>
+    + authenticate(resource: AuthenticateUserResource): ResponseEntity<String>
+  }
+  class UserController {
+    - userQueryService: UserQueryService
+    - userCommandService: UserCommandService
+    + getProfile(userId: UUID): ResponseEntity<UserProfileResource>
+    + updateProfile(userId: UUID, command: UpdateProfileCommand): ResponseEntity<UserProfileResource>
+  }
+}
+
+User "1" *--> "1" UserId : has >
+User "1" *--> "1" Email : has >
+User "1" *--> "1" PasswordHash : has >
+User "1" *--> "1" UserProfile : has >
+User "1" *--> "1" UserRole : has >
+User ..> UserRegistered : publishes >
+User ..> UserProfileUpdated : publishes >
+
+UserRepositoryImpl ..|> UserRepository : implements
+UserCommandService --> UserRepository : uses >
+UserCommandService --> UserDomainService : uses >
+UserQueryService --> UserRepository : uses >
+
+AuthController --> UserCommandService : uses >
+AuthController --> JwtTokenProvider : uses >
+UserController --> UserQueryService : uses >
+UserController --> UserCommandService : uses >
+
+UserCommandAssembler --> RegisterUserCommand : creates >
+UserResourceAssembler --> UserProfileResource : creates >
+UserResourceAssembler --> User : uses >
+
+@enduml

@@ -1,0 +1,115 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "analytics/domain/model" {
+  class ProgressReport {
+    + id: string
+    + periodStart: string
+    + periodEnd: string
+    + averageDailyCalories: number
+    + averageProteinG: number
+    + averageCarbsG: number
+    + averageFatG: number
+    + totalCaloriesBurned: number
+    + weightChange: number
+    + adherencePercent: number
+    + weightDataPoints: WeightDataPoint[]
+    + getWeightTrend(): string
+    + getAdherenceRating(): string
+  }
+  class WeightDataPoint {
+    + date: string
+    + weightKg: number
+  }
+  enum PeriodType {
+    WEEKLY
+    MONTHLY
+    CUSTOM
+  }
+}
+
+package "analytics/application/services" {
+  class AnalyticsService {
+    - api: AnalyticsApiService
+    + currentReport: WritableSignal<ProgressReport | null>
+    + reportHistory: WritableSignal<ProgressReport[]>
+    + isLoading: WritableSignal<boolean>
+    + generateReport(userId: string, periodType: string, startDate: string, endDate: string): Observable<ProgressReport>
+    + loadWeeklyReport(userId: string): Observable<ProgressReport>
+    + loadReportHistory(userId: string): Observable<ProgressReport[]>
+  }
+}
+
+package "analytics/infrastructure/http" {
+  class AnalyticsApiService {
+    - http: HttpClient
+    + postGenerateReport(userId: string, body: GenerateReportBody): Observable<ProgressReport>
+    + getReport(userId: string, start: string, end: string): Observable<ProgressReport>
+    + getReportHistory(userId: string): Observable<ProgressReport[]>
+  }
+  class GenerateReportBody {
+    + periodType: string
+    + startDate: string
+    + endDate: string
+  }
+}
+
+package "analytics/presentation/components" {
+  class "«Component»\nDashboardComponent" as DashboardComponent {
+    - analyticsService: AnalyticsService
+    + currentReport: Signal<ProgressReport | null>
+    + selectedPeriod: WritableSignal<PeriodType>
+    + isLoading: Signal<boolean>
+    + onGenerateReport(): void
+    + onPeriodChange(period: PeriodType): void
+  }
+  class "«Component»\nWeightTrendChartComponent" as WeightTrendChartComponent {
+    + dataPoints: InputSignal<WeightDataPoint[]>
+    + targetWeight: InputSignal<number>
+    + chartConfig: Signal<ChartConfiguration>
+  }
+  class "«Component»\nMacroAveragesCardComponent" as MacroAveragesCardComponent {
+    + report: InputSignal<ProgressReport | null>
+    + calorieTarget: InputSignal<number>
+    + adherenceColor: Signal<string>
+  }
+  class "«Component»\nProgressSummaryCardComponent" as ProgressSummaryCardComponent {
+    + report: InputSignal<ProgressReport | null>
+    + weightTrend: Signal<string>
+    + weightChangeLabel: Signal<string>
+  }
+  class "«Component»\nPeriodSelectorComponent" as PeriodSelectorComponent {
+    + selectedPeriod: InputSignal<PeriodType>
+    + periodChanged: EventEmitter<PeriodType>
+    + periods: PeriodType[]
+    + onSelect(period: PeriodType): void
+  }
+  class ChartConfiguration {
+    + type: string
+    + labels: string[]
+    + datasets: Dataset[]
+  }
+  class Dataset {
+    + data: number[]
+    + label: string
+    + borderColor: string
+    + fill: boolean
+  }
+}
+
+AnalyticsService --> AnalyticsApiService : uses >
+AnalyticsService --> "1" ProgressReport : holds >
+ProgressReport "1" *--> "0..*" WeightDataPoint : contains >
+
+DashboardComponent --> AnalyticsService : uses >
+DashboardComponent "1" *--> "1" PeriodSelectorComponent : contains >
+DashboardComponent o--> "1" WeightTrendChartComponent : renders >
+DashboardComponent o--> "1" MacroAveragesCardComponent : renders >
+DashboardComponent o--> "1" ProgressSummaryCardComponent : renders >
+WeightTrendChartComponent ..> WeightDataPoint : reads >
+WeightTrendChartComponent --> ChartConfiguration : produces >
+ChartConfiguration "1" *--> "1..*" Dataset : has >
+
+@enduml

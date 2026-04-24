@@ -1,0 +1,142 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "nutrition/domain/model" {
+  class DailyLog {
+    + date: string
+    + totalCalories: number
+    + totalProteinG: number
+    + totalCarbsG: number
+    + totalFatG: number
+    + entries: FoodEntry[]
+    + getCalorieProgress(target: number): number
+    + getMacroBreakdown(): MacroBreakdown
+  }
+  class FoodEntry {
+    + id: string
+    + foodName: string
+    + calories: number
+    + proteinG: number
+    + carbsG: number
+    + fatG: number
+    + mealType: MealType
+    + loggedAt: string
+  }
+  class FoodItem {
+    + id: string
+    + name: string
+    + brand: string
+    + caloriesPer100g: number
+    + proteinPer100g: number
+    + carbsPer100g: number
+    + fatPer100g: number
+    + source: string
+  }
+  class MacroBreakdown {
+    + proteinPercent: number
+    + carbsPercent: number
+    + fatPercent: number
+  }
+  enum MealType {
+    BREAKFAST
+    LUNCH
+    DINNER
+    SNACK
+  }
+}
+
+package "nutrition/application/services" {
+  class NutritionLogService {
+    - api: NutritionApiService
+    + dailyLog: WritableSignal<DailyLog | null>
+    + isLoading: WritableSignal<boolean>
+    + loadDailyLog(date: string): Observable<DailyLog>
+    + addEntry(foodItemId: string, amount: number, unit: string, mealType: string): Observable<DailyLog>
+    + removeEntry(logId: string, entryId: string): Observable<DailyLog>
+  }
+  class FoodSearchService {
+    - api: NutritionApiService
+    + searchResults: WritableSignal<FoodItem[]>
+    + isSearching: WritableSignal<boolean>
+    + search(term: string): Observable<FoodItem[]>
+    + clearResults(): void
+  }
+}
+
+package "nutrition/infrastructure/http" {
+  class NutritionApiService {
+    - http: HttpClient
+    + getDailyLog(userId: string, date: string): Observable<DailyLog>
+    + addEntry(userId: string, date: string, body: AddEntryRequest): Observable<DailyLog>
+    + removeEntry(logId: string, entryId: string): Observable<DailyLog>
+    + searchFoodItems(term: string): Observable<FoodItem[]>
+  }
+  class AddEntryRequest {
+    + foodItemId: string
+    + amount: number
+    + unit: string
+    + mealType: string
+  }
+}
+
+package "nutrition/presentation/components" {
+  class "«Component»\nDailyLogComponent" as DailyLogComponent {
+    - logService: NutritionLogService
+    + selectedDate: WritableSignal<string>
+    + dailyLog: Signal<DailyLog | null>
+    + calorieTarget: Signal<number>
+    + onDateChange(date: string): void
+    + onRemoveEntry(entryId: string): void
+  }
+  class "«Component»\nFoodSearchComponent" as FoodSearchComponent {
+    - searchService: FoodSearchService
+    + searchTerm: WritableSignal<string>
+    + results: Signal<FoodItem[]>
+    + foodSelected: EventEmitter<FoodItem>
+    + onSearch(term: string): void
+    + onSelectFood(item: FoodItem): void
+  }
+  class "«Component»\nAddEntryDialogComponent" as AddEntryDialogComponent {
+    - logService: NutritionLogService
+    + selectedFood: FoodItem
+    + addForm: FormGroup
+    + isLoading: WritableSignal<boolean>
+    + onConfirm(): void
+    + onCancel(): void
+  }
+  class "«Component»\nMacroChartComponent" as MacroChartComponent {
+    + log: InputSignal<DailyLog | null>
+    + target: InputSignal<number>
+    + macroBreakdown: Signal<MacroBreakdown>
+    + calorieProgress: Signal<number>
+  }
+  class "«Component»\nSmartScanComponent" as SmartScanComponent {
+    - http: HttpClient
+    - logService: NutritionLogService
+    + capturedImage: WritableSignal<string | null>
+    + detectedItems: WritableSignal<FoodItem[]>
+    + isAnalyzing: WritableSignal<boolean>
+    + onCapture(imageBase64: string): void
+    + onConfirmItems(items: FoodItem[]): void
+  }
+}
+
+NutritionLogService --> NutritionApiService : uses >
+FoodSearchService --> NutritionApiService : uses >
+NutritionLogService --> "1" DailyLog : holds >
+DailyLog "1" *--> "0..*" FoodEntry : contains >
+FoodEntry "1" *--> "1" MealType : typed as >
+
+DailyLogComponent --> NutritionLogService : uses >
+DailyLogComponent --> "1" DailyLog : displays >
+DailyLogComponent o--> "1" MealType : filters by >
+FoodSearchComponent --> FoodSearchService : uses >
+FoodSearchComponent --> AddEntryDialogComponent : opens >
+AddEntryDialogComponent --> NutritionLogService : uses >
+MealType ..> DailyLogComponent : categorizes >
+MacroChartComponent ..> DailyLog : reads >
+SmartScanComponent --> NutritionLogService : uses >
+
+@enduml
