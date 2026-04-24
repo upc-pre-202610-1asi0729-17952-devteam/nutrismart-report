@@ -699,9 +699,7 @@ Diseño Inclusivo
 <div align="center">
   <table>
     <tr>
-      <td><img src="../assets/img/wireframe/webapp/recommendations.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
       <td><img src="../assets/img/wireframe/webapp/smartscan.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
-      <td><img src="../assets/img/wireframe/webapp/suscription.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
     </tr>
     <tr>
       <td><img src="../assets/img/wireframe/webapp/pantry.png" style="max-width:100%; max-height:300px; object-fit:contain;" /></td>
