@@ -218,10 +218,10 @@ Durante el desarrollo del presente Sprint, la elaboración del informe fue lleva
 
 - [5.4. Video About-the-Product](./report/15-chapter5-product-implementation.md#54-video-about-the-product)
 
-- [Conclusiones](./report/18-conclusiones.md)
+[Conclusiones](./report/18-conclusiones.md)
 
-- [Bibliografía](./report/19-bibliografia.md)
+[Bibliografía](./report/19-bibliografia.md)
 
-- [Anexos](./report/20-anexos.md)
+[Anexos](./report/20-anexos.md)
 
 <div style="page-break-after: always"></div>
