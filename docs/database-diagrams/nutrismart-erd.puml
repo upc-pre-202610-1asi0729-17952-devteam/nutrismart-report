@@ -1,0 +1,223 @@
+@startuml
+skinparam monochrome false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+' IAM
+
+package "IAM" #E8F4FD {
+  entity "iam_users" as users {
+    * id : UUID <<PK>>
+    --
+    * email : VARCHAR(255) <<UNIQUE>>
+    * password_hash : TEXT
+    * first_name : VARCHAR(100)
+    * last_name : VARCHAR(100)
+    avatar_url : TEXT
+    * role : VARCHAR(20)
+    * created_at : TIMESTAMP
+    * updated_at : TIMESTAMP
+  }
+}
+
+' NUTRITION
+
+package "Nutrition Tracking" #FEF9E7 {
+  entity "nutrition_food_items" as food_items {
+    * id : UUID <<PK>>
+    --
+    * name : VARCHAR(255)
+    brand : VARCHAR(255)
+    * calories_per_100g : NUMERIC(8,2)
+    * protein_per_100g : NUMERIC(8,2)
+    * carbs_per_100g : NUMERIC(8,2)
+    * fat_per_100g : NUMERIC(8,2)
+    fiber_per_100g : NUMERIC(8,2)
+    * source : VARCHAR(50)
+    * created_at : TIMESTAMP
+  }
+  entity "nutrition_logs" as nutrition_logs {
+    * id : UUID <<PK>>
+    --
+    * user_id : UUID <<FK>>
+    * date : DATE
+    * created_at : TIMESTAMP
+    * updated_at : TIMESTAMP
+  }
+  entity "nutrition_food_entries" as food_entries {
+    * id : UUID <<PK>>
+    --
+    * log_id : UUID <<FK>>
+    * food_item_id : UUID <<FK>>
+    * amount_grams : NUMERIC(8,2)
+    * meal_type : VARCHAR(20)
+    * logged_at : TIMESTAMP
+  }
+}
+
+' BODY METRICS
+
+package "Body & Health Metrics" #EAFAF1 {
+  entity "body_profiles" as body_profiles {
+    * id : UUID <<PK>>
+    --
+    * user_id : UUID <<FK>> <<UNIQUE>>
+    * weight_kg : NUMERIC(6,2)
+    * height_cm : NUMERIC(5,2)
+    * birth_date : DATE
+    * biological_sex : VARCHAR(10)
+    * activity_level : VARCHAR(30)
+    * goal_type : VARCHAR(20)
+    target_weight_kg : NUMERIC(6,2)
+    * created_at : TIMESTAMP
+    * updated_at : TIMESTAMP
+  }
+  entity "body_weight_records" as weight_records {
+    * id : UUID <<PK>>
+    --
+    * user_id : UUID <<FK>>
+    * weight_kg : NUMERIC(6,2)
+    * recorded_at : DATE
+    note : TEXT
+    * created_at : TIMESTAMP
+  }
+}
+
+' RECOMMENDATIONS
+
+package "Smart Recommendations" #FDF2F8 {
+  entity "recs_sets" as recs_sets {
+    * id : UUID <<PK>>
+    --
+    * user_id : UUID <<FK>>
+    * context_json : TEXT
+    * generated_at : TIMESTAMP
+    * expires_at : TIMESTAMP
+  }
+  entity "recs_items" as recs_items {
+    * id : UUID <<PK>>
+    --
+    * set_id : UUID <<FK>>
+    * type : VARCHAR(30)
+    * title : VARCHAR(255)
+    * description : TEXT
+    * priority : INTEGER
+  }
+}
+
+' ACTIVITY
+
+package "Activity & Wearable Sync" #FEF5E7 {
+  entity "activity_logs" as activity_logs {
+    * id : UUID <<PK>>
+    --
+    * user_id : UUID <<FK>>
+    * date : DATE
+    * total_calories_burned : NUMERIC(8,2)
+    * total_steps : INTEGER
+    synced_at : TIMESTAMP
+    * created_at : TIMESTAMP
+    * updated_at : TIMESTAMP
+  }
+  entity "activity_records" as activity_records {
+    * id : UUID <<PK>>
+    --
+    * log_id : UUID <<FK>>
+    * activity_type : VARCHAR(30)
+    * duration_minutes : INTEGER
+    * calories_burned : NUMERIC(8,2)
+    * steps : INTEGER
+    source_device : VARCHAR(100)
+    * recorded_at : TIMESTAMP
+  }
+  entity "activity_wearable_tokens" as wearable_tokens {
+    * id : UUID <<PK>>
+    --
+    * user_id : UUID <<FK>> <<UNIQUE>>
+    * access_token : TEXT
+    * refresh_token : TEXT
+    * expires_at : TIMESTAMP
+    * created_at : TIMESTAMP
+  }
+}
+
+' ANALYTICS
+
+package "Analytics & Reporting" #F4ECF7 {
+  entity "analytics_progress_reports" as reports {
+    * id : UUID <<PK>>
+    --
+    * user_id : UUID <<FK>>
+    * period_start : DATE
+    * period_end : DATE
+    avg_daily_calories : NUMERIC(8,2)
+    avg_protein_g : NUMERIC(8,2)
+    avg_carbs_g : NUMERIC(8,2)
+    avg_fat_g : NUMERIC(8,2)
+    total_calories_burned : NUMERIC(10,2)
+    weight_change_kg : NUMERIC(6,2)
+    adherence_percent : NUMERIC(5,2)
+    days_logged : INTEGER
+    * generated_at : TIMESTAMP
+  }
+  entity "analytics_weight_data_points" as weight_points {
+    * id : UUID <<PK>>
+    --
+    * report_id : UUID <<FK>>
+    * date : DATE
+    * weight_kg : NUMERIC(6,2)
+  }
+}
+
+' BILLING
+
+package "Subscriptions & Billing" #FDEDEC {
+  entity "billing_subscriptions" as subscriptions {
+    * id : UUID <<PK>>
+    --
+    * user_id : UUID <<FK>> <<UNIQUE>>
+    * plan_type : VARCHAR(30)
+    * status : VARCHAR(20)
+    stripe_subscription_id : TEXT
+    * current_period_start : DATE
+    * current_period_end : DATE
+    canceled_at : TIMESTAMP
+    * created_at : TIMESTAMP
+    * updated_at : TIMESTAMP
+  }
+  entity "billing_invoices" as invoices {
+    * id : UUID <<PK>>
+    --
+    * subscription_id : UUID <<FK>>
+    * user_id : UUID <<FK>>
+    * amount : NUMERIC(10,2)
+    * currency : VARCHAR(3)
+    * status : VARCHAR(20)
+    stripe_invoice_id : TEXT
+    * created_at : TIMESTAMP
+    paid_at : TIMESTAMP
+  }
+}
+
+users ||--o{ nutrition_logs        : "has"
+users ||--o{ body_profiles         : "has"
+users ||--o{ weight_records        : "logs"
+users ||--o{ recs_sets             : "receives"
+users ||--o{ activity_logs         : "has"
+users ||--o| wearable_tokens       : "connects"
+users ||--o{ reports               : "generates"
+users ||--|| subscriptions         : "holds"
+users ||--o{ invoices              : "billed"
+
+nutrition_logs  ||--o{ food_entries   : "contains"
+food_items      ||--o{ food_entries   : "referenced by"
+
+recs_sets       ||--o{ recs_items     : "contains"
+
+activity_logs   ||--o{ activity_records : "contains"
+
+reports         ||--o{ weight_points  : "contains"
+
+subscriptions   ||--o{ invoices       : "generates"
+
+@enduml
