@@ -35,12 +35,18 @@ Abril, 2026
 ## REGISTRO DE VERSIONES DEL INFORME
 
 | Versión | Fecha | Autor | Descripción de modificación |
-| :---: | :---: | :---: | :---: |
+| :---: | :---: | :---: | --- |
 | v1.0.0| 23/04/2025 |  Del Aguila Del Aguila, Olenka Priscilla<br>Espinoza Cruz, Angela Milagros<br>Mora Rivera, Joel Fernando<br>Soto Palacios, Brandon Wilder<br> Villarreal Bazan, Angel Martin  | Se agregó: <br>Capitulo I<br>Capitulo II<br>Capitulo III<br>Capitulo IV<br>Capitulo V<br>5.2.1. Sprint 1 |
 
 <div style="page-break-after: always"></div>
 
 ## PROJECT REPORT COLLABORATION INSIGHTS
+
+El repositorio del Project Report se encuentra disponible en la organización de GitHub del equipo en la siguiente URL: https://github.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report
+
+Durante el desarrollo del presente Sprint, la elaboración del informe fue llevada a cabo de forma colaborativa por todos los integrantes del equipo. El trabajo se organizó distribuyendo las secciones y capítulos del informe entre los miembros, quienes realizaron sus aportes mediante commits hacia la rama develop del repositorio. Esto permitió mantener un historial claro de los cambios y garantizar la trazabilidad de cada contribución.
+
+![Report](/assets/img/report_col.png)
 
 <div style="page-break-after: always"></div>
 
@@ -211,5 +217,7 @@ Abril, 2026
   - [5.3.3. Evaluaciones según heurísticas](./report/15-chapter5-product-implementation.md#533-evaluaciones-según-heurísticas)
 
 - [5.4. Video About-the-Product](./report/15-chapter5-product-implementation.md#54-video-about-the-product)
+
+- [Anexos](./report/20-anexos.md)
 
 <div style="page-break-after: always"></div>
