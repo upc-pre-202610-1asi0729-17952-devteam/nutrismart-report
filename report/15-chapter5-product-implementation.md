@@ -20,7 +20,7 @@ Con el fin de centralizar la administración de tareas y asegurar la sincronía 
 
     **Evidencia de uso:**
 
-    ![Trello Evidence]()
+    ![Trello Evidence](../assets/img/evidence/trello.png)
 
 - **Microsoft Teams:** Herramienta de tipo SaaS. Se empleó como el centro neurálgico para la comunicación formal y síncrona del equipo. Esta plataforma permitió integrar las sesiones de videoconferencia con el almacenamiento compartido de archivos y el chat grupal, facilitando la toma de decisiones estratégicas y la organización de reuniones de sprint review y daily stand-ups.
 
@@ -28,7 +28,7 @@ Con el fin de centralizar la administración de tareas y asegurar la sincronía 
 
     **Evidencia de uso:**
 
-    ![Teams Evidence]()
+    ![Teams Evidence](../assets/img/evidence/teams.png)
 
 **Requirement Management**
 
@@ -40,7 +40,7 @@ Para la fase de análisis y especificación de los requerimientos de NutriSmart,
 
     **Evidencia de uso:**
 
-    ![Miro Evidence]()
+    ![Miro Evidence](../assets/img/evidence/miro.png)
 
 - **Structurizr:** Herramienta de tipo SaaS. Se utilizó para la especificación técnica de los requisitos arquitectónicos mediante el modelo C4. Esta suite permitió documentar el contexto del sistema, los contenedores y los componentes de manera jerárquica, asegurando que el diseño de software esté alineado estrictamente con las capacidades funcionales exigidas por la plataforma.
 
@@ -48,7 +48,7 @@ Para la fase de análisis y especificación de los requerimientos de NutriSmart,
 
     **Evidencia de uso:**
 
-    ![Structurizr Evidence]()
+    ![Structurizr Evidence](../assets/img/evidence/structurizr.png)
 
 **Product UX/UI Design**
 
@@ -60,7 +60,7 @@ En el diseño de la interfaz y la experiencia del usuario para la salud digital,
 
     **Evidencia de uso:**
 
-    ![Figma Evidence]()
+    ![Figma Evidence](../assets/img/evidence/figma.jpeg)
 
 - **UXPressia:** Herramienta de tipo SaaS. Se aplicó para la construcción de los Customer Journey Maps y el análisis de los perfiles de usuario (User Personas). Permitió identificar los puntos de dolor de los usuarios al gestionar su nutrición, orientando el diseño hacia soluciones personalizadas.
 
@@ -68,7 +68,7 @@ En el diseño de la interfaz y la experiencia del usuario para la salud digital,
 
     **Evidencia de uso:**
 
-    ![UXPressia Evidence]()
+    ![UXPressia Evidence](../assets/img/evidence/uxpressia.png)
 
 **Software Development**
 
@@ -80,7 +80,7 @@ Para la fase de construcción de la plataforma, se seleccionaron entornos de des
 
     **Evidencia de uso:**
 
-    ![VSCode Evidence]()
+    ![VSCode Evidence](../assets/img/evidence/vscode.png)
 
 - **IntelliJ IDEA:** Herramienta de tipo Desktop (IDE). Se empleó como el entorno de desarrollo integrado especializado para la arquitectura del backend en Spring Boot con Java. Su potente motor de análisis de código permitió gestionar de forma robusta los componentes del dominio y asegurar que la lógica del servidor cumpliera con los estándares de rendimiento exigidos por la plataforma.
 
@@ -100,7 +100,7 @@ Con el objetivo de garantizar la calidad y el cumplimiento de los criterios de a
 
     **Evidencia de uso:**
 
-    ![Gherkin Evidence]()
+    ![Gherkin Evidence](../assets/img/evidence/gherkin.jpeg)
 
 **Software Documentation**
 
@@ -112,7 +112,7 @@ La gestión de los activos digitales y la preservación del historial de cambios
 
     **Evidencia de uso:**
 
-    ![GitHub Evidence]()
+    ![GitHub Evidence](../assets/img/evidence/github.png)
 
 **Software Deployment**
 
