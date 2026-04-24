@@ -44,7 +44,7 @@ Abril, 2026
 
 El repositorio del Project Report se encuentra disponible en la organización de GitHub del equipo en la siguiente URL: https://github.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report
 
-Durante el desarrollo del presente Sprint, la elaboración del informe fue llevada a cabo de forma colaborativa por todos los integrantes del equipo. El trabajo se organizó distribuyendo las secciones y capítulos del informe entre los miembros, quienes realizaron sus aportes mediante commits hacia la rama develop del repositorio. Esto permitió mantener un historial claro de los cambios y garantizar la trazabilidad de cada contribución.
+Durante el desarrollo del presente Sprint, la elaboración del informe fue llevada a cabo de forma colaborativa por todos los integrantes del equipo. El trabajo se organizó distribuyendo las secciones y capítulos del informe entre los miembros, quienes realizaron sus aportes mediante commits en subramas hacia la rama develop del repositorio. Esto permitió mantener un historial claro de los cambios y garantizar la trazabilidad de cada contribución.
 
 ![Report](/assets/img/report_col.png)
 
@@ -217,6 +217,10 @@ Durante el desarrollo del presente Sprint, la elaboración del informe fue lleva
   - [5.3.3. Evaluaciones según heurísticas](./report/15-chapter5-product-implementation.md#533-evaluaciones-según-heurísticas)
 
 - [5.4. Video About-the-Product](./report/15-chapter5-product-implementation.md#54-video-about-the-product)
+
+- [Anexos](./report/18-conclusiones.md)
+
+- [Anexos](./report/19-bibliografia.md)
 
 - [Anexos](./report/20-anexos.md)
 
