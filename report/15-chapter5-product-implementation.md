@@ -177,7 +177,7 @@ A continuación se presentan screenshots de las principales vistas implementadas
 **Subscription Plans Comparison Table**
 ![Suscriptions](../assets/img/suscriptions.png)
 
-**About Us (misión, visión y equipo)**
+**About Us**
 ![About-us](../assets/img/about-us.png)
 
 **FAQ accordion**
