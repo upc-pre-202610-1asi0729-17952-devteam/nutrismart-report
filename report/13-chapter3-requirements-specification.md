@@ -83,11 +83,11 @@
 
 ***Imapct Map - Segmento 1: Pérdida de peso***
 
-![ImpacMap-1](../assets/img/chapter3/impactmap-wl.png)
+![ImpacMap-1](../assets/img/chapter3/impact-map-weight-loss.png)
 
 ***Imapct Map - Segmento 2: Ganancia de masa muscular***
 
-![ImpacMap-2](../assets/img/chapter3/impact-map-.png)
+![ImpacMap-2](../assets/img/chapter3/impact-map-muscle-gain.png)
 
 <div style="page-break-after: always"></div>
 
