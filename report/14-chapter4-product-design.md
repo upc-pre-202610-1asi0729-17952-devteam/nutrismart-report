@@ -293,6 +293,24 @@
 
 ## 4.5. Web Applications Prototyping
 
+<center>
+
+|Desktop Web Browser|
+|---|
+|![Desktop Web Browser](../assets/img/prototyping/desktop.png)|
+|https://upcedupe-my.sharepoint.com/:v:/g/personal/u202411669_upc_edu_pe/IQARIaNnElxCSJ2CHvTwWK1NAZvtl3lP4tIWEVJMpTv8qkY?e=3WhL8q&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D|
+
+</center>
+
+<center>
+
+|Mobile Web Browser|
+|---|
+|![Mobile Web Browser](../assets/img/prototyping/mobile.png)|
+|https://upcedupe-my.sharepoint.com/:v:/g/personal/u202411669_upc_edu_pe/IQARIaNnElxCSJ2CHvTwWK1NAZvtl3lP4tIWEVJMpTv8qkY?e=3WhL8q&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D|
+
+</center>
+
 ## 4.6. Domain-Driven Software Architecture
 
 ### 4.6.1. Design-Level EventStorming
