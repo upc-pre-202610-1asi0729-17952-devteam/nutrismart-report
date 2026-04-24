@@ -1,0 +1,197 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "recommendations.domain.model.aggregates" {
+  class RecommendationSet {
+    - id: RecommendationSetId
+    - userId: UUID
+    - context: RecommendationContext
+    - items: List<Recommendation>
+    - generatedAt: Instant
+    - expiresAt: Instant
+    + RecommendationSet(userId: UUID, context: RecommendationContext)
+    + addRecommendation(rec: Recommendation): void
+    + isExpired(): boolean
+    + getItems(): List<Recommendation>
+    + getId(): RecommendationSetId
+  }
+}
+
+package "recommendations.domain.model.entities" {
+  class Recommendation {
+    - id: RecommendationId
+    - type: RecommendationType
+    - title: String
+    - description: String
+    - priority: int
+    - foodItemRef: UUID
+    + Recommendation(type: RecommendationType, title: String, description: String)
+    + getPriority(): int
+    + getType(): RecommendationType
+  }
+}
+
+package "recommendations.domain.model.valueobjects" {
+  class RecommendationSetId <<ValueObject>> {
+    - value: UUID
+    + getValue(): UUID
+  }
+  class RecommendationId <<ValueObject>> {
+    - value: UUID
+    + getValue(): UUID
+  }
+  class RecommendationContext <<ValueObject>> {
+    - caloriesConsumed: double
+    - calorieTarget: double
+    - weatherCondition: String
+    - temperature: double
+    - currentHour: int
+    - goal: String
+    + RecommendationContext(caloriesConsumed: double, calorieTarget: double)
+    + getCalorieDeficit(): double
+    + isMealTime(): boolean
+  }
+}
+
+package "recommendations.domain.model.enums" {
+  enum RecommendationType {
+    FOOD_SUGGESTION
+    HYDRATION_REMINDER
+    MEAL_TIMING
+    MACRO_BALANCE
+    WEATHER_BASED
+  }
+}
+
+package "recommendations.domain.model.events" {
+  class RecommendationGenerated <<DomainEvent>> {
+    + userId: UUID
+    + setId: UUID
+    + itemCount: int
+    + occurredOn: Instant
+  }
+}
+
+package "recommendations.domain.services" {
+  interface RecommendationEngine {
+    + generate(context: RecommendationContext, profile: UserNutritionProfile): List<Recommendation>
+  }
+  class UserNutritionProfile {
+    + userId: UUID
+    + calorieTarget: double
+    + macroTargets: MacroTargets
+    + goal: String
+    + dietaryPreferences: List<String>
+  }
+  class MacroTargets {
+    + proteinG: double
+    + carbsG: double
+    + fatG: double
+  }
+}
+
+package "recommendations.domain.repositories" {
+  interface RecommendationSetRepository {
+    + findLatestByUserId(userId: UUID): Optional<RecommendationSet>
+    + save(set: RecommendationSet): RecommendationSet
+    + findByUserIdAndDate(userId: UUID, date: LocalDate): List<RecommendationSet>
+  }
+}
+
+package "recommendations.application.internal.commandservices" {
+  class RecommendationCommandService {
+    - engine: RecommendationEngine
+    - repository: RecommendationSetRepository
+    - weatherAdapter: WeatherContextAdapter
+    + handle(command: GenerateRecommendationsCommand): RecommendationSet
+  }
+  class GenerateRecommendationsCommand <<Command>> {
+    + userId: UUID
+    + caloriesConsumed: double
+    + calorieTarget: double
+    + goal: String
+    + latitude: double
+    + longitude: double
+  }
+}
+
+package "recommendations.application.internal.queryservices" {
+  class RecommendationQueryService {
+    - repository: RecommendationSetRepository
+    + handle(query: GetLatestRecommendationsQuery): Optional<RecommendationSet>
+  }
+  class GetLatestRecommendationsQuery <<Query>> {
+    + userId: UUID
+  }
+}
+
+package "recommendations.infrastructure.external" {
+  class WeatherContextAdapter {
+    - httpClient: WebClient
+    - apiKey: String
+    + getWeatherContext(lat: double, lon: double): WeatherData
+  }
+  class WeatherData {
+    + condition: String
+    + temperatureCelsius: double
+    + humidity: int
+  }
+  class RuleBasedRecommendationEngine {
+    + generate(context: RecommendationContext, profile: UserNutritionProfile): List<Recommendation>
+  }
+}
+
+package "recommendations.interfaces.rest.resources" {
+  class RecommendationResource {
+    + id: UUID
+    + type: String
+    + title: String
+    + description: String
+    + priority: int
+  }
+  class RecommendationSetResource {
+    + id: UUID
+    + generatedAt: String
+    + expiresAt: String
+    + items: List<RecommendationResource>
+  }
+  class GenerateRecommendationsResource {
+    + latitude: double
+    + longitude: double
+  }
+}
+
+package "recommendations.interfaces.rest.assemblers" {
+  class RecommendationAssembler {
+    + toResourceFromEntity(set: RecommendationSet): RecommendationSetResource
+    + toItemResource(rec: Recommendation): RecommendationResource
+  }
+}
+
+package "recommendations.interfaces.rest.controllers" {
+  class RecommendationController {
+    - commandService: RecommendationCommandService
+    - queryService: RecommendationQueryService
+    + generate(userId: UUID, resource: GenerateRecommendationsResource): ResponseEntity<RecommendationSetResource>
+    + getLatest(userId: UUID): ResponseEntity<RecommendationSetResource>
+  }
+}
+
+RecommendationSet "1" *--> "1..*" Recommendation : contains >
+RecommendationSet "1" *--> "1" RecommendationContext : based on >
+RecommendationSet ..> RecommendationGenerated : publishes >
+Recommendation "1" *--> "1" RecommendationType : has >
+
+RuleBasedRecommendationEngine ..|> RecommendationEngine : implements
+RecommendationCommandService --> RecommendationEngine : uses >
+RecommendationCommandService --> RecommendationSetRepository : uses >
+RecommendationCommandService --> WeatherContextAdapter : uses >
+RecommendationQueryService --> RecommendationSetRepository : uses >
+
+RecommendationController --> RecommendationCommandService : uses >
+RecommendationController --> RecommendationQueryService : uses >
+RecommendationController --> RecommendationAssembler : uses >
+
+@enduml

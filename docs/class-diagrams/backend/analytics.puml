@@ -1,0 +1,191 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "analytics.domain.model.aggregates" {
+  class ProgressReport {
+    - id: ProgressReportId
+    - userId: UUID
+    - period: ReportPeriod
+    - nutritionSummary: NutritionSummary
+    - activitySummary: ActivitySummary
+    - weightTrend: WeightTrend
+    - generatedAt: Instant
+    + ProgressReport(userId: UUID, period: ReportPeriod)
+    + setNutritionSummary(summary: NutritionSummary): void
+    + setActivitySummary(summary: ActivitySummary): void
+    + setWeightTrend(trend: WeightTrend): void
+    + getId(): ProgressReportId
+    + getPeriod(): ReportPeriod
+  }
+}
+
+package "analytics.domain.model.valueobjects" {
+  class ProgressReportId <<ValueObject>> {
+    - value: UUID
+    + getValue(): UUID
+  }
+  class ReportPeriod <<ValueObject>> {
+    - startDate: LocalDate
+    - endDate: LocalDate
+    + ReportPeriod(startDate: LocalDate, endDate: LocalDate)
+    + getDays(): long
+    + contains(date: LocalDate): boolean
+  }
+  class NutritionSummary <<ValueObject>> {
+    - averageDailyCalories: double
+    - averageProteinG: double
+    - averageCarbsG: double
+    - averageFatG: double
+    - daysLogged: int
+    - adherencePercent: double
+    + NutritionSummary(avgCalories: double, avgProtein: double, avgCarbs: double, avgFat: double, daysLogged: int)
+    + getAdherencePercent(): double
+  }
+  class ActivitySummary <<ValueObject>> {
+    - totalCaloriesBurned: double
+    - totalSteps: int
+    - activeDays: int
+    - averageCaloriesBurnedPerDay: double
+    + ActivitySummary(totalBurned: double, totalSteps: int, activeDays: int)
+  }
+  class WeightTrend <<ValueObject>> {
+    - startWeight: double
+    - endWeight: double
+    - minWeight: double
+    - maxWeight: double
+    - recordings: List<WeightDataPoint>
+    + WeightTrend(startWeight: double, endWeight: double)
+    + getWeightChange(): double
+    + getTrendDirection(): String
+  }
+  class WeightDataPoint <<ValueObject>> {
+    - date: LocalDate
+    - weightKg: double
+    + WeightDataPoint(date: LocalDate, weightKg: double)
+  }
+}
+
+package "analytics.domain.model.enums" {
+  enum PeriodType {
+    WEEKLY
+    MONTHLY
+    CUSTOM
+  }
+}
+
+package "analytics.domain.repositories" {
+  interface ProgressReportRepository {
+    + findByUserIdAndPeriod(userId: UUID, period: ReportPeriod): Optional<ProgressReport>
+    + findByUserId(userId: UUID): List<ProgressReport>
+    + save(report: ProgressReport): ProgressReport
+  }
+}
+
+package "analytics.domain.services" {
+  interface ProgressInsightsGenerator {
+    + generateInsights(userId: UUID, period: ReportPeriod): ProgressReport
+  }
+}
+
+package "analytics.application.internal.commandservices" {
+  class AnalyticsCommandService {
+    - generator: ProgressInsightsGenerator
+    - repository: ProgressReportRepository
+    + handle(command: GenerateProgressInsightsCommand): ProgressReport
+  }
+  class GenerateProgressInsightsCommand <<Command>> {
+    + userId: UUID
+    + periodType: String
+    + startDate: LocalDate
+    + endDate: LocalDate
+  }
+}
+
+package "analytics.application.internal.queryservices" {
+  class AnalyticsQueryService {
+    - repository: ProgressReportRepository
+    + handle(query: GetProgressReportQuery): Optional<ProgressReport>
+    + handle(query: GetReportHistoryQuery): List<ProgressReport>
+  }
+  class GetProgressReportQuery <<Query>> {
+    + userId: UUID
+    + startDate: LocalDate
+    + endDate: LocalDate
+  }
+  class GetReportHistoryQuery <<Query>> {
+    + userId: UUID
+  }
+}
+
+package "analytics.infrastructure" {
+  class ProgressInsightsGeneratorImpl {
+    - nutritionLogRepository: NutritionLogRepository
+    - weightRecordRepository: WeightRecordRepository
+    - activityLogRepository: ActivityLogRepository
+    + generateInsights(userId: UUID, period: ReportPeriod): ProgressReport
+    - buildNutritionSummary(logs: List<NutritionLog>, period: ReportPeriod): NutritionSummary
+    - buildActivitySummary(logs: List<ActivityLog>, period: ReportPeriod): ActivitySummary
+    - buildWeightTrend(records: List<WeightRecord>): WeightTrend
+  }
+}
+
+package "analytics.interfaces.rest.resources" {
+  class ProgressReportResource {
+    + id: UUID
+    + periodStart: String
+    + periodEnd: String
+    + averageDailyCalories: double
+    + averageProteinG: double
+    + averageCarbsG: double
+    + averageFatG: double
+    + totalCaloriesBurned: double
+    + weightChange: double
+    + adherencePercent: double
+    + weightDataPoints: List<WeightDataPointResource>
+  }
+  class WeightDataPointResource {
+    + date: String
+    + weightKg: double
+  }
+  class GenerateReportResource {
+    + periodType: String
+    + startDate: String
+    + endDate: String
+  }
+}
+
+package "analytics.interfaces.rest.assemblers" {
+  class ProgressReportAssembler {
+    + toResourceFromEntity(report: ProgressReport): ProgressReportResource
+    + toDataPointResource(dp: WeightDataPoint): WeightDataPointResource
+  }
+}
+
+package "analytics.interfaces.rest.controllers" {
+  class AnalyticsController {
+    - commandService: AnalyticsCommandService
+    - queryService: AnalyticsQueryService
+    + generateReport(userId: UUID, resource: GenerateReportResource): ResponseEntity<ProgressReportResource>
+    + getReport(userId: UUID, startDate: String, endDate: String): ResponseEntity<ProgressReportResource>
+    + getReportHistory(userId: UUID): ResponseEntity<List<ProgressReportResource>>
+  }
+}
+
+ProgressReport "1" *--> "1" ReportPeriod : covers >
+ProgressReport "1" *--> "1" NutritionSummary : summarizes >
+ProgressReport "1" *--> "1" ActivitySummary : summarizes >
+ProgressReport "1" *--> "1" WeightTrend : tracks >
+WeightTrend "1" *--> "0..*" WeightDataPoint : contains >
+
+ProgressInsightsGeneratorImpl ..|> ProgressInsightsGenerator : implements
+AnalyticsCommandService --> ProgressInsightsGenerator : uses >
+AnalyticsCommandService --> ProgressReportRepository : uses >
+AnalyticsQueryService --> ProgressReportRepository : uses >
+
+AnalyticsController --> AnalyticsCommandService : uses >
+AnalyticsController --> AnalyticsQueryService : uses >
+AnalyticsController --> ProgressReportAssembler : uses >
+
+@enduml

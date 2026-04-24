@@ -1,0 +1,110 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "activity/domain/model" {
+  class ActivityLog {
+    + date: string
+    + totalCaloriesBurned: number
+    + totalSteps: number
+    + activities: ActivityRecord[]
+    + syncedAt: string
+    + getActiveMinutes(): number
+  }
+  class ActivityRecord {
+    + id: string
+    + activityType: string
+    + durationMinutes: number
+    + caloriesBurned: number
+    + steps: number
+    + recordedAt: string
+    + sourceDevice: string
+  }
+  class WearableStatus {
+    + isConnected: boolean
+    + deviceName: string
+    + lastSyncAt: string
+    + getTimeSinceSync(): string
+  }
+}
+
+package "activity/application/services" {
+  class ActivityService {
+    - api: ActivityApiService
+    + dailyLog: WritableSignal<ActivityLog | null>
+    + wearableStatus: WritableSignal<WearableStatus | null>
+    + isLoading: WritableSignal<boolean>
+    + isSyncing: WritableSignal<boolean>
+    + loadDailyLog(userId: string, date: string): Observable<ActivityLog>
+    + syncWearable(userId: string): Observable<ActivityLog>
+    + logManualActivity(userId: string, type: string, durationMinutes: number): Observable<ActivityLog>
+    + connectWearable(userId: string, authCode: string): Observable<void>
+  }
+}
+
+package "activity/infrastructure/http" {
+  class ActivityApiService {
+    - http: HttpClient
+    + getDailyLog(userId: string, date: string): Observable<ActivityLog>
+    + postSyncWearable(userId: string): Observable<ActivityLog>
+    + postManualActivity(userId: string, body: ManualActivityBody): Observable<ActivityLog>
+    + postConnectWearable(userId: string, code: string): Observable<void>
+  }
+  class ManualActivityBody {
+    + activityType: string
+    + durationMinutes: number
+  }
+}
+
+package "activity/presentation/components" {
+  class "«Component»\nActivityDashboardComponent" as ActivityDashboardComponent {
+    - activityService: ActivityService
+    + dailyLog: Signal<ActivityLog | null>
+    + wearableStatus: Signal<WearableStatus | null>
+    + selectedDate: WritableSignal<string>
+    + onSync(): void
+    + onDateChange(date: string): void
+  }
+  class "«Component»\nActivityListComponent" as ActivityListComponent {
+    + activities: InputSignal<ActivityRecord[]>
+    + totalCaloriesBurned: InputSignal<number>
+    + totalSteps: InputSignal<number>
+  }
+  class "«Component»\nManualActivityFormComponent" as ManualActivityFormComponent {
+    - activityService: ActivityService
+    + activityForm: FormGroup
+    + activityTypes: string[]
+    + isLoading: WritableSignal<boolean>
+    + onSubmit(): void
+  }
+  class "«Component»\nWearableStatusCardComponent" as WearableStatusCardComponent {
+    - activityService: ActivityService
+    + status: Signal<WearableStatus | null>
+    + isConnected: Signal<boolean>
+    + isSyncing: Signal<boolean>
+    + onConnectGoogleFit(): void
+    + onSync(): void
+  }
+  class "«Component»\nActivityRingComponent" as ActivityRingComponent {
+    + calsBurned: InputSignal<number>
+    + calsTarget: InputSignal<number>
+    + steps: InputSignal<number>
+    + progressPercent: Signal<number>
+  }
+}
+
+ActivityService --> ActivityApiService : uses >
+ActivityService --> "1" ActivityLog : holds >
+ActivityService --> "1" WearableStatus : holds >
+ActivityLog "1" *--> "0..*" ActivityRecord : contains >
+
+ActivityDashboardComponent --> ActivityService : uses >
+ActivityDashboardComponent o--> "1" ActivityListComponent : contains >
+ActivityDashboardComponent o--> "1" WearableStatusCardComponent : contains >
+ActivityDashboardComponent o--> "1" ActivityRingComponent : contains >
+ActivityListComponent ..> ActivityRecord : renders >
+ManualActivityFormComponent --> ActivityService : uses >
+WearableStatusCardComponent --> ActivityService : uses >
+
+@enduml

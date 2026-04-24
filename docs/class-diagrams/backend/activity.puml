@@ -1,0 +1,207 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "activity.domain.model.aggregates" {
+  class ActivityLog {
+    - id: ActivityLogId
+    - userId: UUID
+    - date: LocalDate
+    - activities: List<ActivityRecord>
+    - totalCaloriesBurned: double
+    - syncedAt: Instant
+    + ActivityLog(userId: UUID, date: LocalDate)
+    + addActivity(record: ActivityRecord): void
+    + recalculateTotalCalories(): void
+    + getTotalSteps(): int
+    + getId(): ActivityLogId
+  }
+}
+
+package "activity.domain.model.entities" {
+  class ActivityRecord {
+    - id: ActivityRecordId
+    - activityType: ActivityType
+    - durationMinutes: int
+    - caloriesBurned: double
+    - steps: int
+    - sourceDevice: String
+    - recordedAt: Instant
+    + ActivityRecord(type: ActivityType, durationMinutes: int, caloriesBurned: double)
+    + getCaloriesBurned(): double
+  }
+}
+
+package "activity.domain.model.valueobjects" {
+  class ActivityLogId <<ValueObject>> {
+    - value: UUID
+    + getValue(): UUID
+  }
+  class ActivityRecordId <<ValueObject>> {
+    - value: UUID
+    + getValue(): UUID
+  }
+  class CalorieBalance <<ValueObject>> {
+    - consumed: double
+    - burned: double
+    + CalorieBalance(consumed: double, burned: double)
+    + getNetCalories(): double
+    + getDeficit(): double
+  }
+  class WearableToken <<ValueObject>> {
+    - accessToken: String
+    - refreshToken: String
+    - expiresAt: Instant
+    + WearableToken(accessToken: String, refreshToken: String, expiresAt: Instant)
+    + isExpired(): boolean
+  }
+}
+
+package "activity.domain.model.enums" {
+  enum ActivityType {
+    WALKING
+    RUNNING
+    CYCLING
+    SWIMMING
+    STRENGTH_TRAINING
+    YOGA
+    OTHER
+    + getMETValue(): double
+  }
+}
+
+package "activity.domain.model.events" {
+  class CaloricBalanceAdjusted <<DomainEvent>> {
+    + userId: UUID
+    + date: LocalDate
+    + caloriesBurned: double
+    + netCalories: double
+    + occurredOn: Instant
+  }
+  class WearableSynced <<DomainEvent>> {
+    + userId: UUID
+    + syncedAt: Instant
+    + recordsImported: int
+  }
+}
+
+package "activity.domain.repositories" {
+  interface ActivityLogRepository {
+    + findByUserIdAndDate(userId: UUID, date: LocalDate): Optional<ActivityLog>
+    + findByUserId(userId: UUID): List<ActivityLog>
+    + save(log: ActivityLog): ActivityLog
+  }
+  interface WearableTokenRepository {
+    + findByUserId(userId: UUID): Optional<WearableToken>
+    + save(userId: UUID, token: WearableToken): void
+    + deleteByUserId(userId: UUID): void
+  }
+}
+
+package "activity.application.internal.commandservices" {
+  class ActivityCommandService {
+    - activityLogRepository: ActivityLogRepository
+    - wearableTokenRepository: WearableTokenRepository
+    - googleFitAdapter: GoogleFitAdapter
+    + handle(command: SyncWearableDataCommand): ActivityLog
+    + handle(command: LogManualActivityCommand): ActivityLog
+    + handle(command: ConnectWearableCommand): void
+  }
+  class SyncWearableDataCommand <<Command>> {
+    + userId: UUID
+    + date: LocalDate
+  }
+  class LogManualActivityCommand <<Command>> {
+    + userId: UUID
+    + date: LocalDate
+    + activityType: String
+    + durationMinutes: int
+  }
+  class ConnectWearableCommand <<Command>> {
+    + userId: UUID
+    + authCode: String
+  }
+}
+
+package "activity.application.internal.queryservices" {
+  class ActivityQueryService {
+    - activityLogRepository: ActivityLogRepository
+    + handle(query: GetDailyActivityQuery): Optional<ActivityLog>
+    + handle(query: GetActivityHistoryQuery): List<ActivityLog>
+  }
+  class GetDailyActivityQuery <<Query>> {
+    + userId: UUID
+    + date: LocalDate
+  }
+  class GetActivityHistoryQuery <<Query>> {
+    + userId: UUID
+    + days: int
+  }
+}
+
+package "activity.infrastructure.external" {
+  class GoogleFitAdapter {
+    - httpClient: WebClient
+    + fetchActivities(token: WearableToken, date: LocalDate): List<ActivityRecord>
+    + exchangeAuthCode(code: String): WearableToken
+    + refreshToken(token: WearableToken): WearableToken
+  }
+}
+
+package "activity.interfaces.rest.resources" {
+  class ActivityRecordResource {
+    + id: UUID
+    + activityType: String
+    + durationMinutes: int
+    + caloriesBurned: double
+    + steps: int
+    + recordedAt: String
+  }
+  class ActivityLogResource {
+    + date: String
+    + totalCaloriesBurned: double
+    + totalSteps: int
+    + activities: List<ActivityRecordResource>
+    + syncedAt: String
+  }
+  class ManualActivityResource {
+    + activityType: String
+    + durationMinutes: int
+  }
+}
+
+package "activity.interfaces.rest.assemblers" {
+  class ActivityLogAssembler {
+    + toResourceFromEntity(log: ActivityLog): ActivityLogResource
+    + toRecordResource(record: ActivityRecord): ActivityRecordResource
+  }
+}
+
+package "activity.interfaces.rest.controllers" {
+  class ActivityController {
+    - commandService: ActivityCommandService
+    - queryService: ActivityQueryService
+    + getDailyActivity(userId: UUID, date: LocalDate): ResponseEntity<ActivityLogResource>
+    + syncWearable(userId: UUID): ResponseEntity<ActivityLogResource>
+    + logManualActivity(userId: UUID, resource: ManualActivityResource): ResponseEntity<ActivityLogResource>
+    + connectWearable(userId: UUID, code: String): ResponseEntity<Void>
+  }
+}
+
+ActivityLog "1" *--> "0..*" ActivityRecord : contains >
+ActivityRecord "1" *--> "1" ActivityType : classified as >
+ActivityLog ..> CaloricBalanceAdjusted : publishes >
+ActivityLog ..> WearableSynced : publishes >
+
+ActivityCommandService --> ActivityLogRepository : uses >
+ActivityCommandService --> WearableTokenRepository : uses >
+ActivityCommandService --> GoogleFitAdapter : uses >
+ActivityQueryService --> ActivityLogRepository : uses >
+
+ActivityController --> ActivityCommandService : uses >
+ActivityController --> ActivityQueryService : uses >
+ActivityController --> ActivityLogAssembler : uses >
+ActivityLogAssembler --> ActivityLogResource : creates >
+
+@enduml
