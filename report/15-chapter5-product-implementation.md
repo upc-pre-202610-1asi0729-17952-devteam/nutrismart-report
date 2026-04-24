@@ -263,6 +263,46 @@ Las pruebas de aceptación del sistema fueron redactadas empleando la sintaxis G
 
 ### 5.1.4. Software Deployment Configuration
 
+Durante este sprint se configuraron la organización y los repositorios del proyecto NutriSmart en GitHub, estableciendo la estructura base para el despliegue de todos los productos digitales de la solución. A continuación se describen los pasos realizados.
+
+##### Creación de la organización en GitHub
+
+Se creó la organización `upc-pre-202610-1asi0729-17952-devteam` en GitHub, la cual centraliza todos los repositorios del proyecto. Para crearla:
+
+- Iniciar sesión en [github.com](https://github.com)
+- Hacer click en el ícono de perfil → **Your organizations**
+- Click en **New organization**
+- Seleccionar el plan **Free**
+- Ingresar el nombre `upc-pre-202610-1asi0729-17952-devteam`
+- Completar la configuración e invitar a los miembros del equipo
+
+##### Creación de los repositorios
+
+Dentro de la organización se crearon 4 repositorios, uno por cada producto digital de la solución:
+
+| Repositorio | Descripción |
+|---|---|
+| `nutrismart-report` | Documentación e informe del proyecto |
+| `nutrismart-website` | Landing page estática |
+| `nutrismart-webapp` | Frontend Web Application |
+| `nutrismart-platform` | Web Services / Backend |
+
+Para crear cada repositorio:
+
+- Ir a la organización → **Repositories** → **New**
+- Asignar el nombre correspondiente
+- Seleccionar visibilidad **Public**
+- Inicializar con un `README.md`
+- Click en **Create repository**
+
+##### Configuración de ramas base (Gitflow)
+
+En cada repositorio se configuraron las ramas base del flujo de trabajo:
+
+- Por defecto GitHub crea la rama `main`
+- Desde `main` se crea la rama `develop`
+- Se establece `develop` como rama base para los Pull Requests en **Settings** → **Branches** → **Default branch**
+
 ## 5.2. Landing Page, Services & Applications Implementation
 
 ### 5.2.1. Sprint 1
