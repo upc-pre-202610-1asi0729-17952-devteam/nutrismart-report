@@ -162,10 +162,11 @@ Las entrevistas fueron diseñadas con preguntas diferenciadas según cada segmen
 3. ¿Tiene alguna meta física actualmente, como bajar de peso o mejorar su alimentación? ¿Qué es lo que más le cuesta lograr?
 4. Cuando come fuera de casa, en un restaurante, en la calle o en el trabajo, ¿sabe con certeza cuánto está comiendo en términos de calorías, o simplemente calcula una cifra aproximada?
 
-**Bloque 3: Validación de funciones**
+**Bloque 3: Comportamiento real ante el quiebre**
 
-5. Si una aplicación pudiera analizar la foto de su plato o del menú de un restaurante y decirle automáticamente qué tan saludable es esa comida para usted, ¿la usaría? ¿Por qué?
-6. ¿Le parecería útil que la aplicación le sugiera qué comer según el clima del día, por ejemplo, algo más ligero cuando hace mucho calor, o algo más sustancioso cuando hace frío?
+5. ¿Cuándo fue la última vez que rompiste tu dieta o dejaste de controlar lo que comías? ¿Qué pasó exactamente ese día?
+6. Cuando intentaste usar alguna aplicación o método para controlar tu alimentación y lo abandonaste, ¿qué fue lo que te hizo dejarlo?
+7. ¿Qué estrategia usas cuando sientes que el control de lo que comes te genera más ansiedad que ayuda?
 
 ##### Segmento 2 — Ganancia de Masa Muscular (Jóvenes de 18 a 32 años)
 
@@ -180,11 +181,11 @@ Las entrevistas fueron diseñadas con preguntas diferenciadas según cada segmen
 4. ¿Llevas algún control de lo que comes, especialmente de cuánta proteína consumes al día? ¿Qué es lo que más te incomoda de las aplicaciones que has probado para registrar tu comida?
 5. Cuando viajas o tu rutina cambia por algún motivo, trabajo, viaje, eventos, ¿cómo afecta eso tu alimentación y tu entrenamiento?
 
-**Bloque 3: Validación de funciones**
+**Bloque 3: Comportamiento real ante el quiebre**
 
-6. Si estuvieras de viaje en una ciudad que no conoces y una aplicación te sugiriera automáticamente platos típicos de esa zona que encajan con tu dieta, ¿lo usarías? ¿Qué te parecería eso?
-7. Si tu reloj o tu celular midiera automáticamente cuánto te moviste en el día y la aplicación ajustara sola cuánto deberías comer ese día según eso, ¿qué valor le darías a esa función?
-
+6. ¿Qué hiciste la última semana que no pudiste entrenar ni seguir tu dieta? ¿Cómo reaccionaste y qué comiste?
+7. Cuando usas una app de nutrición y se vuelve tediosa, ¿en qué momento exacto la dejas de usar? ¿Qué fue lo último que registraste?
+8. ¿Alguna vez has sentido que llevar el control de tus macros te genera más estrés que beneficio? ¿Qué hiciste en ese momento?
 
 ### 2.2.2. Registro de entrevistas
 
