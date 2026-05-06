@@ -81,9 +81,6 @@ El usuario aprenderá a identificar las mejores opciones en menús de restaurant
 
 #### 1.2.2.3. Lean UX Hypothesis Statements
 
-#### 1.2.2.3. Lean UX Hypothesis Statements
-#### 1.2.2.3. Lean UX Hypothesis Statements
-
 **Creemos que** implementar un sistema de análisis de alimentos por fotografía 
 para usuarios que consideran tedioso el registro manual de calorías logrará 
 reducir la tasa de abandono de la aplicación durante los primeros 30 días de uso.
