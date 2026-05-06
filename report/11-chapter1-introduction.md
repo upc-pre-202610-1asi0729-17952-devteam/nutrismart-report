@@ -81,39 +81,25 @@ El usuario aprenderá a identificar las mejores opciones en menús de restaurant
 
 #### 1.2.2.3. Lean UX Hypothesis Statements
 
-**Creemos que** implementar un sistema de análisis de alimentos por fotografía 
-para usuarios que consideran tedioso el registro manual de calorías logrará 
+**Creemos que** implementar un sistema de análisis de alimentos por fotografía para usuarios que consideran tedioso el registro manual de calorías logrará 
 reducir la tasa de abandono de la aplicación durante los primeros 30 días de uso.
 **Sabremos que** esto es cierto,
-**Cuando** veamos que la tasa de abandono en el primer mes disminuye al menos 
-un 30% en comparación con usuarios que solo utilizan el método de búsqueda 
-de texto tradicional.
+**Cuando** veamos que la tasa de abandono en el primer mes disminuye al menos un 30% en comparación con usuarios que solo utilizan el método de búsqueda de texto tradicional.
 
-**Creemos que** ofrecer sugerencias de comidas basadas en la ubicación y el clima 
-para usuarios con estilos de vida dinámicos logrará que los usuarios mantengan 
-su meta nutricional diaria incluso cuando comen fuera de casa.
+**Creemos que** ofrecer sugerencias de comidas basadas en la ubicación y el clima para usuarios con estilos de vida dinámicos logrará que los usuarios mantengan su meta nutricional diaria incluso cuando comen fuera de casa.
 **Sabremos que** esto es cierto,
-**Cuando** veamos que el porcentaje de días en que los usuarios cumplen su 
-objetivo calórico estando fuera de casa es comparable al de los días en que 
-comen en casa.
+**Cuando** veamos que el porcentaje de días en que los usuarios cumplen su objetivo calórico estando fuera de casa es comparable al de los días en que comen en casa.
 
-**Creemos que** la funcionalidad de escaneo de menús físicos en restaurantes 
-para personas con metas estrictas de ganancia muscular o pérdida de peso 
-logrará reducir las decisiones alimenticias incompatibles con su plan nutricional 
-al comer fuera.
+**Creemos que** la funcionalidad de escaneo de menús físicos en restaurantes para personas con metas estrictas de ganancia muscular o pérdida de peso logrará reducir las decisiones alimenticias incompatibles con su plan nutricional al comer fuera.
 **Sabremos que** esto es cierto,
-**Cuando** veamos que los usuarios que utilizan el escaneo de menú registran 
-al menos un 40% menos de excesos calóricos o déficits de proteína en comidas 
-fuera de casa respecto a quienes no lo utilizan.
+**Cuando** veamos que los usuarios que utilizan el escaneo de menú registran al menos un 40% menos de excesos calóricos o déficits de proteína en comidas fuera de casa respecto a quienes no lo utilizan.
 
-**Creemos que** sincronizar los datos de actividad física de relojes inteligentes 
-para realizar ajustes metabólicos en tiempo real para usuarios entusiastas del 
+**Creemos que** sincronizar los datos de actividad física de relojes inteligentes para realizar ajustes metabólicos en tiempo real para usuarios entusiastas del 
 fitness logrará reducir los errores de déficit o superávit calórico incorrecto 
 en días de entrenamiento.
 **Sabremos que** esto es cierto,
-**Cuando** veamos que los usuarios con wearable sincronizado presentan una 
-desviación calórica diaria menor al 10% respecto a su objetivo en días de 
-actividad física intensa, en comparación con usuarios sin sincronización.
+**Cuando** veamos que los usuarios con wearable sincronizado presentan una desviación calórica diaria menor al 10% respecto a su objetivo en días de actividad física intensa, en comparación con usuarios sin sincronización.
+
 #### 1.2.2.4. Lean UX Canvas
 
 ![LeanUX Canva](../assets/img/LeanUXCanva.jpg)
