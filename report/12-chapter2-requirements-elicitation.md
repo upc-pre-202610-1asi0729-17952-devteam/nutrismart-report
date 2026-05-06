@@ -162,10 +162,11 @@ Las entrevistas fueron diseñadas con preguntas diferenciadas según cada segmen
 3. ¿Tiene alguna meta física actualmente, como bajar de peso o mejorar su alimentación? ¿Qué es lo que más le cuesta lograr?
 4. Cuando come fuera de casa, en un restaurante, en la calle o en el trabajo, ¿sabe con certeza cuánto está comiendo en términos de calorías, o simplemente calcula una cifra aproximada?
 
-**Bloque 3: Validación de funciones**
+**Bloque 3: Comportamiento real ante el quiebre**
 
-5. Si una aplicación pudiera analizar la foto de su plato o del menú de un restaurante y decirle automáticamente qué tan saludable es esa comida para usted, ¿la usaría? ¿Por qué?
-6. ¿Le parecería útil que la aplicación le sugiera qué comer según el clima del día, por ejemplo, algo más ligero cuando hace mucho calor, o algo más sustancioso cuando hace frío?
+5. ¿Cuándo fue la última vez que rompiste tu dieta o dejaste de controlar lo que comías? ¿Qué pasó exactamente ese día?
+6. Cuando intentaste usar alguna aplicación o método para controlar tu alimentación y lo abandonaste, ¿qué fue lo que te hizo dejarlo?
+7. ¿Qué estrategia usas cuando sientes que el control de lo que comes te genera más ansiedad que ayuda?
 
 ##### Segmento 2 — Ganancia de Masa Muscular (Jóvenes de 18 a 32 años)
 
@@ -180,11 +181,11 @@ Las entrevistas fueron diseñadas con preguntas diferenciadas según cada segmen
 4. ¿Llevas algún control de lo que comes, especialmente de cuánta proteína consumes al día? ¿Qué es lo que más te incomoda de las aplicaciones que has probado para registrar tu comida?
 5. Cuando viajas o tu rutina cambia por algún motivo, trabajo, viaje, eventos, ¿cómo afecta eso tu alimentación y tu entrenamiento?
 
-**Bloque 3: Validación de funciones**
+**Bloque 3: Comportamiento real ante el quiebre**
 
-6. Si estuvieras de viaje en una ciudad que no conoces y una aplicación te sugiriera automáticamente platos típicos de esa zona que encajan con tu dieta, ¿lo usarías? ¿Qué te parecería eso?
-7. Si tu reloj o tu celular midiera automáticamente cuánto te moviste en el día y la aplicación ajustara sola cuánto deberías comer ese día según eso, ¿qué valor le darías a esa función?
-
+6. ¿Qué hiciste la última semana que no pudiste entrenar ni seguir tu dieta? ¿Cómo reaccionaste y qué comiste?
+7. Cuando usas una app de nutrición y se vuelve tediosa, ¿en qué momento exacto la dejas de usar? ¿Qué fue lo último que registraste?
+8. ¿Alguna vez has sentido que llevar el control de tus macros te genera más estrés que beneficio? ¿Qué hiciste en ese momento?
 
 ### 2.2.2. Registro de entrevistas
 
@@ -287,19 +288,19 @@ Daphne es una profesional con una rutina física exigente de cinco a seis días 
 
 #### Segmento 1: Personas que buscan perder peso
 
-El análisis integral de las entrevistas realizadas al Segmento Objetivo 1 revela una homogeneidad total en la necesidad de herramientas de control calórico: el 100% de los participantes busca perder peso o mejorar su salud, pero desconoce los valores nutricionales exactos de los alimentos consumidos fuera del hogar. Existe una clara diferencia generacional y situacional en las motivaciones. Mientras que los adultos mayores de 40 años se enfocan en el control metabólico preventivo y la salud clínica, como niveles elevados de azúcar o sobrepeso derivado del sedentarismo laboral, el perfil joven enfrenta obstáculos fisiológicos específicos como el SOP y la gestión de la ansiedad alimentaria vinculada a antojos.
+El análisis de las entrevistas revela tres patrones de comportamiento de dominio que van más allá de la necesidad declarada de control calórico. El primero es que el quiebre ocurre fuera del hogar, no en él. Los tres perfiles muestran que el entorno controlado del hogar no representa el punto de falla real: el abandono del seguimiento nutricional se desencadena consistentemente en contextos externos como el restaurante, el trabajo o el evento social. Esto indica que el dominio crítico no es el registro en sí, sino la toma de decisiones alimenticias bajo presión contextual y sin información disponible en el momento.
 
-En términos de comportamiento tecnológico, se identifica una apertura absoluta hacia el uso de la cámara del dispositivo móvil como interfaz principal para el análisis nutricional. Todos los entrevistados validaron la utilidad de la fotografía para obtener exactitud en el control de ingesta, lo que sugiere que la facilidad de uso es un factor crítico para el éxito de la herramienta. Un hallazgo relevante es la validación unánime de la funcionalidad de recomendaciones según el clima; este factor no solo se percibe como una novedad, sino como una respuesta a disparadores psicológicos y físicos reales, como el aumento del apetito en climas fríos o la necesidad de hidratación y ligereza en climas cálidos.
+El segundo patrón es que la carga cognitiva del seguimiento es el principal inhibidor. Ninguno de los entrevistados abandonó su meta por falta de motivación declarada, sino por la fricción del proceso: calcular "al ojo", estimar porciones, recordar valores nutricionales. Evelyn compensa con reglas heurísticas propias, Jorge usa estimación visual y Daniela directamente no cuenta calorías fuera de casa. Esto evidencia que el comportamiento real difiere significativamente de lo que los usuarios dicen que harían: aunque los tres afirman querer control preciso, en la práctica todos operan con aproximaciones porque el costo cognitivo del control exacto es demasiado alto.
 
-Finalmente, el análisis demuestra que el segmento requiere una solución que trascienda el simple conteo de calorías, buscando un soporte que se adapte a estilos de vida variados, desde el sedentarismo de oficina hasta la actividad docente, y que ofrezca un respaldo educativo sobre la composición de los platos. La influencia del entorno y las condiciones de salud preexistentes actúan como los principales movilizadores para la adopción de la plataforma, consolidando a este segmento como usuarios potenciales que valoran la precisión, la innovación en la personalización y el acompañamiento constante en sus metas físicas.
+El tercer patrón es que las condiciones preexistentes generan riesgo de abandono silencioso. El caso de Daniela con SOP es especialmente relevante para el dominio: no es simplemente un usuario con dificultades de disciplina, sino un perfil donde la condición fisiológica genera ciclos de ansiedad alimentaria que ninguna app de conteo calórico puede resolver sin modelar ese comportamiento específico. El riesgo de abandono en este perfil no es visible en el registro diario sino en los episodios de ansiedad que no se registran. La implicación para el dominio es que NutriSmart no puede limitarse a facilitar el registro: debe detectar cuándo el usuario está en un contexto de alto riesgo de quiebre y actuar preventivamente antes de que ocurra la desviación.
 
 #### Segmento 2: Personas con metas de ganancia de masa muscular
 
-El análisis de las entrevistas realizadas al Segmento Objetivo 2 revela una homogeneidad absoluta en la adopción de tecnología vestible: el 100% de los participantes utiliza dispositivos como smartwatches o Apple Watch para monitorear su actividad física. A diferencia de otros segmentos, este grupo no busca únicamente perder peso, sino una optimización de macronutrientes que se adapte a un estilo de vida de alto rendimiento y alta demanda de tiempo. Existe un consenso en que el mayor obstáculo para la disciplina no es la falta de voluntad, sino la fricción generada por factores externos como la carga académica y laboral, los cuales interrumpen la regularidad de sus entrenamientos y su planificación alimentaria.
+El análisis revela que este segmento presenta el perfil de abandono más predecible del sistema, y paradójicamente el más ignorado por las aplicaciones existentes. El primer patrón es que el abandono tiene un disparador externo claro y recurrente. Los tres entrevistados identifican el mismo detonante: la ruptura de rutina por carga académica o viaje. No es un problema de motivación ni de conocimiento nutricional, sino de adaptabilidad del sistema cuando el contexto cambia. David deja de entrenar cuando viaja, Rando cuando acumulan responsabilidades académicas, Daphne cuando el estrés laboral eleva el costo del pesaje. El patrón es consistente: el abandono no es gradual, es abrupto y situacional.
 
-En el ámbito tecnológico, se identifica un rechazo hacia las aplicaciones de nutrición tradicionales por ser percibidas como confusas o excesivamente demandantes en cuanto al registro manual de datos. Los entrevistados valoran la automatización como el diferencial de mayor valor en la propuesta, específicamente la capacidad de la aplicación para ajustar porciones y macronutrientes de forma reactiva a la actividad física del día. Esto evidencia que el usuario de este segmento busca soluciones que operen en "piloto automático", eliminando la carga mental y el estrés asociado al pesaje meticuloso de alimentos, y permitiendo que la nutrición se integre de forma fluida con sus dispositivos de salud preexistentes.
+El segundo patrón es que la carga cognitiva del pesaje es el punto de quiebre más específico. Daphne representa el caso más revelador: un usuario de alta disciplina que abandonó el control estricto no por falta de voluntad sino porque el costo mental del pesaje en crudo versus cocido superó el beneficio percibido. Esto expone una brecha crítica en las apps actuales: maximizan la precisión a costa de la sostenibilidad. El comportamiento real del segmento no es "quiero control exacto", sino "quiero control suficiente que no me consuma".
 
-Finalmente, surge un patrón crítico relacionado con la alimentación fuera de casa y los viajes, identificado como el "dilema del viajero". Los tres participantes coinciden en que viajar representa un punto de quiebre en su progreso debido a la dificultad para encontrar opciones saludables y al desconocimiento de la gastronomía local en términos nutricionales. La validación de una función que sugiera platos típicos locales alineados a sus metas nutricionales confirma que este segmento busca una herramienta que les otorgue libertad y flexibilidad cultural sin sacrificar sus objetivos físicos, consolidando la necesidad de una plataforma que funcione tanto como monitor inteligente de actividad como guía gastronómico personalizado.
+El tercer patrón es que lo que los usuarios dicen que harían difiere de su comportamiento real. Los tres validaron positivamente funciones de automatización y sugerencias locales, pero sus relatos de comportamiento pasado revelan que en los momentos de quiebre no buscaron herramientas más sofisticadas: simplemente dejaron de registrar. Esto sugiere que la solución no es más funcionalidad, sino menor fricción en los momentos críticos de ruptura de rutina. La implicación para el dominio es que el sistema debe modelar específicamente el comportamiento durante las semanas de ruptura, no solo durante las semanas de adherencia, ya que es ahí donde se define si el usuario abandona permanentemente o recupera consistencia.
 
 ## 2.3. Needfinding
 
