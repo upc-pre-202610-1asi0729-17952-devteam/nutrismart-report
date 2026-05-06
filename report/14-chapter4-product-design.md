@@ -88,6 +88,7 @@ El Diagrama de Contexto (Nivel 1 del modelo C4) representa a NutriSmart como un 
 	- `Google Fit API:` Sincroniza datos de actividad física y gasto energético.
 	- `OpenWeatherMap:` Provee datos climáticos para ajustar las sugerencias de comidas.
 	- `Stripe:` Gestiona de forma segura los pagos y el estado de las suscripciones.
+	- `Geolocation API:` Provee la ubicación actual del usuario para el Modo Viaje y las recomendaciones contextuales.
 
 ![Context Diagram](../assets/img/artifacts/nutrismart-SystemContext.png)
 
@@ -99,6 +100,8 @@ El Diagrama de Contenedores (Nivel 2 del modelo C4) desglosa el sistema NutriSma
 
  - **Web Application:** Servidor web que entrega los archivos estáticos al navegador del usuario para inicializar la aplicación.
     - **Tecnología:** `Nginx`.
+ - **Landing Page:** Sitio web estático que presenta la propuesta de valor de NutriSmart y redirige a los usuarios hacia la aplicación web.
+    - **Tecnología:** `HTML5 + CSS3 + JavaScript`.
  - **Single Page Application:** Frontend donde los usuarios interactúan con la plataforma, gestionan sus metas y visualizan sus progresos. Se ejecuta completamente en el navegador del usuario.
     - **Tecnología:** `Angular (con Angular Material para UI y RxJS para la gestión de servicios)`.
  - **API Application:** Backend que maneja la lógica de negocio, el motor de recomendaciones, el procesamiento de imágenes y la integración con servicios externos.
@@ -118,37 +121,93 @@ El Diagrama de Componentes (Nivel 3 del modelo C4) describe la estructura intern
 
 **A. Single Page Application Components (Frontend)**
 
-Este contenedor se organiza para garantizar una interfaz reactiva siguiendo el patrón de arquitectura de Angular.
+El Single Page Application se organiza en 7 Bounded Contexts, cada uno con 4 capas siguiendo el patrón de arquitectura del Domain-Driven Design.
 
-**Elementos:**
-
- - **UI Components:** Biblioteca de vistas y elementos visuales basados en Material Design.
-    - **Tecnología:** `Angular Material`.
- - **Angular Router:** Componente encargado de la navegación y el enrutamiento del lado del cliente.
-    - **Tecnología:** `Angular Router`.
- - **Data Services:** Servicios encargados de la lógica de negocio del lado del cliente y el manejo de flujos de datos asíncronos.
-    - **Tecnología:** `RxJS`.
- - **HTTP Client:** Encargado de orquestar las peticiones asíncronas y la comunicación con el servidor de API.
-    - **Tecnología:** `HttpClient (Angular)`.
+El diagrama a continuación muestra todos los componentes de la arquitectura en un único bloque, dado que Structurizr no soporta la agrupación visual por Bounded Context en las vistas de componentes.
 
 ![Web Component Diagram](../assets/img/artifacts/nutrismart-WebComponentsDiagram.png)
 
-![Web Component Diagram Summarized](../assets/img/artifacts/nutrismart-WebComponentsDiagram1.png)
+Cada Bounded Context contiene una capa de Presentation con las vistas Angular, una capa de Application con los servicios TypeScript que orquestan la lógica del cliente, una capa de Domain con los modelos e interfaces, y una capa de Infrastructure con el cliente HTTP Angular que se comunica con el API Application.
+
+Para apreciar la separación por capas Domain-Driven Design de cada Bounded Context, se presenta a continuación un diagrama de detalle individual por cada uno.
+
+**Bounded Contexts:**
+
+ - **Identity & Access:** Gestiona las vistas de login, registro y perfil del usuario.
+
+   ![IAM Frontend Diagram](../assets/img/artifacts/nutrismart-IAMFrontendDiagram.png)
+
+ - **Nutrition Tracking:** Gestiona las vistas de registro de comidas, Smart Scan y escaneo de menús.
+
+   ![Nutrition Frontend Diagram](../assets/img/artifacts/nutrismart-NutritionFrontendDiagram.png)
+
+ - **Body & Health Metrics:** Gestiona las vistas de métricas corporales, historial de peso y objetivos de salud.
+
+   ![Body Frontend Diagram](../assets/img/artifacts/nutrismart-BodyFrontendDiagram.png)
+
+ - **Smart Recommendations:** Gestiona las vistas de recomendaciones personalizadas, Modo Viaje y Despensa.
+
+   ![Recs Frontend Diagram](../assets/img/artifacts/nutrismart-RecsFrontendDiagram.png)
+
+ - **Activity & Wearable Sync:** Gestiona las vistas de registro de actividad física y sincronización con wearables.
+
+   ![Activity Frontend Diagram](../assets/img/artifacts/nutrismart-ActivityFrontendDiagram.png)
+
+ - **Analytics & Reporting:** Gestiona las vistas del dashboard, gráficas de progreso y rachas.
+
+   ![Analytics Frontend Diagram](../assets/img/artifacts/nutrismart-AnalyticsFrontendDiagram.png)
+
+ - **Subscriptions & Billing:** Gestiona las vistas de planes de suscripción y pagos.
+
+   ![Billing Frontend Diagram](../assets/img/artifacts/nutrismart-BillingFrontendDiagram.png)
 
 **B. API Application Components (Backend)**
 
-El backend se divide en módulos que representan los 7 Bounded Contexts del dominio, asegurando una arquitectura desacoplada y escalable. Adicionalmente, cuenta con un Data Access Layer que centraliza la persistencia de datos mediante el patrón Repository, gestionando todas las operaciones de lectura y escritura hacia la base de datos.
+El API Application se organiza en 7 Bounded Contexts y un Shared Kernel, cada uno siguiendo el patrón de arquitectura del Domain-Driven Design.
 
-**Elementos:**
-
- - **Modulos de Dominio (Identity, Nutrition, Health, Recs, Activity, Analytics, Billing):** Implementan las reglas de negocio específicas para cada contexto identificado.
-    - **Tecnología:** `Java / Spring Boot (Services & Controllers)`.
- - **Data Access Layer (Repository):** Componente que centraliza la persistencia de la información mediante el uso de abstracciones de datos.
-    - **Tecnología:** `Spring Data JPA / Hibernate`.
+El diagrama a continuación muestra todos los componentes de la arquitectura en un único bloque, dado que Structurizr no soporta la agrupación visual por Bounded Context en las vistas de componentes.
 
 ![API Component Diagram](../assets/img/artifacts/nutrismart-APIComponentsDiagram.png)
 
-![API Component Diagram Summarized](../assets/img/artifacts/nutrismart-APIComponentsDiagram1.png)
+Cada Bounded Context contiene una capa de Interfaces con los Controllers de Spring Boot que reciben las peticiones HTTP, una capa de Application con los servicios y comandos que orquestan los casos de uso, una capa de Domain con los agregados y entidades del dominio, y una capa de Infrastructure con los repositorios de Spring Data JPA y los clientes de APIs externas cuando corresponda.
+
+Para apreciar la separación por capas Domain-Driven Design de cada Bounded Context, se presenta a continuación un diagrama de detalle individual por cada uno.
+
+**Bounded Contexts:**
+
+ - **Identity & Access:** Maneja la autenticación, autorización y perfiles de usuario.
+
+   ![IAM Backend Diagram](../assets/img/artifacts/nutrismart-IAMBackendDiagram.png)
+
+ - **Nutrition Tracking:** Gestiona el registro de comidas y el procesamiento de Smart Scan. Se integra con Google Cloud Vision y Nutrition Data Providers.
+
+   ![Nutrition Backend Diagram](../assets/img/artifacts/nutrismart-NutritionBackendDiagram.png)
+
+ - **Body & Health Metrics:** Calcula índices de salud como BMI y TDEE y registra el historial de peso.
+
+   ![Body Backend Diagram](../assets/img/artifacts/nutrismart-BodyBackendDiagram.png)
+
+ - **Smart Recommendations:** Procesa datos contextuales para generar sugerencias personalizadas. Se integra con OpenWeatherMap y Geolocation API.
+
+   ![Recs Backend Diagram](../assets/img/artifacts/nutrismart-RecsBackendDiagram.png)
+
+ - **Activity & Wearable Sync:** Sincroniza pasos y datos de actividad desde Google Fit.
+
+   ![Activity Backend Diagram](../assets/img/artifacts/nutrismart-ActivityBackendDiagram.png)
+
+ - **Analytics & Reporting:** Genera gráficas de progreso, rachas y reportes del usuario.
+
+   ![Analytics Backend Diagram](../assets/img/artifacts/nutrismart-AnalyticsBackendDiagram.png)
+
+ - **Subscriptions & Billing:** Gestiona los niveles de suscripción e integra con Stripe para el procesamiento de pagos.
+
+   ![Billing Backend Diagram](../assets/img/artifacts/nutrismart-BillingBackendDiagram.png)
+
+**Shared Kernel:**
+
+Componente transversal utilizado por todos los Bounded Contexts que agrupa clases base, interfaces compartidas y objetos de valor reutilizables. No contiene lógica de negocio propia ni acceso a base de datos.
+
+![Shared Kernel Diagram](../assets/img/artifacts/nutrismart-SharedKernelDiagram.png)
 
 ## 4.7. Software Object-Oriented Design
 
