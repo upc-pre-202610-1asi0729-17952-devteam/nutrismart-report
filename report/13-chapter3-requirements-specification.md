@@ -100,8 +100,6 @@
 
 ## 3.3. Product Backlog
 
-## 3.3. Product Backlog
-
 | # | Epic ID | Story ID | Título | Descripción | SP |
 |---|---|---|---|---|---|
 | 1 | EP01 | US01 | Maintain Daily Nutritional Adherence | As a user with physical goals, I want the system to evaluate whether I met my daily nutritional targets so that my adherence status is always up to date and reflects my real consistency. | 5 |
