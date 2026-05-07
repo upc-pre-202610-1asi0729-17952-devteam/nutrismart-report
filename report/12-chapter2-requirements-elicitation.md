@@ -509,118 +509,141 @@ En conjunto, estos hallazgos orientan el desarrollo de nuestra plataforma hacia 
 
 ## 2.4. Big Picture EventStorming
 
-En esta sección se desarrolla el modelado del dominio del sistema mediante la técnica de Big Picture Event Storming, con el propósito de construir una visión integral del negocio de nuestra plataforma bajo los principios de Domain Driven Design. Este proceso permitió identificar los eventos de dominio más relevantes, estableciendo su secuencia temporal y las relaciones de causalidad que definen el comportamiento del sistema a nivel global.
+En esta sección se desarrolla el modelado del dominio de NutriSmart mediante la técnica de Big Picture Event Storming, con el propósito de construir una visión estratégica e integral del negocio bajo los principios de Domain-Driven Design. Este nivel se enfoca en descubrir qué ocurre en el dominio, en qué orden y qué consecuencias genera cada hecho significativo, sin descender aún al nivel de comandos, aggregates o decisiones de implementación técnica.
 
-El análisis realizado permitió, además, delimitar los actores que interactúan con el dominio, así como los comandos que representan las intenciones de cambio de estado y los sistemas externos que participan en la ejecución de los procesos de negocio. Esto evidencia una arquitectura orientada a eventos, caracterizada por un alto nivel de desacoplamiento y consistencia eventual entre los distintos componentes del sistema. 
+El proceso permitió identificar los eventos de dominio de mayor impacto en el negocio nutricional, establecer su secuencia temporal y delimitar las relaciones de causalidad que gobiernan el comportamiento del sistema a nivel global. El análisis reveló que el dominio de NutriSmart no gira alrededor del registro de alimentos como funcionalidad técnica, sino alrededor de la adherencia nutricional del usuario como resultado de negocio: los hechos más relevantes son aquellos que indican si un usuario está manteniendo, perdiendo o recuperando consistencia con su plan nutricional.
 
-Asimismo, se identificaron eventos de alta relevancia que actúan como mecanismos de propagación, especialmente aquellos asociados al registro de consumo nutricional, los cuales desencadenan procesos en múltiples bounded contexts como analítica, recomendaciones inteligentes y gestión de métricas de salud.
+El modelado también permitió delimitar los actores que interactúan con el dominio, los sistemas externos que participan en la ejecución de los procesos de negocio y los puntos de fricción identificados como hotspots durante el análisis. Esto evidencia una arquitectura orientada a eventos caracterizada por un alto nivel de desacoplamiento y consistencia eventual entre los distintos componentes del sistema, donde los eventos emitidos por el Nutrition Tracking Context hacia el Behavioral Consistency Context constituyen el núcleo de la arquitectura reactiva, dado que cualquier desviación en el seguimiento diario desencadena una cadena de evaluación, detección y recomendación preventiva.
 
-Finalmente, la estructuración del Big Picture Event Storming organiza los elementos del dominio en flujos de negocio coherentes, permitiendo visualizar las interdependencias entre bounded contexts, la secuencia lógica de ejecución y los principales puntos de integración. Este enfoque contribuye a la alineación entre el modelo de dominio y los procesos del negocio, además de facilitar la identificación de oportunidades de mejora en la arquitectura del sistema.
-
+La estructuración del Big Picture Event Storming organiza los elementos del dominio en ocho Bounded Contexts distribuidos en swimlanes, permitiendo visualizar las interdependencias entre contextos, la secuencia lógica de ejecución y los principales puntos de integración con sistemas externos como Google Fit, Google Cloud Vision, OpenWeatherMap y Stripe. Este enfoque contribuye a la alineación entre el modelo de dominio y los procesos del negocio, garantizando que el diseño arquitectónico refleje con fidelidad el comportamiento real del sistema.
 
 **Big Picture Event Storming**
 
 ![Big Picture Event Storming](../assets/img/chapter2-neeedfinding-images/BigPictureEventStorming.jpg)
 
-Para poder apreciar mejor el Big Picture Event Storming, le recomendamos ingresar al siguiente link: [Tablero de Miro: Big Picture Event Storming](https://miro.com/app/board/uXjVGnTlN0E=/?share_link_id=736747337916)
-
+Para poder apreciar mejor el Big Picture Event Storming, le recomendamos ingresar al siguiente link: [Tablero de Miro: Big Picture Event Storming](https://miro.com/app/board/uXjVHXFS-bE=/?share_link_id=984400620775)
 
 ## 2.5. Ubiquitous Language
 
-El presente Ubiquitous Language establece un conjunto estructurado de términos y conceptos clave propios del dominio de nuestra plataforma, con el propósito de definir un lenguaje común, preciso y libre de ambigüedades entre los distintos stakeholders y el equipo de desarrollo. Este glosario se fundamenta en los principios de Domain Driven Design, permitiendo alinear la comprensión del negocio de la nutrición personalizada, el seguimiento de métricas de salud y la generación de recomendaciones contextuales. Cada término ha sido definido considerando su significado específico dentro del dominio, garantizando consistencia semántica, trazabilidad conceptual y una comunicación efectiva que facilite el análisis, diseño e implementación de la solución.
-
-
-
-**User & Profile**
-
-| Term                                                    | Definition                                                                                                                              |
-|---------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| User (Usuario)                                          | The person using the platform to manage their nutrition, physical activity, and health goals.                                            |
-| User Profile (Perfil de Usuario)                        | The set of personal and health data for the user, such as age, sex, weight, height, activity level, and dietary restrictions.           |
-| Goal (Meta)                                             | The user's primary objective related to their physical state: losing weight, gaining muscle mass, or maintaining their current condition. |
-| Dietary Restrictions (Restricciones Alimentarias)       | Limitations on the user's diet due to allergies, intolerances, or medical conditions.                                                   |
-| Subscription Plan (Plan de Suscripción)                 | Access level contracted by the user (Basic, Pro, Premium) that determines available features.                                           |
+El presente Ubiquitous Language establece un conjunto estructurado de términos y conceptos clave propios del dominio de NutriSmart, con el propósito de definir un lenguaje común, preciso y libre de ambigüedades entre los distintos stakeholders y el equipo de desarrollo. Este glosario se fundamenta en los principios de Domain-Driven Design y refleja la restructuración del dominio en torno a su núcleo real: mantener la adherencia nutricional del usuario a lo largo del tiempo. Los términos están organizados por Bounded Context, garantizando que el lenguaje del negocio gobierne tanto el diseño como la implementación.
 
 ---
 
-**Body & Health Metrics**
+**User & Profile** *(Identity & Access Management)*
 
-| Term                                                    | Definition                                                                                                                              |
-|---------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| Weight (Peso)                                           | Body measurement of the user recorded periodically to evaluate progress.                                                                |
-| Height (Altura)                                         | Physical measurement used alongside weight to calculate health indicators.                                                              |
-| BMI / Body Mass Index (IMC / Índice de Masa Corporal)   | An indicator that relates weight and height to estimate the user's physical status.                                                     |
-| BMR / Basal Metabolic Rate (TMB / Tasa Metabólica Basal)| The amount of calories the body needs at rest for vital functions.                                                                      |
-| TDEE / Total Daily Energy Expenditure (Gasto Calórico Diario Total) | The total calories the user burns in a day, considering their physical activity.                                              |
-| Daily Calorie Target (Objetivo Calórico Diario)         | The number of calories the user should consume daily according to their goal.                                                           |
-
----
-
-**Nutrition Tracking**
-
-| Term                                                    | Definition                                                                                                                              |
-|---------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| Meal (Comida)                                           | Food intake recorded at specific times of the day: breakfast, lunch, dinner, or snack.                                                  |
-| Food Item (Alimento)                                    | Individual product consumed by the user with associated nutritional information.                                                         |
-| Nutrition Log (Registro Nutricional)                    | History of food consumed by the user, organized by day.                                                                                 |
-| Calories (Calorías)                                     | The unit of energy provided by the consumed food.                                                                                       |
-| Macronutrients / Macros (Macronutrientes)               | The primary components of food: proteins, carbohydrates, and fats.                                                                      |
-| Daily Intake (Consumo Diario)                           | Total calories and macronutrients consumed by the user in a day.                                                                        |
+| Term | Definition |
+|---|---|
+| User (Usuario) | The person using the platform to manage their nutrition, physical activity, and health goals. |
+| User Profile (Perfil de Usuario) | The set of personal and health data for the user, including age, biological sex, weight, height, activity level, dietary restrictions, and medical conditions. |
+| Goal (Meta) | The user's primary objective: losing weight (`WEIGHT_LOSS`) or gaining muscle mass (`MUSCLE_GAIN`). Determines the caloric strategy applied by the system. |
+| Dietary Restrictions (Restricciones Alimentarias) | Limitations on the user's diet due to allergies, intolerances, or medical conditions. Actively enforced by the system on every meal log and recommendation. |
+| Medical Condition (Condición Médica) | A diagnosed health condition such as Type 2 Diabetes, Gout, or Coeliac Disease that modifies the system's nutritional recommendations and restrictions. |
+| Onboarding (Configuración Inicial) | The mandatory setup process in which the user provides their physical data, goal, activity level, dietary restrictions, and medical conditions before accessing the platform. |
+| Subscription Plan (Plan de Suscripción) | Access tier contracted by the user — Basic, Pro, or Premium — that determines which features are available. |
 
 ---
 
-**Smart Scan**
+**Metabolic Adaptation** *(Metabolic Adaptation Context)*
 
-| Term                                                    | Definition                                                                                                                              |
-|---------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| Smart Scan (Escaneo Inteligente)                        | A feature that analyzes images of food or menus to estimate their nutritional value.                                                    |
-| Dish Photo (Foto de Plato)                              | An image of food taken by the user to identify its components and calories.                                                             |
-| Menu Photo (Foto de Menú)                               | An image of a restaurant menu used to recommend healthy options.                                                                        |
-| Food Analysis (Análisis de Alimento)                    | The process of estimating calories and macronutrients from an image.                                                                    |
-| Manual Confirmation (Confirmación Manual)               | User validation of the analysis results before saving them.                                                                             |
-
----
-
-**Recommendations**
-
-| Term                                                    | Definition                                                                                                                              |
-|---------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| Recommendation (Recomendación)                          | Personalized suggestion of foods or meals based on the user's profile.                                                                  |
-| Context Aware Recommendation (Recomendación Contextual) | A recommendation that considers factors such as weather, location, and user status.                                                     |
-| Weather Condition (Condición Climática)                 | The state of the weather (heat, cold, etc.) that influences dietary recommendations.                                                    |
-| Travel Mode (Modo Viaje)                                | A feature that adapts recommendations based on the city or country where the user is located.                                           |
-| Pantry (Despensa)                                       | A list of ingredients available at home as recorded by the user.                                                                        |
-| Recipe Suggestion (Sugerencia de Receta)                | A recommendation for food preparation based on available ingredients and nutritional needs.                                             |
-| Macro Deficit (Déficit de Macronutrientes)              | The difference between the macronutrients consumed and those required for the day.                                                      |
+| Term | Definition |
+|---|---|
+| BMI / Body Mass Index (IMC) | An indicator that relates weight and height to estimate the user's physical status. |
+| BMR / Basal Metabolic Rate (TMB) | The amount of calories the body needs at rest for vital functions. Calculated using the Mifflin-St Jeor formula. |
+| TDEE / Total Daily Energy Expenditure | The total calories the user burns in a day, considering their physical activity level. Primary input for caloric target calculation. |
+| Nutrition Plan (Plan Nutricional) | The aggregate that protects the user's caloric and macronutrient targets. Enforces the invariant that targets must always reflect the user's current metabolic state. |
+| Caloric Strategy (Estrategia Calórica) | The combination of daily caloric target and macronutrient distribution adopted to achieve the user's goal. `WEIGHT_LOSS` applies a deficit; `MUSCLE_GAIN` applies a surplus. |
+| Caloric Deficit (Déficit Calórico) | A daily caloric target set below the TDEE to promote fat loss. |
+| Caloric Surplus (Superávit Calórico) | A daily caloric target set above the TDEE to support muscle hypertrophy. |
+| Metabolic Target (Objetivo Metabólico) | The specific daily calorie and macro values the system sets for the user based on their TDEE and goal. |
+| Stagnation (Estancamiento) | A state in which the user shows no measurable physical progress toward their goal despite consistent adherence for 14 or more days, triggering a strategy adjustment. |
+| Active Calories (Calorías Activas) | Calories burned through physical activity, imported from Google Fit or logged manually, which adjust the net daily caloric target. |
+| Energy Balance (Balance Calórico) | The relationship between calories consumed and calories burned in a day. Governs the caloric target adjustment after activity sync. |
+| Metabolic Adaptation (Adaptación Metabólica) | The physiological adjustment of the body's energy expenditure in response to sustained caloric deficit or surplus, requiring recalculation of nutritional targets. |
 
 ---
 
-**Activity & Energy Balance**
+**Nutrition Tracking** *(Nutrition Tracking Context)*
 
-| Term                                                    | Definition                                                                                                                              |
-|---------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| Physical Activity (Actividad Física)                    | Exercise performed by the user that contributes to daily caloric expenditure.                                                           |
-| Active Calories (Calorías Activas)                      | Calories burned through physical activity.                                                                                              |
-| Energy Balance (Balance Calórico)                       | The relationship between calories consumed and calories burned in a day.                                                                |
-
----
-
-**Progress & Analytics**
-
-| Term                                                    | Definition                                                                                                                              |
-|---------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| Progress (Progreso)                                     | The user's evolution regarding their goal, based on body metrics and consumption.                                                       |
-| Daily Summary (Resumen Diario)                          | An overview of calorie and macronutrient consumption against the daily target.                                                          |
-| Streak (Racha)                                          | The number of consecutive days in which the user records their full information.                                                        |
-| Alert (Alerta)                                          | A notification when the user exceeds or falls short of their nutritional goals.                                                         |
-| Trend (Tendencia)                                       | The pattern of change in metrics such as weight or consumption over time.                                                               |
+| Term | Definition |
+|---|---|
+| Daily Intake (Consumo Diario) | The aggregate that protects daily nutritional consistency. Accumulates all meal records for the day and validates them against the user's caloric and macro targets. |
+| Meal (Comida) | Food intake recorded at a specific time window of the day: breakfast (06–10h), lunch (11–15h), dinner (18–22h), or snack. |
+| Meal Record (Registro de Comida) | A confirmed entry in the daily log containing a food item, quantity, meal type, and estimated macronutrients. |
+| Food Item (Alimento) | Individual product consumed by the user with associated nutritional information sourced from Open Food Facts or USDA FoodData Central. |
+| Macronutrients / Macros (Macronutrientes) | The primary components of food: proteins, carbohydrates, and fats. Tracked individually against daily targets. |
+| Macro Deficit (Déficit de Macronutrientes) | The difference between the macronutrients consumed and those required to meet the daily target. |
+| Meal Skip (Omisión de Comida) | The absence of any food registration during an expected meal time window. Contributes to the adherence evaluation in Behavioral Consistency. |
+| Restricted Item Blocked (Alimento Bloqueado) | A food item that the system prevents from being logged because it contains an ingredient that conflicts with the user's active dietary restrictions or medical conditions. |
+| Daily Goal Met (Meta Diaria Cumplida) | The state in which the user's total daily intake falls within ±10% of their caloric target with all required macros covered. Triggers a positive adherence update. |
+| Daily Goal Exceeded (Meta Diaria Superada) | The state in which the user's total daily intake surpasses their caloric target. Triggers a deviation record in Behavioral Consistency. |
+| Smart Scan — Plate (Escaneo Inteligente — Plato) | A Pro/Premium feature that analyzes a photo of a food plate using Google Cloud Vision API to estimate calories and macronutrients, reducing manual logging friction. |
 
 ---
 
-**Domain Concepts Clave**
+**Behavioral Consistency** *(Behavioral Consistency Context)*
 
-| Term                                                    | Definition                                                                                                                              |
-|---------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| Personalized Nutrition (Nutrición Personalizada)        | An approach that adapts dietary recommendations to the user's characteristics and context.                                              |
-| Health Goal Achievement (Logro de Objetivos de Salud)   | The fulfillment of physical goals through monitoring and recommendations.                                                               |
-| Contextual Awareness (Conciencia Contextual)            | The system's ability to consider external factors such as weather and location.                                                         |
+| Term | Definition |
+|---|---|
+| Behavioral Progress (Progreso Conductual) | The aggregate that protects the user's adherence state over time. Tracks streak, consecutive misses, and adherence status. No external context can modify it directly. |
+| Adherence (Adherencia Nutricional) | The degree to which a user consistently follows their nutritional plan across consecutive days without significant deviations. The primary measure of success in NutriSmart. |
+| Adherence Status (Estado de Adherencia) | The current classification of the user's behavioral consistency: `ON_TRACK`, `AT_RISK`, `DROPPED`, or `RECOVERED`. |
+| Streak (Racha) | The number of consecutive days in which the user met their daily nutritional goal. Resets to zero upon a missed day. Milestones are triggered at 7, 14, 21, and 30 days. |
+| Behavioral Drop (Caída Conductual) | A detected pattern in which the user accumulates 3 consecutive days of meal skips or exceeded goals, transitioning the adherence status to `AT_RISK`. |
+| Nutritional Abandonment Risk (Riesgo de Abandono Nutricional) | The escalated state triggered after 7 consecutive days of inactivity, transitioning the adherence status to `DROPPED` and activating an intervention recommendation. |
+| Consistency Recovery (Recuperación de Consistencia) | The return of a user to active meal logging after a period of behavioral drop or abandonment. Transitions adherence status back to `ON_TRACK`. |
+| Consecutive Misses (Días Consecutivos Fallidos) | The count of consecutive days in which the user either skipped meals or exceeded their daily goal. Threshold of 3 triggers `BehavioralDropDetected`. |
+| Strategy Mismatch (Desajuste de Estrategia) | A state detected when a newly recalculated metabolic target is inconsistent with the user's historical adherence capacity, triggering a gradual adjustment suggestion. |
+
+---
+
+**Restaurant Intelligence** *(Restaurant Intelligence Context)*
+
+| Term | Definition |
+|---|---|
+| Restaurant Menu (Menú de Restaurante) | The aggregate that protects the nutritional analysis of a scanned menu. Manages dish identification, restriction filtering, and compatibility ranking. |
+| Menu Scan (Escaneo de Menú) | A Premium feature that processes a photo of a restaurant menu using Google Cloud Vision API to identify dishes and estimate their nutritional content. |
+| Dish Compatibility Score (Puntuación de Compatibilidad) | A calculated value that ranks a restaurant dish according to how well it aligns with the user's remaining daily macros and goal type. |
+| Compatible Dishes Ranked (Platos Compatibles Rankeados) | The ordered list of restaurant dishes that pass the dietary restriction filter and are sorted by compatibility score. The top result becomes the best dish suggestion. |
+| Restricted Dish Flagged (Plato Restringido Marcado) | A restaurant dish identified as incompatible because it contains an ingredient that conflicts with the user's active dietary restrictions or medical conditions. |
+| Best Dish (Mejor Plato) | The top-ranked dish from the compatibility analysis, presented to the user with a nutritional justification explaining why it fits their current plan. |
+
+---
+
+**Smart Recommendation** *(Smart Recommendation Context)*
+
+| Term | Definition |
+|---|---|
+| Recommendation Session (Sesión de Recomendación) | The aggregate that protects the generation of contextual recommendations. Each session considers the user's adherence status, location, weather, and remaining macros. |
+| Preventive Recommendation (Recomendación Preventiva) | A re-engagement suggestion automatically generated when `BehavioralDropDetected` is received. Offers a simple, achievable meal option to help the user return to consistency. |
+| Intervention Recommendation (Recomendación de Intervención) | A reactivation plan generated when `NutritionalAbandonmentRisk` is received. Proposes a simplified, lower-friction version of the nutritional plan to restart adherence gradually. |
+| Strategy Adjustment Recommendation (Recomendación de Ajuste de Estrategia) | A suggestion generated when `StagnationDetected` is received, proposing a new macro distribution or caloric change to break a weight plateau. |
+| Context-Aware Recommendation (Recomendación Contextual) | A recommendation that integrates the user's adherence status, current weather, geographic location, and remaining macros to produce a relevant, actionable suggestion. |
+| Weather Condition (Condición Climática) | The current temperature and atmospheric state at the user's location. Temperatures above 28°C trigger light and hydrating suggestions; below 12°C trigger warm and calorie-dense ones. |
+| Travel Mode (Modo Viaje) | A Pro/Premium feature that activates when the user is detected in or manually selects a city different from their home location, providing local dish recommendations compatible with their nutritional profile. |
+| Pantry (Despensa) | The list of ingredients registered by the user as available at home. Used by the recommendation engine to suggest recipes that cover macro deficits using existing ingredients. |
+| Recipe Suggestion (Sugerencia de Receta) | A meal preparation recommendation generated from the user's pantry ingredients, filtered by dietary restrictions and prioritized by the macro most in deficit for the day. |
+
+---
+
+**Analytics & Reporting** *(Analytics & Reporting — Generic Subdomain)*
+
+| Term | Definition |
+|---|---|
+| Daily Summary (Resumen Diario) | A read model presenting calories consumed versus the daily target, macro breakdown, remaining balance, and current adherence status. Updated reactively upon each domain event from Nutrition Tracking and Behavioral Consistency. |
+| Progress (Progreso) | The user's evolution toward their physical and behavioral goals, measured through body metrics trends, adherence history, and streak consistency. |
+| Trend (Tendencia) | The directional pattern of change in metrics such as weight or caloric adherence over a defined time period. |
+| PDF Report (Reporte PDF) | A Premium feature that exports a structured document containing daily calorie summaries, macro averages, weight evolution, adherence history, and activity data for a selected date range. |
+
+---
+
+**Domain Enumerations**
+
+| Enum | Values | Context |
+|---|---|---|
+| GoalType | `WEIGHT_LOSS`, `MUSCLE_GAIN` | Metabolic Adaptation, Nutrition Tracking |
+| ActivityLevel | `SEDENTARY`, `MODERATE`, `ACTIVE`, `VERY_ACTIVE` | Metabolic Adaptation |
+| MealCategory | `BREAKFAST`, `LUNCH`, `DINNER`, `SNACK` | Nutrition Tracking |
+| AdherenceStatus | `ON_TRACK`, `AT_RISK`, `DROPPED`, `RECOVERED` | Behavioral Consistency |
+| NutritionalRiskLevel | `SAFE`, `MODERATE`, `HIGH`, `CRITICAL` | Nutrition Tracking, Restaurant Intelligence |
+| RecommendationType | `PREVENTIVE`, `INTERVENTION`, `STRATEGY_ADJUSTMENT`, `WEATHER_BASED`, `TRAVEL`, `PANTRY_RECIPE`, `BEST_DISH` | Smart Recommendation |
+| SubscriptionTier | `BASIC`, `PRO`, `PREMIUM` | Subscriptions & Billing |
