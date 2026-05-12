@@ -43,13 +43,14 @@ La arquitectura de NutriSmart se basa en Domain-Driven Design (DDD), centrando e
 A continuación, se identifican y describen los contextos delimitados que componen la solución:
 | Bounded Context | Descripción | Módulos incluidos |
 | :--- | :--- | :--- |
-| **Identity & Access** | Gestión de autenticación, autorización y perfiles de usuario. | User & Auth |
-| **Nutrition Tracking** | Registro y análisis de alimentos mediante logs y Smart Scan. | Nutrition Log, Smart Scan |
-| **Body & Health Metrics** | Seguimiento de indicadores corporales (IMC, TDEE) y metas. | Body Tracking |
-| **Smart Recommendations** | Motor de sugerencias personalizadas según contexto y clima. | Recommendations Engine |
-| **Activity & Wearable Sync** | Integración y sincronización con dispositivos físicos (Google Fit). | Wearable Sync |
-| **Analytics & Reporting** | Generación de dashboards, progreso visual y reportes. | Dashboard & Analytics |
-| **Subscriptions & Billing** | Gestión de planes, facturación y control de features Premium. | Subscriptions |
+| **Identity & Access** | Gestión de autenticación, autorización y perfiles de usuario. | User & Auth, Onboarding |
+| **Subscriptions & Billing** | Gestión de planes, facturación y control de features Premium. | Subscriptions, Stripe Integration |
+| **Metabolic Adaptation** | Cálculo de métricas corporales (BMI, BMR, TDEE), metas calóricas y sincronización con wearables. | Body Tracking, Wearable Sync, Activity Log |
+| **Nutrition Tracking** | Registro y análisis de alimentos mediante logs y Smart Scan. | Nutrition Log, Smart Scan, Dietary Restrictions |
+| **Behavioral Consistency** | Seguimiento de adherencia, detección de caídas conductuales y gestión de rachas. | Adherence Tracking, Streak Engine |
+| **Restaurant Intelligence** | Análisis de menús físicos mediante foto y ranking de platos compatibles con el perfil del usuario. | Menu Scan, Dish Ranking |
+| **Smart Recommendations** | Motor de sugerencias personalizadas según contexto, clima, despensa y estado conductual. | Recommendations Engine, Travel Mode, Pantry |
+| **Analytics & Reporting** | Generación de dashboards, progreso visual y reportes en PDF. | Dashboard & Analytics |
 
 ### 4.6.1. Design-Level EventStorming
 
