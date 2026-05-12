@@ -38,19 +38,32 @@
 
 ## 4.6. Domain-Driven Software Architecture
 
-La arquitectura de NutriSmart se basa en Domain-Driven Design (DDD), centrando el diseño en los procesos críticos de salud y nutrición. El sistema se organiza en 7 Bounded Contexts independientes, lo que garantiza una separación clara de responsabilidades y un lenguaje común entre el equipo técnico y el negocio. Este enfoque modular permite que funcionalidades clave, como el análisis de imágenes y el motor de recomendaciones, sean altamente escalables, facilitando un mantenimiento eficiente y una evolución alineada con los requerimientos del dominio.
+La arquitectura de NutriSmart se basa en Domain-Driven Design (DDD), centrando el diseño en los procesos críticos de salud y nutrición. El sistema se organiza en 8 Bounded Contexts independientes, lo que garantiza una separación clara de responsabilidades y un lenguaje común entre el equipo técnico y el negocio. Este enfoque modular permite que funcionalidades clave, como el análisis de imágenes y el motor de recomendaciones, sean altamente escalables, facilitando un mantenimiento eficiente y una evolución alineada con los requerimientos del dominio.
 
 A continuación, se identifican y describen los contextos delimitados que componen la solución:
+
+### Nivel Core
+
 | Bounded Context | Descripción | Módulos incluidos |
 | :--- | :--- | :--- |
-| **Identity & Access** | Gestión de autenticación, autorización y perfiles de usuario. | User & Auth, Onboarding |
-| **Subscriptions & Billing** | Gestión de planes, facturación y control de features Premium. | Subscriptions, Stripe Integration |
 | **Metabolic Adaptation** | Cálculo de métricas corporales (BMI, BMR, TDEE), metas calóricas y sincronización con wearables. | Body Tracking, Wearable Sync, Activity Log |
 | **Nutrition Tracking** | Registro y análisis de alimentos mediante logs y Smart Scan. | Nutrition Log, Smart Scan, Dietary Restrictions |
 | **Behavioral Consistency** | Seguimiento de adherencia, detección de caídas conductuales y gestión de rachas. | Adherence Tracking, Streak Engine |
 | **Restaurant Intelligence** | Análisis de menús físicos mediante foto y ranking de platos compatibles con el perfil del usuario. | Menu Scan, Dish Ranking |
+
+### Nivel Supporting
+
+| Bounded Context | Descripción | Módulos incluidos |
+| :--- | :--- | :--- |
 | **Smart Recommendations** | Motor de sugerencias personalizadas según contexto, clima, despensa y estado conductual. | Recommendations Engine, Travel Mode, Pantry |
+
+### Nivel Genéricos
+
+| Bounded Context | Descripción | Módulos incluidos |
+| :--- | :--- | :--- |
 | **Analytics & Reporting** | Generación de dashboards, progreso visual y reportes en PDF. | Dashboard & Analytics |
+| **Subscriptions & Billing** | Gestión de planes, facturación y control de features Premium. | Subscriptions, Stripe Integration |
+| **Identity & Access** | Gestión de autenticación, autorización y perfiles de usuario. | User & Auth, Onboarding |
 
 ### 4.6.1. Design-Level EventStorming
 
@@ -255,7 +268,7 @@ El usuario registra ingredientes disponibles con `RegisterPantryItems`, emitiend
 ---
  
  
-## Niveles Genéricos
+## Nivel Genéricos
  
 ---
  
