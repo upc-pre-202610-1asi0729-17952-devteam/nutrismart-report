@@ -49,19 +49,19 @@ A continuación, se identifican y describen los contextos delimitados que compon
 | **Metabolic Adaptation** | Cálculo de métricas corporales (BMI, BMR, TDEE), metas calóricas y sincronización con wearables. | Body Tracking, Wearable Sync, Activity Log |
 | **Nutrition Tracking** | Registro y análisis de alimentos mediante logs y Smart Scan. | Nutrition Log, Smart Scan, Dietary Restrictions |
 | **Behavioral Consistency** | Seguimiento de adherencia, detección de caídas conductuales y gestión de rachas. | Adherence Tracking, Streak Engine |
-| **Restaurant Intelligence** | Análisis de menús físicos mediante foto y ranking de platos compatibles con el perfil del usuario. | Menu Scan, Dish Ranking |
 
 ### Nivel Supporting
 
 | Bounded Context | Descripción | Módulos incluidos |
 | :--- | :--- | :--- |
+| **Restaurant Intelligence** | Análisis de menús físicos mediante foto y ranking de platos compatibles con el perfil del usuario. | Menu Scan, Dish Ranking |
 | **Smart Recommendations** | Motor de sugerencias personalizadas según contexto, clima, despensa y estado conductual. | Recommendations Engine, Travel Mode, Pantry |
+| **Analytics & Reporting** | Generación de dashboards, progreso visual y reportes en PDF. | Dashboard & Analytics |
 
 ### Nivel Genéricos
 
 | Bounded Context | Descripción | Módulos incluidos |
 | :--- | :--- | :--- |
-| **Analytics & Reporting** | Generación de dashboards, progreso visual y reportes en PDF. | Dashboard & Analytics |
 | **Subscriptions & Billing** | Gestión de planes, facturación y control de features Premium. | Subscriptions, Stripe Integration |
 | **Identity & Access** | Gestión de autenticación, autorización y perfiles de usuario. | User & Auth, Onboarding |
 
@@ -187,6 +187,10 @@ Disparado por `MetabolicTargetsRecalculated` (desde Metabolic Adaptation), el si
 - Muy agresivo → `StrategyMismatchDetected` → **Smart Recommendation**: `SuggestGradualAdjustment`
 
 ---
+ 
+## Nivel Supporting
+ 
+---
 
 ### Restaurant Intelligence
  
@@ -212,10 +216,6 @@ Los platos sin restricciones se rankean según el criterio del objetivo del usua
 - `gain_muscle` → mayor contenido proteico (>20g)
 Se emite `CompatibleDishesRanked` con el ranking completo y el `best_dish` en la primera posición. La vista **Menu Analysis Result** presenta el resultado al usuario. El evento propaga hacia **Smart Recommendation** (`SuggestBestDish`) y **Nutrition Tracking** (el usuario puede loggear el plato elegido).
 
----
- 
-## Nivel Supporting
- 
 ---
  
 ### Smart Recommendations
@@ -267,10 +267,6 @@ El usuario registra ingredientes disponibles con `RegisterPantryItems`, emitiend
  
 ---
  
-## Nivel Genéricos
- 
----
- 
 ### Analytics & Reporting
  
 Este contexto centraliza la generación de dashboards, métricas de progreso y reportes. Consta de 4 swimlanes.
@@ -290,6 +286,10 @@ El usuario exporta un reporte con `ExportReportPDF` (rango de fechas). La polít
 #### Adherence Progress Update
  
 Disparado por `ConsistencyRecovered` (desde Behavioral Consistency), el sistema ejecuta `UpdateAdherenceProgress`, emitiendo `AdherenceProgressUpdated` y actualizando la sección de adherencia en la vista **Progress Summary**.
+
+---
+ 
+## Nivel Genéricos
  
 ---
 
