@@ -310,7 +310,34 @@ El sistema ejecuta `RenewSubscription` de forma programada a través de **Stripe
  
 ---
 
-
+### Identity & Access Management
+ 
+Este contexto gestiona el ciclo de vida de la sesión y el perfil del usuario. Consta de 5 swimlanes.
+ 
+#### User Registration
+ 
+El visitante ejecuta el comando `RegisterAccount`. Las políticas **Unique Email Validation** y **Strong Password Validation** bloquean el registro si el email ya existe o la contraseña es débil. Si ambas se cumplen, se emite el evento `AccountCreated`, que genera la vista **Welcome Screen** y activa, dentro del mismo contexto, el flujo de onboarding.
+ 
+#### Onboarding
+ 
+El usuario recién registrado ejecuta `SubmitOnboardingProfile` con sus datos físicos (peso, talla, objetivo, nivel de actividad, restricciones dietéticas). Las políticas **Valid Weight Input** y **Valid Height Input** validan los datos antes de emitir `OnboardingCompleted`. Este evento cruza contextos y dispara:
+ 
+- **Metabolic Adaptation** → `CalculateInitialTargets`
+- **Behavioral Consistency** → `InitializeBehavioralTracking`
+- **Nutrition Tracking** → `RegisterDietaryRestrictions`
+#### Log In
+ 
+El usuario ejecuta `LoginToAccount`. La política **Valid Credentials** bloquea temporalmente la cuenta tras 5 intentos fallidos. Si las credenciales son correctas, se emite `SessionStarted`.
+ 
+#### Log Out
+ 
+El usuario ejecuta `LogoutFromAccount`, lo que emite `SessionTerminated` y expone la vista **Session Ended**.
+ 
+#### Profile Settings
+ 
+El usuario actualiza su perfil mediante `UpdateProfile`. Al emitirse `ProfileUpdated`, si el nivel de actividad cambió, se notifica a **Metabolic Adaptation** para disparar `RecalculateMetabolicTargets`.
+ 
+---
 
 **EventStorming**
 
