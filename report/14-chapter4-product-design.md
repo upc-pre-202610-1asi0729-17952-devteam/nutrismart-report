@@ -125,7 +125,7 @@ El Single Page Application se organiza en 7 Bounded Contexts, cada uno con 4 cap
 
 El diagrama a continuación muestra todos los componentes de la arquitectura en un único bloque, dado que Structurizr no soporta la agrupación visual por Bounded Context en las vistas de componentes.
 
-![Web Component Diagram](../assets/img/artifacts/nutrismart-WebComponentsDiagram.png)
+![Web Component Diagram](../assets/img/artifacts/4nutrismart-WebComponentsDiagram.png)
 
 Cada Bounded Context contiene una capa de Presentation con las vistas Angular, una capa de Application con los servicios TypeScript que orquestan la lógica del cliente, una capa de Domain con los modelos e interfaces, y una capa de Infrastructure con el cliente HTTP Angular que se comunica con el API Application.
 
