@@ -145,6 +145,14 @@ Para apreciar la separación por capas Domain-Driven Design de cada Bounded Cont
 
    ![Metabolic Frontend Diagram](../assets/img/artifacts/7nutrismart-MetabolicFrontendDiagram.png)
 
+- **Behavioral Consistency:** Gestiona las vistas de estado de adherencia, rachas y resumen de progreso conductual.
+
+
+
+- **Restaurant Intelligence:** Gestiona las vistas de escaneo de menú, platos compatibles y mejor plato sugerido.
+
+
+
  - **Smart Recommendations:** Gestiona las vistas de recomendaciones personalizadas, Modo Viaje y Despensa.
 
    ![Recs Frontend Diagram](../assets/img/artifacts/10nutrismart-RecsFrontendDiagram.png)
@@ -182,6 +190,14 @@ Para apreciar la separación por capas Domain-Driven Design de cada Bounded Cont
  - **Metabolic Adaptation:** Calcula BMI, BMR y TDEE, gestiona los objetivos calóricos y sincroniza datos de actividad desde Google Fit (Premium).
 
    ![Metabolic Backend Diagram](../assets/img/artifacts/16nutrismart-MetabolicBackendDiagram.png)
+
+- **Behavioral Consistency:** Evalúa la adherencia diaria, detecta caídas conductuales y gestiona el sistema de rachas.
+
+
+
+- **Restaurant Intelligence:** Procesa fotos de menús, filtra platos por restricciones y rankea las opciones más compatibles con el perfil del usuario. Se integra con Google Cloud Vision API y Nutritional Data Providers.
+
+
 
  - **Smart Recommendations:** Procesa datos contextuales para generar sugerencias personalizadas. Se integra con OpenWeatherMap y Geolocation API.
 
