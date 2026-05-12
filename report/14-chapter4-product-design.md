@@ -201,7 +201,7 @@ Se emite `CompatibleDishesRanked` con el ranking completo y el `best_dish` en la
 
 ---
  
-## Contextos Supporting
+## Nivel Supporting
  
 ---
  
@@ -255,7 +255,7 @@ El usuario registra ingredientes disponibles con `RegisterPantryItems`, emitiend
 ---
  
  
-## Contextos Genéricos
+## Niveles Genéricos
  
 ---
  
@@ -336,6 +336,40 @@ El usuario ejecuta `LogoutFromAccount`, lo que emite `SessionTerminated` y expon
 #### Profile Settings
  
 El usuario actualiza su perfil mediante `UpdateProfile`. Al emitirse `ProfileUpdated`, si el nivel de actividad cambió, se notifica a **Metabolic Adaptation** para disparar `RecalculateMetabolicTargets`.
+ 
+---
+
+## Mapa de interdependencias entre niveles
+ 
+| Evento (Origen) | Contexto Origen | Comando (Destino) | Contexto Destino |
+| :--- | :--- | :--- | :--- |
+| `OnboardingCompleted` | IAM | `CalculateInitialTargets` | Metabolic Adaptation |
+| `OnboardingCompleted` | IAM | `InitializeBehavioralTracking` | Behavioral Consistency |
+| `OnboardingCompleted` | IAM | `RegisterDietaryRestrictions` | Nutrition Tracking |
+| `ProfileUpdated` | IAM | `RecalculateMetabolicTargets` | Metabolic Adaptation |
+| `BenefitsEnabled` | Subscriptions & Billing | `UnlockPremiumFeatures` | Smart Recommendation |
+| `BenefitsEnabled` | Subscriptions & Billing | `EnableMenuScan` | Restaurant Intelligence |
+| `BenefitsEnabled` | Subscriptions & Billing | `EnableWearableSync` | Metabolic Adaptation |
+| `BenefitsDisabled` | Subscriptions & Billing | `LockPremiumFeatures` | Smart Recommendation |
+| `BenefitsDisabled` | Subscriptions & Billing | `DisableMenuScan` | Restaurant Intelligence |
+| `BenefitsDisabled` | Subscriptions & Billing | `DisableWearableSync` | Metabolic Adaptation |
+| `MetabolicTargetSet` | Metabolic Adaptation | `SetDailyNutritionalTargets` | Nutrition Tracking |
+| `MetabolicTargetsRecalculated` | Metabolic Adaptation | `UpdateDailyTargets` | Nutrition Tracking |
+| `MetabolicTargetsRecalculated` | Metabolic Adaptation | `EvaluateStrategyConsistency` | Behavioral Consistency |
+| `CaloricTargetAdjusted` | Metabolic Adaptation | `UpdateNetDailyTarget` | Nutrition Tracking |
+| `StagnationDetected` | Metabolic Adaptation | `SuggestStrategyAdjustment` | Smart Recommendation |
+| `MealRecorded` | Nutrition Tracking | `EvaluateAdherenceStatus` | Behavioral Consistency |
+| `DailyGoalMet` | Nutrition Tracking | `EvaluateAdherenceStatus` | Behavioral Consistency |
+| `DailyGoalMet` | Nutrition Tracking | `UpdateDailyDashboard` | Analytics & Reporting |
+| `DailyGoalExceeded` | Nutrition Tracking | `RegisterDeviation` | Behavioral Consistency |
+| `MealSkipped` | Nutrition Tracking | `EvaluateAdherenceImpact` | Behavioral Consistency |
+| `BehavioralDropDetected` | Behavioral Consistency | `GeneratePreventiveRecommendation` | Smart Recommendation |
+| `NutritionalAbandonmentRisk` | Behavioral Consistency | `RequestInterventionRecommendation` | Smart Recommendation |
+| `ConsistencyRecovered` | Behavioral Consistency | `UpdateAdherenceProgress` | Analytics & Reporting |
+| `StrategyMismatchDetected` | Behavioral Consistency | `SuggestGradualAdjustment` | Smart Recommendation |
+| `CompatibleDishesRanked` | Restaurant Intelligence | `SuggestBestDish` | Smart Recommendation |
+| `CompatibleDishesRanked` | Restaurant Intelligence | [Read Model] Menu Analysis Result | Nutrition Tracking |
+| `StrategyAdjustmentSuggested` | Smart Recommendation | `RecalculateMetabolicTargets` | Metabolic Adaptation |
  
 ---
 
