@@ -138,7 +138,42 @@ Este swimlane recibe eventos de otros contextos:
  
 ---
 
+### Behavioral Consistency
+ 
+Este contexto evalúa la adherencia conductual del usuario y escala respuestas ante desviaciones. Consta de 7 swimlanes.
+ 
+#### Behavioral Tracking Initialization
+ 
+Disparado por `OnboardingCompleted`, el sistema ejecuta `InitializeBehavioralTracking`, estableciendo el estado inicial: `adherence_status: ON_TRACK`, `streak: 0`, `consecutive_misses: 0`.
+ 
+#### Daily Adherence Evaluation
+ 
+Ante cada `MealRecorded` o `DailyGoalMet` desde Nutrition Tracking, el sistema evalúa el estado de adherencia. Si todo está en orden, emite `AdherenceUpdated` (`status: ON_TRACK`, `streak +1`).
+ 
+#### Behavioral Drop Detection
+ 
+Si `MealSkipped` o `DailyGoalExceeded` ocurren durante **3 días consecutivos**, la política dispara `DetectBehavioralDrop`, emitiendo `BehavioralDropDetected` (`status: AT_RISK`). Se envía una notificación push motivacional y se activa en **Smart Recommendation** el comando `GeneratePreventiveRecommendation`.
+ 
+#### Abandonment Risk Escalation
+ 
+Si tras `BehavioralDropDetected` no hay recuperación en los siguientes **4 días** (total: 7 días sin adherencia), el sistema ejecuta `EscalateAbandonmentRisk`, emitiendo `NutritionalAbandonmentRisk` (`status: DROPPED`). Se envía una notificación push empática y se activa `RequestInterventionRecommendation` en **Smart Recommendation**.
+ 
+#### Consistency Recovery
+ 
+Cuando el usuario vuelve a registrar una comida luego de estar en estado `AT_RISK` o `DROPPED`, la política detecta la recuperación y ejecuta `RegisterConsistencyRecovery`, emitiendo `ConsistencyRecovered`. Se envía notificación positiva y se notifica a **Analytics** para actualizar el historial de adherencia.
+ 
+#### Streak Milestone
+ 
+Cuando `DailyGoalMet` se acumula **7 días consecutivos**, el sistema ejecuta `RegisterStreakMilestone`, emitiendo `StreakMilestoneReached` (hitos: 7 / 14 / 21 / 30 días). El usuario recibe una notificación de celebración y se actualiza la vista **Streak Badge**.
+ 
+#### Strategy Consistency Evaluation
+ 
+Disparado por `MetabolicTargetsRecalculated` (desde Metabolic Adaptation), el sistema evalúa si el nuevo objetivo es compatible con el historial de adherencia del usuario:
+ 
+- Compatible → `StrategyConsistencyConfirmed`
+- Muy agresivo → `StrategyMismatchDetected` → **Smart Recommendation**: `SuggestGradualAdjustment`
 
+---
 
 
 **EventStorming**
