@@ -92,7 +92,51 @@ El usuario registra actividad manualmente con `LogManualActivity`. La política 
  
 ---
 
-
+### Nutrition Tracking
+ 
+Este contexto centraliza el registro de alimentos y la validación diaria de macros. Consta de 8 swimlanes.
+ 
+#### Dietary Restrictions Registration
+ 
+Disparado por `OnboardingCompleted`, el sistema ejecuta `RegisterDietaryRestrictions`, activando la lista de restricciones que filtrará todo registro posterior.
+ 
+#### Food Search
+ 
+El usuario busca alimentos con `SearchFoodItem`, consultando las APIs **Open Food Facts** y **USDA FoodData Central**. El evento `FoodSearchExecuted` presenta la vista **Food Results List** con valores nutricionales por ítem.
+ 
+#### Meal Logging
+ 
+El usuario registra una comida con `LogMealEntry`. La política **CheckDietaryRestrictions** bloquea el registro si el alimento contiene algún ingrediente restringido, emitiendo `RestrictedItemBlocked` con notificación push. Si pasa la validación, se emite `MealRecorded`, actualizando el **Daily Macro Summary** y notificando a **Behavioral Consistency**.
+ 
+#### Daily Macro Validation
+ 
+Cada vez que se emite `MealRecorded`, la política **ValidateDailyMacros** compara el consumo total contra el objetivo:
+ 
+- Consumo ≤ objetivo → `DailyProgressUpdated` (estado: `on_track`)
+- Consumo > objetivo → `DailyGoalExceeded` con notificación push y desvío reportado a **Behavioral Consistency**
+#### End of Day Evaluation
+ 
+A las 23:59, el sistema evalúa si el usuario completó el día dentro del ±10% de su objetivo calórico. Si se cumple, emite `DailyGoalMet`, propagándose hacia **Behavioral Consistency** y **Analytics**. Si una ventana horaria de comida (desayuno 06-10h / almuerzo 11-15h / cena 18-22h) pasa sin registro, se emite `MealSkipped` con notificación push y se notifica a **Behavioral Consistency**.
+ 
+#### Edit and Delete Meal Entry
+ 
+El usuario puede corregir un registro con `EditMealEntry` (emite `MealEntryUpdated`) o eliminarlo con `DeleteMealEntry` (emite `MealEntryRemoved`). Ambos eventos relanzan automáticamente la política **ValidateDailyMacros**.
+ 
+#### Smart Scan — Food Plate Photo *(Pro / Premium)*
+ 
+El usuario escanea un plato con `ScanMealPhoto`. La imagen se procesa mediante **Google Cloud Vision API** y **Open Food Facts API**. La política **Image Valid** rechaza imágenes que no sean de comida. El evento `MealPhotoAnalyzed` presenta la vista **Scan Preview Card** con ítems y macros estimados. El usuario confirma con `ConfirmScanResult`, emitiendo `MealRecorded` (fuente: `smart_scan`), que sigue el mismo flujo que el log manual.
+ 
+#### Incoming Events *(receptores)*
+ 
+Este swimlane recibe eventos de otros contextos:
+ 
+| Evento entrante | Origen | Comando disparado |
+| :--- | :--- | :--- |
+| `MetabolicTargetSet` | Metabolic Adaptation | `SetDailyNutritionalTargets` |
+| `CaloricTargetAdjusted` | Metabolic Adaptation | `UpdateNetDailyTarget` |
+| `CompatibleDishesRanked` | Restaurant Intelligence | [Read Model] Menu Analysis Result |
+ 
+---
 
 
 
