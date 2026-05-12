@@ -175,6 +175,30 @@ Disparado por `MetabolicTargetsRecalculated` (desde Metabolic Adaptation), el si
 
 ---
 
+### Restaurant Intelligence
+ 
+Este contexto analiza menús de restaurantes y rankea platos compatibles con el perfil del usuario. Consta de 4 swimlanes. Requiere plan **Premium**.
+ 
+#### Menu Photo Scan
+ 
+Habilitado por `BenefitsEnabled` (Premium), el usuario escanea un menú con `ScanMenuPhoto`. La imagen se procesa mediante **Google Cloud Vision API**. La política **Image Valid** rechaza imágenes ilegibles, y se emite `MenuPhotoProcessed` con el texto extraído y los ítems detectados.
+ 
+#### Menu Items Analysis
+ 
+La política **When MenuPhotoProcessed** dispara `AnalyzeMenuItems`, que consulta la **Open Food Facts API** y la **USDA FoodData Central** para estimar macros de cada plato, emitiendo `RestaurantMealAnalyzed`.
+ 
+#### Dietary Restrictions Filter
+ 
+La política **CheckDishRestrictions** cruza cada plato con las restricciones del usuario. Los platos incompatibles emiten `RestrictedDishFlagged` con la razón (alergia o condición médica).
+ 
+#### Compatible Dishes Ranking
+ 
+Los platos sin restricciones se rankean según el criterio del objetivo del usuario:
+ 
+- `lose_weight` → menor densidad calórica
+- `gain_muscle` → mayor contenido proteico (>20g)
+Se emite `CompatibleDishesRanked` con el ranking completo y el `best_dish` en la primera posición. La vista **Menu Analysis Result** presenta el resultado al usuario. El evento propaga hacia **Smart Recommendation** (`SuggestBestDish`) y **Nutrition Tracking** (el usuario puede loggear el plato elegido).
+ 
 
 **EventStorming**
 
