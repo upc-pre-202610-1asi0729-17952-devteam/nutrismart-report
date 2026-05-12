@@ -54,19 +54,48 @@ A continuación, se identifican y describen los contextos delimitados que compon
 
 ### 4.6.1. Design-Level EventStorming
 
-En esta sección se presenta el modelado del comportamiento del sistema mediante la técnica de EventStorming a nivel de diseño. Este proceso permitió identificar los eventos de dominio y los comandos que disparan la lógica de negocio en cada Bounded Context, estableciendo las reglas de reacción del sistema ante acciones del usuario o políticas automaticas.
+En esta sección se presenta el modelado del comportamiento del sistema mediante la técnica de EventStorming a nivel de diseño. Este proceso permitió identificar los eventos de dominio, los comandos que disparan la lógica de negocio y las políticas automáticas que rigen la reactividad del sistema en cada Bounded Context.
 
-A continuación, se detalla la matriz de interdependencias que asegura la reactividad y sincronización de datos entre los distintos módulos:
-| Origen (Evento) | Destino (Comando) | Descripción |
-| :--- | :--- | :--- |
-| **Identity:** User Registered | **Body Metrics:** Register Body Metrics | Inicializa el perfil de salud y metas al crear la cuenta. |
-| **Nutrition:** Consumption Updated (Created/Updated/Deleted) | **Analytics:** Generate Progress Insights | Sincroniza indicadores y gráficas de consumo diario ante cualquier cambio en el log. |
-| **Nutrition:** Consumption Updated (Created/Updated/Deleted) | **Smart Recs:** Generate Recommendation | Ajusta las sugerencias alimenticias en tiempo real según los macros consumidos y el déficit calórico del día. |
-| **Activity:** Caloric Balance Adjusted | **Analytics:** Generate Progress Insights | Refleja el gasto energético por actividad física o sincronización con wearable en los reportes de progreso. |
-| **Body Metrics:** TDEE Calculated | **Analytics:** Generate Progress Insights | Compara objetivos metabólicos teóricos frente al progreso real registrado. |
-| **Body Metrics:** TDEE Calculated | **Smart Recs:** Generate Recommendation | Personaliza las porciones y sugerencias de comida según el perfil físico y la meta calórica actualizada del usuario. |
-| **Subscriptions:** Benefits Enabled | **Smart Recs:** Unlock Premium Features | Habilita el acceso a algoritmos de recomendación avanzada y análisis detallado por IA. |
-| **Subscriptions:** Benefits Disabled | **Smart Recs:** Lock Premium Features | Restringe el acceso a funcionalidades avanzadas tras la expiración o cancelación del plan. |
+---
+ 
+## Nivel Core
+ 
+---
+ 
+### Metabolic Adaptation
+ 
+Este contexto calcula y mantiene actualizados los targets metabólicos del usuario. Consta de 5 swimlanes.
+ 
+#### Initial Metabolic Calculation
+ 
+Disparado por `OnboardingCompleted` (desde IAM), el sistema ejecuta `CalculateInitialTargets`. El cálculo sigue la secuencia: **BMI → BMR (Mifflin-St Jeor) → TDEE**. Según el objetivo:
+ 
+- `lose_weight` → `SetCaloricDeficitTarget`: `TDEE - 500 kcal`, macros P30%/C40%/F30%
+- `gain_muscle` → `SetCaloricSurplusTarget`: `TDEE + 300 kcal`, macros P35%/C45%/F20%
+El evento `MetabolicTargetSet` notifica a **Nutrition Tracking** para inicializar los objetivos diarios.
+ 
+#### Body Metrics Update
+ 
+El usuario ejecuta `UpdateBodyMetrics` (nuevo peso/talla). Las políticas de validación de entrada preceden la emisión de `BodyMetricsUpdated`, que recalcula BMI, BMR y TDEE. El evento `MetabolicTargetsRecalculated` propaga actualizaciones hacia **Nutrition Tracking** y **Behavioral Consistency**.
+ 
+#### Stagnation Detection
+ 
+El sistema evalúa diariamente el progreso. Si transcurren **14 días consecutivos sin avance**, ejecuta `DetectWeightPlateau`, emitiendo `StagnationDetected`, que activa en **Smart Recommendation** el comando `SuggestStrategyAdjustment`.
+ 
+#### Wearable Sync *(requiere Premium)*
+ 
+Habilitado por `BenefitsEnabled` (Premium), el usuario conecta Google Fit con `ConnectGoogleFit`. Una vez activo, el sistema sincroniza cada hora mediante `SyncWearableActivity`, emitiendo `ActivitySynced`. La política subsecuente ejecuta `AdjustDailyCalorieTarget`, que emite `CaloricTargetAdjusted` y actualiza el objetivo neto en **Nutrition Tracking**.
+ 
+#### Manual Activity Log
+ 
+El usuario registra actividad manualmente con `LogManualActivity`. La política calcula las calorías activas con la fórmula `MET × peso_kg × horas`, emitiendo `ActiveCaloriesCalculated`, y ajusta el balance calórico diario del mismo modo que el wearable.
+ 
+---
+
+
+
+
+
 
 **EventStorming**
 
