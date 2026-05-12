@@ -51,8 +51,29 @@ El criterio de conversión a planes superiores, proyectando más del 10% de usua
 ---
  
 ### Recomendaciones
- 
 
+ **Roadmap de producto a corto plazo (0–3 meses post-lanzamiento)**
+ 
+La prioridad inmediata debe ser la instrumentación de métricas de retención temprana. El criterio de éxito de la primera hipótesis, es decir, la reducción del 30% en abandono durante los primeros 30 días, solo puede medirse si desde el día uno se registran los eventos de sesión, los métodos de registro utilizados (fotográfico vs. manual) y las fechas de último acceso por cohorte de usuario. Se recomienda implementar un pipeline de analítica de comportamiento desde el sprint de lanzamiento, no como una fase posterior.
+ 
+La base de datos de alimentos debe ampliarse con gastronomía peruana antes del lanzamiento público. Las entrevistas evidenciaron que los competidores globales como MyFitnessPal presentan fricción precisamente por la ausencia de platos locales. Incorporar los alimentos y preparaciones más frecuentes de la dieta urbana peruana, como menús de restaurante, comida criolla y preparaciones universitarias, es una condición necesaria para que el Smart Scan y el Restaurant Intelligence Context funcionen con precisión en el mercado objetivo.
+ 
+Se recomienda diseñar un flujo de recuperación activa para usuarios que no registran actividad durante 48 horas consecutivas. El patrón de abandono abrupto identificado en ambos segmentos indica que la ventana de intervención es corta: si el sistema no actúa en los primeros dos días de inactividad, la probabilidad de recuperación cae drásticamente. El Behavioral Consistency Context tiene la arquitectura para detectar este estado, por lo que el roadmap debe incluir la implementación de notificaciones de reenganche con sugerencias contextuales basadas en la última actividad del usuario.
+ 
+**Roadmap de producto a mediano plazo (3–9 meses)**
+ 
+La integración con Apple Watch y Samsung Health debe incorporarse al roadmap de la versión Premium. Aunque la arquitectura actual contempla Google Fit como fuente de datos de actividad, Daphne, el perfil de referencia del segmento de ganancia muscular, usa Apple Watch. Dado que este dispositivo tiene alta penetración entre los usuarios de mayor poder adquisitivo del segmento fitness urbano, su ausencia en la integración puede ser una barrera de conversión al plan Premium.
+ 
+Se recomienda desarrollar una funcionalidad de detección y soporte para condiciones fisiológicas específicas como el Síndrome de Ovario Poliquístico (SOP), la resistencia a la insulina y la diabetes tipo 2. El caso de Daniela evidenció que existe un perfil de usuario donde la condición médica genera ciclos de ansiedad alimentaria que ninguna app de conteo calórico puede resolver sin modelar ese comportamiento específico. Incorporar alertas preventivas y recomendaciones adaptadas a estas condiciones ampliaría significativamente la propuesta de valor de NutriSmart y la diferenciaría de todos sus competidores actuales.
+ 
+La expansión del módulo de Analytics & Reporting hacia reportes compartibles con profesionales de salud, como nutricionistas y médicos, debe considerarse como una funcionalidad de alto valor para el segmento de pérdida de peso de mayor edad. Evelyn ya contaba con asesoría de un nutricionista, por lo que una integración que permita exportar el historial nutricional en un formato legible por profesionales de salud convertiría a NutriSmart en un complemento de la atención médica, no solo en una app de consumo personal.
+ 
+**Roadmap de producto a largo plazo (9–18 meses)**
+ 
+El modelo de negocio SaaS debe explorar una oferta orientada a entrenadores personales y nutricionistas independientes. NutriSmart puede posicionarse como un soporte digital para los profesionales que operan en entornos como gimnasios, centros de nutrición y clínicas de salud preventiva, sin necesidad de integrarse institucionalmente con ellos. Una versión de la plataforma que permita a entrenadores y nutricionistas hacer seguimiento del progreso nutricional de sus clientes desde NutriSmart complementaría las rutinas y planes que estos profesionales ya diseñan, generando un canal de distribución orgánico y un flujo de ingresos recurrente con menor costo de adquisición que el canal directo al consumidor.
+ 
+Finalmente, se recomienda evaluar la incorporación de modelos de lenguaje para ofrecer orientación nutricional conversacional en tiempo real, especialmente en los momentos de toma de decisión en restaurantes. La tendencia del mercado de aplicaciones de salud apunta hacia interfaces de lenguaje natural como canal principal de interacción. Integrar esta capacidad en el flujo del Restaurant Intelligence Context, donde el usuario pueda consultar qué opciones del menú se ajustan a su perfil, representaría la evolución natural del producto hacia un asistente nutricional verdaderamente conversacional.
+ 
 ---
  
 ## Video About-the-Team
