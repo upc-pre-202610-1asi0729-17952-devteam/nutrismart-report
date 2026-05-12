@@ -141,9 +141,9 @@ Para apreciar la separación por capas Domain-Driven Design de cada Bounded Cont
 
    ![Nutrition Frontend Diagram](../assets/img/artifacts/6nutrismart-NutritionFrontendDiagram.png)
 
- - **Body & Health Metrics:** Gestiona las vistas de métricas corporales, historial de peso y objetivos de salud.
+ - **Metabolic Adaptation:** Gestiona las vistas de métricas corporales, historial de peso, objetivos metabólicos y registro de actividad.
 
-   ![Body Frontend Diagram](../assets/img/artifacts/7nutrismart-MetabolicFrontendDiagram.png)
+   ![Metabolic Frontend Diagram](../assets/img/artifacts/7nutrismart-MetabolicFrontendDiagram.png)
 
  - **Smart Recommendations:** Gestiona las vistas de recomendaciones personalizadas, Modo Viaje y Despensa.
 
@@ -179,9 +179,9 @@ Para apreciar la separación por capas Domain-Driven Design de cada Bounded Cont
 
    ![Nutrition Backend Diagram](../assets/img/artifacts/15nutrismart-NutritionBackendDiagram.png)
 
- - **Body & Health Metrics:** Calcula índices de salud como BMI y TDEE y registra el historial de peso.
+ - **Metabolic Adaptation:** Calcula BMI, BMR y TDEE, gestiona los objetivos calóricos y sincroniza datos de actividad desde Google Fit (Premium).
 
-   ![Body Backend Diagram](../assets/img/artifacts/16nutrismart-MetabolicBackendDiagram.png)
+   ![Metabolic Backend Diagram](../assets/img/artifacts/16nutrismart-MetabolicBackendDiagram.png)
 
  - **Smart Recommendations:** Procesa datos contextuales para generar sugerencias personalizadas. Se integra con OpenWeatherMap y Geolocation API.
 
