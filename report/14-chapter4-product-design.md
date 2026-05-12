@@ -147,11 +147,11 @@ Para apreciar la separación por capas Domain-Driven Design de cada Bounded Cont
 
 - **Behavioral Consistency:** Gestiona las vistas de estado de adherencia, rachas y resumen de progreso conductual.
 
-
+   ![Behavioral Frontend Diagram](../assets/img/artifacts/8nutrismart-BehavioralFrontendDiagram.png)
 
 - **Restaurant Intelligence:** Gestiona las vistas de escaneo de menú, platos compatibles y mejor plato sugerido.
 
-
+   ![Restaurant Frontend Diagram](../assets/img/artifacts/9nutrismart-RestaurantFrontendDiagram.png)
 
  - **Smart Recommendations:** Gestiona las vistas de recomendaciones personalizadas, Modo Viaje y Despensa.
 
@@ -193,11 +193,11 @@ Para apreciar la separación por capas Domain-Driven Design de cada Bounded Cont
 
 - **Behavioral Consistency:** Evalúa la adherencia diaria, detecta caídas conductuales y gestiona el sistema de rachas.
 
-
+   ![Behavioral Backend Diagram](../assets/img/artifacts/17nutrismart-BehavioralBackendDiagram.png)
 
 - **Restaurant Intelligence:** Procesa fotos de menús, filtra platos por restricciones y rankea las opciones más compatibles con el perfil del usuario. Se integra con Google Cloud Vision API y Nutritional Data Providers.
 
-
+   ![Restaurant Backend Diagram](../assets/img/artifacts/18nutrismart-RestaurantBackendDiagram.png)
 
  - **Smart Recommendations:** Procesa datos contextuales para generar sugerencias personalizadas. Se integra con OpenWeatherMap y Geolocation API.
 
