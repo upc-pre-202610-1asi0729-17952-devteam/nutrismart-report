@@ -69,10 +69,10 @@ A continuación, se detalla la matriz de interdependencias que asegura la reacti
 
 **EventStorming**
 
-![EventStorming Diagram](../assets/img/artifacts/eventStorming.png)
+![EventStorming Diagram](../assets/img/artifacts/eventStorming.jpg)
 
 Para poder apreciar mejor el EventStorming le recomendamos ingresar al siguiente link:
-<br>[Visualizar EventStorming en Miro](https://miro.com/welcomeonboard/ZGpHbU1hMVZnYmpjUWg4NFQzOGcyVllGYndBSGRLa2dNcFErY0RnMVJKMWt5ekRVbUhQWXBQV2RFVTFZYzdwTVFnUmJYVHRwN2ZuanhYcDhGaHFFdXpqSXhvNThQV28wWnlBTXZDMFE5SXBGVTBCWk9SdmtWR3dDT0Q3WU82eXN0R2lncW1vRmFBVnlLcVJzTmdFdlNRPT0hdjE=?share_link_id=642611168323)
+<br>[Visualizar EventStorming en Miro](https://miro.com/app/live-embed/uXjVHXMvsmU=/?embedMode=view_only_without_ui&moveToViewport=-66936%2C-26975%2C145750%2C52483&embedId=331104344485)
 
 ### 4.6.2. Software Architecture Context Diagram
 
