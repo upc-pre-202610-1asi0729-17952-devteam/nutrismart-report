@@ -149,10 +149,6 @@ Para apreciar la separación por capas Domain-Driven Design de cada Bounded Cont
 
    ![Recs Frontend Diagram](../assets/img/artifacts/10nutrismart-RecsFrontendDiagram.png)
 
- - **Activity & Wearable Sync:** Gestiona las vistas de registro de actividad física y sincronización con wearables.
-
-   ![Activity Frontend Diagram](../assets/img/artifacts/nutrismart-ActivityFrontendDiagram.png)
-
  - **Analytics & Reporting:** Gestiona las vistas del dashboard, gráficas de progreso y rachas.
 
    ![Analytics Frontend Diagram](../assets/img/artifacts/11nutrismart-AnalyticsFrontendDiagram.png)
@@ -190,10 +186,6 @@ Para apreciar la separación por capas Domain-Driven Design de cada Bounded Cont
  - **Smart Recommendations:** Procesa datos contextuales para generar sugerencias personalizadas. Se integra con OpenWeatherMap y Geolocation API.
 
    ![Recs Backend Diagram](../assets/img/artifacts/19nutrismart-RecsBackendDiagram.png)
-
- - **Activity & Wearable Sync:** Sincroniza pasos y datos de actividad desde Google Fit.
-
-   ![Activity Backend Diagram](../assets/img/artifacts/nutrismart-RecsBackendDiagram.png)
 
  - **Analytics & Reporting:** Genera gráficas de progreso, rachas y reportes del usuario.
 
