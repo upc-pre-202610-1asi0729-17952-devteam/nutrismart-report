@@ -198,6 +198,61 @@ Los platos sin restricciones se rankean según el criterio del objetivo del usua
 - `lose_weight` → menor densidad calórica
 - `gain_muscle` → mayor contenido proteico (>20g)
 Se emite `CompatibleDishesRanked` con el ranking completo y el `best_dish` en la primera posición. La vista **Menu Analysis Result** presenta el resultado al usuario. El evento propaga hacia **Smart Recommendation** (`SuggestBestDish`) y **Nutrition Tracking** (el usuario puede loggear el plato elegido).
+
+---
+ 
+## Contextos Supporting
+ 
+---
+ 
+### Smart Recommendations
+ 
+Este contexto centraliza la generación de sugerencias personalizadas basadas en el contexto del usuario. Consta de 9 swimlanes.
+ 
+#### Preventive Recommendation
+ 
+Disparado por `BehavioralDropDetected`, el sistema ejecuta `GeneratePreventiveRecommendation`, emitiendo `PreventiveRecommendationGenerated` con una sugerencia de comida simple y alcanzable acorde al perfil. Se envía notificación push y se presenta la vista **Active Recommendation Card**.
+ 
+#### Intervention Recommendation
+ 
+Disparado por `NutritionalAbandonmentRisk`, el sistema ejecuta `RequestInterventionRecommendation`, emitiendo `InterventionRecommendationGenerated` con un plan simplificado de reactivación gradual.
+ 
+#### Strategy Adjustment Recommendation
+ 
+Disparado por `StagnationDetected` (desde Metabolic Adaptation), el sistema ejecuta `SuggestStrategyAdjustment`, emitiendo `StrategyAdjustmentSuggested` con una nueva distribución de macros sugerida. Si el usuario acepta, se propaga `RecalculateMetabolicTargets` hacia **Metabolic Adaptation**.
+ 
+#### Gradual Adjustment Suggestion
+ 
+Disparado por `StrategyMismatchDetected` (desde Behavioral Consistency), el sistema ejecuta `SuggestGradualAdjustment`, emitiendo `GradualAdjustmentSuggested` con un objetivo más suave acorde al historial de adherencia.
+ 
+#### Best Dish Suggestion
+ 
+Disparado por `CompatibleDishesRanked` (desde Restaurant Intelligence), el sistema ejecuta `SuggestBestDish`, emitiendo `BestDishRecommended` con el plato y su justificación nutricional (e.g., *"Este plato cubre el 80% de tu proteína restante del día"*).
+ 
+#### Weather-Based Recommendation *(Pro / Premium)*
+ 
+El usuario activa la detección de ubicación mediante la **Geolocation API**. Tras obtener `LocationDetected`, el sistema consulta la **OpenWeatherMap API**. Según la temperatura, la política aplica el criterio:
+ 
+- > 28°C → sugerencia ligera/hidratante
+- < 12°C → sugerencia cálida/densa
+Se emite `WeatherAdaptedMealSuggested` con las restricciones activas aplicadas.
+ 
+#### Travel Mode *(Pro / Premium)*
+ 
+El usuario activa el Travel Mode manualmente o por detección automática de ubicación. El evento `TravelModeActivated` desencadena `GenerateTravelRecommendation`, que filtra platos locales de la ciudad según las restricciones del perfil y emite `LocalDishesRecommended` para la vista **Local Dishes Card**.
+ 
+#### Pantry & Recipe Suggestions *(Pro / Premium)*
+ 
+El usuario registra ingredientes disponibles con `RegisterPantryItems`, emitiendo `PantryUpdated`. La política **Macro Deficit Check** prioriza recetas que cubran el macro más deficitario del día, aplicando además el filtro de restricciones. Se emite `RecipeSuggested` con la vista **Recipe Card**, y el usuario puede loggear directamente la receta en **Nutrition Tracking**.
+ 
+#### Premium Features Lock / Unlock
+ 
+| Evento entrante | Origen | Comando | Evento emitido |
+| :--- | :--- | :--- | :--- |
+| `BenefitsEnabled` | Subscriptions & Billing | `UnlockPremiumFeatures` | `PremiumFeaturesUnlocked` |
+| `BenefitsDisabled` | Subscriptions & Billing | `LockPremiumFeatures` | `PremiumFeaturesLocked` |
+ 
+---
  
 
 **EventStorming**
