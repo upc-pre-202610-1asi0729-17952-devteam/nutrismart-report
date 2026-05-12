@@ -88,7 +88,7 @@ El Diagrama de Contexto (Nivel 1 del modelo C4) representa a NutriSmart como un 
 	- `Google Fit API:` Sincroniza datos de actividad física y gasto energético.
 	- `OpenWeatherMap:` Provee datos climáticos para ajustar las sugerencias de comidas.
 	- `Stripe:` Gestiona de forma segura los pagos y el estado de las suscripciones.
-	- `Geolocation API:` Provee la ubicación actual del usuario para el Modo Viaje y las recomendaciones contextuales.
+	- `Geolocation API:` Provee la ubicación actual del usuario para el Modo Viaje y las recomendaciones contextuales(plan Pro/Premium).
 
 ![Context Diagram](../assets/img/artifacts/1nutrismart-SystemContext.png)
 
@@ -137,7 +137,7 @@ Para apreciar la separación por capas Domain-Driven Design de cada Bounded Cont
 
    ![IAM Frontend Diagram](../assets/img/artifacts/5nutrismart-IAMFrontendDiagram.png)
 
- - **Nutrition Tracking:** Gestiona las vistas de registro de comidas, Smart Scan y escaneo de menús.
+ - **Nutrition Tracking:** Gestiona las vistas de registro de comidas, Smart Scan y  búsqueda de alimentos.
 
    ![Nutrition Frontend Diagram](../assets/img/artifacts/6nutrismart-NutritionFrontendDiagram.png)
 
@@ -153,7 +153,7 @@ Para apreciar la separación por capas Domain-Driven Design de cada Bounded Cont
 
    ![Restaurant Frontend Diagram](../assets/img/artifacts/9nutrismart-RestaurantFrontendDiagram.png)
 
- - **Smart Recommendations:** Gestiona las vistas de recomendaciones personalizadas, Modo Viaje y Despensa.
+ - **Smart Recommendations:** Gestiona las vistas de recomendaciones personalizadas, Modo Viaje, Despensa y recomendaciones por clima.
 
    ![Recs Frontend Diagram](../assets/img/artifacts/10nutrismart-RecsFrontendDiagram.png)
 
@@ -214,6 +214,12 @@ Para apreciar la separación por capas Domain-Driven Design de cada Bounded Cont
 **Shared Kernel:**
 
 Componente transversal utilizado por todos los Bounded Contexts que agrupa clases base, interfaces compartidas y objetos de valor reutilizables. No contiene lógica de negocio propia ni acceso a base de datos.
+
+Incluye los siguientes sub-componentes:
+ 
+- **Base Domain:** Clases abstractas base para agregados, entidades y objetos de valor.
+- **Common Interfaces:** Interfaces compartidas como `IRepository` y `IDomainEvent`.
+- **Common Value Objects:** Objetos de valor reutilizables como `Money`, `DateRange` y `Pagination`.
 
 ![Shared Kernel Diagram](../assets/img/artifacts/22nutrismart-SharedKernelDiagram.png)
 
