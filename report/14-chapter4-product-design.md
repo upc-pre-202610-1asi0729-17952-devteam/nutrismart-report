@@ -254,6 +254,34 @@ El usuario registra ingredientes disponibles con `RegisterPantryItems`, emitiend
  
 ---
  
+ ---
+ 
+## Contextos Genéricos
+ 
+---
+ 
+### Analytics & Reporting
+ 
+Este contexto centraliza la generación de dashboards, métricas de progreso y reportes. Consta de 4 swimlanes.
+ 
+#### Dashboard Update *(consumidor pasivo)*
+ 
+El dashboard se actualiza automáticamente ante los siguientes eventos entrantes: `MealRecorded`, `DailyGoalMet`, `DailyGoalExceeded`, `CaloricTargetAdjusted`, `ConsistencyRecovered` y `MetabolicTargetsRecalculated`. El comando `UpdateDailyDashboard` emite `DashboardUpdated` con el resumen calórico, macros y estado de adherencia actualizados.
+ 
+#### View Dashboard
+ 
+El usuario consulta el dashboard con `ViewDashboard`, emitiendo `DashboardViewed` y presentando la vista **Progress Summary** (resumen diario, semanal y mensual). La política subsecuente ejecuta `UpdateUsageStreak`, actualizando la vista **Streak Badge**.
+ 
+#### Export PDF Report *(Premium)*
+ 
+El usuario exporta un reporte con `ExportReportPDF` (rango de fechas). La política **Premium Plan Required** valida el acceso antes de emitir `PDFReportGenerated`, que incluye resúmenes calóricos diarios, promedios de macros, evolución de peso, historial de adherencia y datos de actividad.
+ 
+#### Adherence Progress Update
+ 
+Disparado por `ConsistencyRecovered` (desde Behavioral Consistency), el sistema ejecuta `UpdateAdherenceProgress`, emitiendo `AdherenceProgressUpdated` y actualizando la sección de adherencia en la vista **Progress Summary**.
+ 
+---
+
 
 **EventStorming**
 
