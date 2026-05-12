@@ -267,7 +267,6 @@ El usuario registra ingredientes disponibles con `RegisterPantryItems`, emitiend
  
 ---
  
- 
 ## Nivel Genéricos
  
 ---
