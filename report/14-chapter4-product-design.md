@@ -254,7 +254,6 @@ El usuario registra ingredientes disponibles con `RegisterPantryItems`, emitiend
  
 ---
  
- ---
  
 ## Contextos Genéricos
  
@@ -281,6 +280,36 @@ El usuario exporta un reporte con `ExportReportPDF` (rango de fechas). La polít
 Disparado por `ConsistencyRecovered` (desde Behavioral Consistency), el sistema ejecuta `UpdateAdherenceProgress`, emitiendo `AdherenceProgressUpdated` y actualizando la sección de adherencia en la vista **Progress Summary**.
  
 ---
+
+### Subscriptions & Billing
+ 
+Este contexto gestiona los planes de suscripción y la integración con Stripe. Consta de 3 swimlanes.
+ 
+#### Plan Selection and Payment
+ 
+El usuario selecciona un plan con `SelectSubscriptionPlan` (Basic / Pro / Premium). La política **Valid Plan Selected** valida la elección, emite `PlanSelected` y encadena automáticamente `SubmitPayment` hacia **Stripe API**. Tras el pago exitoso (`PaymentSuccessful`), se ejecuta `ActivateSubscription`, que emite `SubscriptionActivated`. A continuación, la política **When SubscriptionActivated** ejecuta `EnablePlanFeatures`, desbloqueando las funcionalidades según el plan:
+ 
+| Plan | Funcionalidades |
+| :--- | :--- |
+| **Basic** | NutritionLog, BasicDashboard, BMI/BMR/TDEE |
+| **Pro** | + SmartScan, TravelMode, WeatherRecs, Pantry |
+| **Premium** | + WearableSync, RestaurantMenuAnalysis, UnlimitedHistory, PDFReports |
+ 
+El evento `BenefitsEnabled` propaga habilitaciones hacia:
+ 
+- **Smart Recommendation** → `UnlockPremiumFeatures`
+- **Restaurant Intelligence** → `EnableMenuScan` (solo Premium)
+- **Metabolic Adaptation** → `EnableWearableSync` (solo Premium)
+#### Unsubscribe
+ 
+El usuario ejecuta `CancelSubscription` (validado contra **Stripe API**), emitiendo `SubscriptionCancelled`. La política subsecuente ejecuta `DisablePlanFeatures`, lo que emite `BenefitsDisabled` y propaga bloqueos hacia Smart Recommendation, Restaurant Intelligence y Metabolic Adaptation.
+ 
+#### Automatic Renewal
+ 
+El sistema ejecuta `RenewSubscription` de forma programada a través de **Stripe API**. Al emitirse `SubscriptionRenewed`, se reactiva automáticamente `EnablePlanFeatures` y vuelve a propagarse `BenefitsEnabled` hacia Smart Recommendation.
+ 
+---
+
 
 
 **EventStorming**
