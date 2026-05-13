@@ -37,16 +37,26 @@ Abril, 2026
 | Versión | Fecha | Autor | Descripción de modificación |
 | :---: | :---: | :---: | --- |
 | v1.0.0| 23/04/2025 |  Del Aguila Del Aguila, Olenka Priscilla<br>Espinoza Cruz, Angela Milagros<br>Mora Rivera, Joel Fernando<br>Soto Palacios, Brandon Wilder<br> Villarreal Bazan, Angel Martin  | Se agregó: <br>Capitulo I<br>Capitulo II<br>Capitulo III<br>Capitulo IV<br>Capitulo V<br>5.2.1. Sprint 1 |
+| v2.0.0| 12/05/2025 |  Del Aguila Del Aguila, Olenka Priscilla<br>Espinoza Cruz, Angela Milagros<br>Mora Rivera, Joel Fernando<br>Soto Palacios, Brandon Wilder<br> Villarreal Bazan, Angel Martin  | Capitulo V<br>5.2.2. Sprint 2<br>5.2.2. Sprint 2 <br>5.2.2.1. Sprint Planning 2. <br>5.2.2.2. Aspect Leaders and Collaborators. <br>5.2.2.3. Sprint Backlog 2. <br>5.2.2.4. Development Evidence for Sprint Review. <br>5.2.2.5. Execution Evidence for Sprint Review. <br>5.2.2.6. Services Documentation Evidence for Sprint Review. <br>5.2.2.7. Software Deployment Evidence for Sprint Review. <br>5.2.2.8. Team Collaboration Insights during Sprint. |
 
 <div style="page-break-after: always"></div>
 
 ## PROJECT REPORT COLLABORATION INSIGHTS
 
-El repositorio del Project Report se encuentra disponible en la organización de GitHub del equipo en la siguiente URL: https://github.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report
+El repositorio del Project Report se encuentra disponible en la organización de GitHub del equipo en la siguiente URL: 
+
+[Repositorio Reporte](https://github.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report)
+
+[Repositorio WebApp](https://github.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp)
 
 Durante el desarrollo del presente Sprint, la elaboración del informe fue llevada a cabo de forma colaborativa por todos los integrantes del equipo. El trabajo se organizó distribuyendo las secciones y capítulos del informe entre los miembros, quienes realizaron sus aportes mediante commits en subramas hacia la rama develop del repositorio. Esto permitió mantener un historial claro de los cambios y garantizar la trazabilidad de cada contribución.
 
+AV1:<br>
 ![Report](/assets/img/report_col.png)
+
+TB1:<br>
+![Report](/assets/img/report_col_tb1.png)
+
 
 <div style="page-break-after: always"></div>
 
