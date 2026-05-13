@@ -774,14 +774,12 @@ A continuación se presentan screenshots de las principales vistas implementadas
  **Registro, login y onboarding**
 
 ![Registration view](../assets/img/sprint2/register.png)
-![Login view](../assets/img/sprint2/login.png)
-![Onboarding step 2 — physical data](../assets/img/sprint2/onboarding-goal.png)
+![Onboarding step 2 — physical data](../assets/img/sprint2/onboarding-physical-data.png)
 ![Onboarding step 4 — targets preview with BMI, BMR, TDEE and macro distribution](../assets/img/sprint2/onboarding-targets-preview.png)
 
-**Dashboard — cuatro estados de adherencia conductual**
+**Dashboard**
 
 ![Dashboard ON_TRACK state](../assets/img/sprint2/dashboard-on-track.png)
-![Streak milestone widget at 7 consecutive days](../assets/img/sprint2/streak-milestone.png)
 
 **Nutrition Tracking — Daily Log, análisis semanal y bloqueo de restricciones**
 
@@ -793,7 +791,6 @@ A continuación se presentan screenshots de las principales vistas implementadas
 
 **Restaurant Intelligence y Smart Scan**
 
-![Smart Scan mode selection view with plan entitlement check](../assets/img/sprint2/smart-scan-mode-selection.png)
 ![Plate scan result — editable food items list with MealRecorded confirmation](../assets/img/sprint2/plate-scan-result.png)
 ![RestrictedDishFlagged section in menu scan results](../assets/img/sprint2/restricted-dish-flagged.png)
 
