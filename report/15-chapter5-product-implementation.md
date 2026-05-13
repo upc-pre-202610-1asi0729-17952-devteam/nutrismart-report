@@ -396,7 +396,7 @@ El Sprint 1 tiene como objetivo principal entregar el sitio web estático (Landi
 A continuación se presenta el board del sprint en Trello y la tabla de work-items correspondiente.
 
 ![Board Sprint 1](../assets/img/sprint1/sprintbacklog.png)
-URL del Board (Trello): https://trello.com/invite/b/69e7e914df07d176838add9d/ATTIdd4dfe357744be4dc97cce9e1ff43aeeC1917E49/sprint-1
+URL del Board (Trello): [Enlace Trello](https://trello.com/invite/b/69e7e914df07d176838add9d/ATTIdd4dfe357744be4dc97cce9e1ff43aeeC1917E49/sprint-1)
 
 | US ID | US Title | Task ID | Task Title | Description | Est. (h) | Assigned To | Status |
 |-------|----------|---------|------------|-------------|----------|-------------|--------|
@@ -636,7 +636,7 @@ El Sprint 2 tiene como objetivo entregar el frontend completo de la aplicación 
  
 ![Board Sprint 2](../assets/img/sprint2/sprintbacklog.png)
  
-URL del Board (Trello):
+URL del Board (Trello): [Enlace Trello](https://trello.com/invite/b/6a03a5352711a147e1dcddde/ATTId2ac96f1c9b394e8f4c8f3ad82fcdacb692DB4EB/sprint-backlog-2)
  
 | US ID | US Title | Task ID | Task Title | Description | Est. (h) | Assigned To | Status |
 |-------|----------|---------|------------|-------------|----------|-------------|--------|
