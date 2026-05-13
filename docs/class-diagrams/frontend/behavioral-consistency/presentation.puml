@@ -1,0 +1,213 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' ─── Boundary stubs: application layer ───────────────────────────────────────
+package "behavioral-consistency/application [boundary]" {
+  class BehavioralConsistencyStore <<boundary>> {
+    + currentProgress: Signal<BehavioralProgress | null>
+    + activeRecoveryPlan: Signal<RecoveryPlan | null>
+    + loading: Signal<boolean>
+    + error: Signal<string | null>
+    + streak: Signal<number>
+    + consecutiveMisses: Signal<number>
+    + weekDots: Signal<boolean[]>
+    + weeklyCompletionRate: Signal<number>
+    + completedDaysThisWeek: Signal<number>
+    + behavioralSummary: Signal<string>
+    + ensureProgressForUser(userId: number): Observable<BehavioralProgress>
+    + loadRecoveryPlan(userId: number): void
+    + markGoalMet(): void
+    + markGoalMissed(): void
+  }
+}
+
+package "iam/application [boundary]" {
+  class IamStore <<boundary>> {
+    + currentUser: Signal<User | null>
+  }
+}
+
+package "nutrition-tracking/application [boundary]" {
+  class NutritionStore <<boundary>> {
+    + loading: Signal<boolean>
+    + error: Signal<string | null>
+    + dailyTotals(): MacroTotals
+    + getDailyIntakeFor(date: Date): DailyIntake | null
+    + todayActiveCalories(): number
+    + todayMacroWarnings(): MacroWarnings
+    + recordsByMealType(): Record<string, MealRecord[]>
+  }
+}
+
+' ─── ViewModels ──────────────────────────────────────────────────────────────
+package "behavioral-consistency/presentation/viewmodels" {
+
+  class DashboardMealVm <<view model>> {
+    + nameKey: string
+    + description: string
+    + caloriesLabel: string
+    + dotClass: string
+    + notLogged: boolean
+    + missed: boolean
+  }
+
+  class DashboardMacroVm <<view model>> {
+    + nameKey: string
+    + consumed: number
+    + target: number
+    + colorClass: string
+  }
+
+  class DonutArcVm <<view model>> {
+    + dasharray: string
+    + dashoffset: string
+  }
+
+  class GreetingVm <<view model>> {
+    + greetingKey: string
+    + greetingParams: Record<string, unknown>
+    + badgeLabelKey: string
+    + badgeLabelParams: Record<string, unknown>
+    + badgeClass: string
+    + topAccentClass: string
+  }
+
+  class CaloriesVm <<view model>> {
+    + consumed: number
+    + target: number
+    + remaining: number
+    + netBalance: number
+    + progressPercent: number
+    + googleFitCalories: number | null
+  }
+
+  class MealsVm <<view model>> {
+    + meals: DashboardMealVm[]
+    + showNoMealsLoggedBlock: boolean
+    + noMealsDays: number
+  }
+
+  class MacrosVm <<view model>> {
+    + macros: DashboardMacroVm[]
+  }
+
+  class StreakVm <<view model>> {
+    + streak: number
+    + descKey: string
+    + descParams: Record<string, unknown>
+    + footerKey: string
+    + footerParams: Record<string, unknown>
+    + streakClass: string
+    + weekDots: boolean[]
+    + todayIndex: number
+    + weeklyCompletionRate: number
+  }
+}
+
+' ─── Views ───────────────────────────────────────────────────────────────────
+package "behavioral-consistency/presentation/views" {
+
+  class BehavioralDashboard <<view>> {
+    - iamStore: IamStore
+    - behavioralStore: BehavioralConsistencyStore
+    - nutritionStore: NutritionStore
+    --
+    + isLoading: Signal<boolean>
+    + loadError: Signal<string | null>
+    + hasProgress: Signal<boolean>
+    + weekLabels: Signal<string[]>
+    + dateLabel: Signal<string>
+    + donutArcs: Signal<{ protein: DonutArcVm; carbs: DonutArcVm; fat: DonutArcVm }>
+    + greetingVm: Signal<GreetingVm>
+    + caloriesVm: Signal<CaloriesVm>
+    + mealsVm: Signal<MealsVm>
+    + macrosVm: Signal<MacrosVm>
+    + streakVm: Signal<StreakVm>
+    + activeRecoveryPlan: Signal<RecoveryPlan | null>
+    --
+    + onLogMeal(): void
+    + onRetry(): void
+    + macroPercent(consumed: number, target: number): number
+  }
+}
+
+' ─── Components ──────────────────────────────────────────────────────────────
+package "behavioral-consistency/presentation/components" {
+
+  ' ⚠️ DDD VIOLATION: AdherenceStatusCard.status is InputSignal<AdherenceStatus> (domain enum)
+  ' Consider: InputSignal<'on-track' | 'at-risk' | 'dropped'> or a StatusVm interface
+  class AdherenceStatusCard <<component>> {
+    + status: InputSignal<AdherenceStatus>
+    --
+    + titleKey: Signal<string>
+    + messageKey: Signal<string>
+    + statusClass: Signal<string>
+  }
+
+  class BehavioralActionPanel <<component>> {
+    --
+    + goalMet: OutputEmitterRef<void>
+    + goalMissed: OutputEmitterRef<void>
+    + refreshRequested: OutputEmitterRef<void>
+    --
+    + markGoalMet(): void
+    + markGoalMissed(): void
+    + refresh(): void
+  }
+
+  class BehavioralSummaryCard <<component>> {
+    + completedDaysThisWeek: InputSignal<number>
+    + weeklyCompletionRate: InputSignal<number>
+    + summary: InputSignal<string>
+    --
+    + progressLabelKey: Signal<string>
+    + rateVariant: Signal<string>
+  }
+
+  class ConsistencyWeekStrip <<component>> {
+    + weekDots: InputSignal<boolean[]>
+    + dayLabels: InputSignal<string[]>
+    --
+    + completedCount: Signal<number>
+  }
+
+  class StreakCard <<component>> {
+    + streak: InputSignal<number>
+    + consecutiveMisses: InputSignal<number>
+    --
+    + streakMessageKey: Signal<string>
+    + hasMisses: Signal<boolean>
+  }
+
+  ' ⚠️ DDD VIOLATION: ReEngagementCard accepts RecoveryPlan domain entity as input
+  ' Consider a RecoveryPlanVm with { trigger: string; actions: ActionVm[]; activatedAt: string }
+  class ReEngagementCard <<component>> {
+    + plan: InputSignal<RecoveryPlan | null>
+  }
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+BehavioralDashboard o--> BehavioralConsistencyStore : uses >
+BehavioralDashboard o--> IamStore : uses >
+BehavioralDashboard o--> NutritionStore : uses >
+
+BehavioralDashboard ..> GreetingVm : builds >
+BehavioralDashboard ..> CaloriesVm : builds >
+BehavioralDashboard ..> MealsVm : builds >
+BehavioralDashboard ..> MacrosVm : builds >
+BehavioralDashboard ..> StreakVm : builds >
+
+MealsVm "1" *--> "0..*" DashboardMealVm : contains >
+MacrosVm "1" *--> "0..*" DashboardMacroVm : contains >
+
+BehavioralDashboard --> AdherenceStatusCard : hosts >
+BehavioralDashboard --> BehavioralActionPanel : hosts >
+BehavioralDashboard --> BehavioralSummaryCard : hosts >
+BehavioralDashboard --> ConsistencyWeekStrip : hosts >
+BehavioralDashboard --> StreakCard : hosts >
+BehavioralDashboard --> ReEngagementCard : hosts >
+
+@enduml

@@ -11,13 +11,32 @@ package "analytics.domain.model.aggregates" {
     - nutritionSummary: NutritionSummary
     - activitySummary: ActivitySummary
     - weightTrend: WeightTrend
+    - adherenceSummary: AdherenceSummary
     - generatedAt: Instant
     + ProgressReport(userId: UUID, period: ReportPeriod)
     + setNutritionSummary(summary: NutritionSummary): void
     + setActivitySummary(summary: ActivitySummary): void
     + setWeightTrend(trend: WeightTrend): void
+    + setAdherenceSummary(summary: AdherenceSummary): void
     + getId(): ProgressReportId
     + getPeriod(): ReportPeriod
+  }
+  class DailyDashboard {
+    - id: DailyDashboardId
+    - userId: UUID
+    - date: LocalDate
+    - caloriesConsumed: double
+    - calorieTarget: double
+    - macrosConsumed: MacroNutrients
+    - caloriesBurned: double
+    - adherenceStatus: String
+    - usageStreak: int
+    - updatedAt: Instant
+    + DailyDashboard(userId: UUID, date: LocalDate)
+    + update(caloriesConsumed: double, calorieTarget: double, macros: MacroNutrients, adherenceStatus: String): void
+    + updateCaloriesBurned(caloriesBurned: double): void
+    + incrementUsageStreak(): void
+    + getId(): DailyDashboardId
   }
 }
 
@@ -26,10 +45,15 @@ package "analytics.domain.model.valueobjects" {
     - value: UUID
     + getValue(): UUID
   }
+  class DailyDashboardId <<ValueObject>> {
+    - value: UUID
+    + getValue(): UUID
+  }
   class ReportPeriod <<ValueObject>> {
     - startDate: LocalDate
     - endDate: LocalDate
-    + ReportPeriod(startDate: LocalDate, endDate: LocalDate)
+    - type: PeriodType
+    + ReportPeriod(startDate: LocalDate, endDate: LocalDate, type: PeriodType)
     + getDays(): long
     + contains(date: LocalDate): boolean
   }
@@ -55,7 +79,7 @@ package "analytics.domain.model.valueobjects" {
     - endWeight: double
     - minWeight: double
     - maxWeight: double
-    - recordings: List<WeightDataPoint>
+    - dataPoints: List<WeightDataPoint>
     + WeightTrend(startWeight: double, endWeight: double)
     + getWeightChange(): double
     + getTrendDirection(): String
@@ -64,6 +88,23 @@ package "analytics.domain.model.valueobjects" {
     - date: LocalDate
     - weightKg: double
     + WeightDataPoint(date: LocalDate, weightKg: double)
+  }
+  class AdherenceSummary <<ValueObject>> {
+    - daysOnTrack: int
+    - daysAtRisk: int
+    - daysDropped: int
+    - recoveryEvents: int
+    - streakMilestonesReached: List<Integer>
+    + AdherenceSummary(daysOnTrack: int, daysAtRisk: int, daysDropped: int)
+    + getOverallAdherencePercent(): double
+  }
+  class MacroNutrients <<ValueObject>> {
+    - calories: double
+    - proteinG: double
+    - carbsG: double
+    - fatG: double
+    + MacroNutrients(calories: double, proteinG: double, carbsG: double, fatG: double)
+    + add(other: MacroNutrients): MacroNutrients
   }
 }
 
@@ -75,11 +116,33 @@ package "analytics.domain.model.enums" {
   }
 }
 
+package "analytics.domain.model.events" {
+  class DashboardUpdated <<DomainEvent>> {
+    + userId: UUID
+    + date: LocalDate
+    + occurredOn: Instant
+  }
+  class PDFReportGenerated <<DomainEvent>> {
+    + userId: UUID
+    + reportId: UUID
+    + occurredOn: Instant
+  }
+  class AdherenceProgressUpdated <<DomainEvent>> {
+    + userId: UUID
+    + occurredOn: Instant
+  }
+}
+
 package "analytics.domain.repositories" {
   interface ProgressReportRepository {
     + findByUserIdAndPeriod(userId: UUID, period: ReportPeriod): Optional<ProgressReport>
     + findByUserId(userId: UUID): List<ProgressReport>
     + save(report: ProgressReport): ProgressReport
+  }
+  interface DailyDashboardRepository {
+    + findByUserIdAndDate(userId: UUID, date: LocalDate): Optional<DailyDashboard>
+    + findByUserId(userId: UUID): List<DailyDashboard>
+    + save(dashboard: DailyDashboard): DailyDashboard
   }
 }
 
@@ -87,13 +150,30 @@ package "analytics.domain.services" {
   interface ProgressInsightsGenerator {
     + generateInsights(userId: UUID, period: ReportPeriod): ProgressReport
   }
+  interface PdfReportExporter {
+    + export(report: ProgressReport): byte[]
+  }
 }
 
 package "analytics.application.internal.commandservices" {
   class AnalyticsCommandService {
-    - generator: ProgressInsightsGenerator
-    - repository: ProgressReportRepository
+    - reportRepository: ProgressReportRepository
+    - dashboardRepository: DailyDashboardRepository
+    - insightsGenerator: ProgressInsightsGenerator
+    - pdfExporter: PdfReportExporter
+    + handle(command: UpdateDailyDashboardCommand): DailyDashboard
     + handle(command: GenerateProgressInsightsCommand): ProgressReport
+    + handle(command: ExportReportPdfCommand): byte[]
+    + handle(command: UpdateAdherenceProgressCommand): DailyDashboard
+    + handle(command: UpdateUsageStreakCommand): DailyDashboard
+  }
+  class UpdateDailyDashboardCommand <<Command>> {
+    + userId: UUID
+    + date: LocalDate
+    + caloriesConsumed: double
+    + calorieTarget: double
+    + caloriesBurned: double
+    + adherenceStatus: String
   }
   class GenerateProgressInsightsCommand <<Command>> {
     + userId: UUID
@@ -101,13 +181,31 @@ package "analytics.application.internal.commandservices" {
     + startDate: LocalDate
     + endDate: LocalDate
   }
+  class ExportReportPdfCommand <<Command>> {
+    + userId: UUID
+    + startDate: LocalDate
+    + endDate: LocalDate
+  }
+  class UpdateAdherenceProgressCommand <<Command>> {
+    + userId: UUID
+    + date: LocalDate
+  }
+  class UpdateUsageStreakCommand <<Command>> {
+    + userId: UUID
+  }
 }
 
 package "analytics.application.internal.queryservices" {
   class AnalyticsQueryService {
-    - repository: ProgressReportRepository
+    - reportRepository: ProgressReportRepository
+    - dashboardRepository: DailyDashboardRepository
+    + handle(query: GetDailyDashboardQuery): Optional<DailyDashboard>
     + handle(query: GetProgressReportQuery): Optional<ProgressReport>
     + handle(query: GetReportHistoryQuery): List<ProgressReport>
+  }
+  class GetDailyDashboardQuery <<Query>> {
+    + userId: UUID
+    + date: LocalDate
   }
   class GetProgressReportQuery <<Query>> {
     + userId: UUID
@@ -122,16 +220,31 @@ package "analytics.application.internal.queryservices" {
 package "analytics.infrastructure" {
   class ProgressInsightsGeneratorImpl {
     - nutritionLogRepository: NutritionLogRepository
-    - weightRecordRepository: WeightRecordRepository
     - activityLogRepository: ActivityLogRepository
+    - behavioralProgressRepository: BehavioralProgressRepository
     + generateInsights(userId: UUID, period: ReportPeriod): ProgressReport
-    - buildNutritionSummary(logs: List<NutritionLog>, period: ReportPeriod): NutritionSummary
-    - buildActivitySummary(logs: List<ActivityLog>, period: ReportPeriod): ActivitySummary
-    - buildWeightTrend(records: List<WeightRecord>): WeightTrend
+    - buildNutritionSummary(userId: UUID, period: ReportPeriod): NutritionSummary
+    - buildActivitySummary(userId: UUID, period: ReportPeriod): ActivitySummary
+    - buildWeightTrend(userId: UUID, period: ReportPeriod): WeightTrend
+    - buildAdherenceSummary(userId: UUID, period: ReportPeriod): AdherenceSummary
+  }
+  class PdfReportExporterImpl {
+    + export(report: ProgressReport): byte[]
   }
 }
 
 package "analytics.interfaces.rest.resources" {
+  class DailyDashboardResource {
+    + date: String
+    + caloriesConsumed: double
+    + calorieTarget: double
+    + caloriesBurned: double
+    + totalProteinG: double
+    + totalCarbsG: double
+    + totalFatG: double
+    + adherenceStatus: String
+    + usageStreak: int
+  }
   class ProgressReportResource {
     + id: UUID
     + periodStart: String
@@ -143,6 +256,7 @@ package "analytics.interfaces.rest.resources" {
     + totalCaloriesBurned: double
     + weightChange: double
     + adherencePercent: double
+    + overallAdherencePercent: double
     + weightDataPoints: List<WeightDataPointResource>
   }
   class WeightDataPointResource {
@@ -157,6 +271,9 @@ package "analytics.interfaces.rest.resources" {
 }
 
 package "analytics.interfaces.rest.assemblers" {
+  class DailyDashboardAssembler {
+    + toResourceFromEntity(dashboard: DailyDashboard): DailyDashboardResource
+  }
   class ProgressReportAssembler {
     + toResourceFromEntity(report: ProgressReport): ProgressReportResource
     + toDataPointResource(dp: WeightDataPoint): WeightDataPointResource
@@ -164,12 +281,18 @@ package "analytics.interfaces.rest.assemblers" {
 }
 
 package "analytics.interfaces.rest.controllers" {
+  class DashboardController {
+    - commandService: AnalyticsCommandService
+    - queryService: AnalyticsQueryService
+    + getDailyDashboard(userId: UUID, date: LocalDate): ResponseEntity<DailyDashboardResource>
+  }
   class AnalyticsController {
     - commandService: AnalyticsCommandService
     - queryService: AnalyticsQueryService
     + generateReport(userId: UUID, resource: GenerateReportResource): ResponseEntity<ProgressReportResource>
     + getReport(userId: UUID, startDate: String, endDate: String): ResponseEntity<ProgressReportResource>
     + getReportHistory(userId: UUID): ResponseEntity<List<ProgressReportResource>>
+    + exportPdf(userId: UUID, startDate: String, endDate: String): ResponseEntity<byte[]>
   }
 }
 
@@ -177,13 +300,27 @@ ProgressReport "1" *--> "1" ReportPeriod : covers >
 ProgressReport "1" *--> "1" NutritionSummary : summarizes >
 ProgressReport "1" *--> "1" ActivitySummary : summarizes >
 ProgressReport "1" *--> "1" WeightTrend : tracks >
+ProgressReport "1" *--> "1" AdherenceSummary : includes >
 WeightTrend "1" *--> "0..*" WeightDataPoint : contains >
+DailyDashboard "1" *--> "1" MacroNutrients : has >
+
+ProgressReport ..> PDFReportGenerated : publishes >
+DailyDashboard ..> DashboardUpdated : publishes >
+DailyDashboard ..> AdherenceProgressUpdated : publishes >
 
 ProgressInsightsGeneratorImpl ..|> ProgressInsightsGenerator : implements
-AnalyticsCommandService --> ProgressInsightsGenerator : uses >
-AnalyticsCommandService --> ProgressReportRepository : uses >
-AnalyticsQueryService --> ProgressReportRepository : uses >
+PdfReportExporterImpl ..|> PdfReportExporter : implements
 
+AnalyticsCommandService --> ProgressReportRepository : uses >
+AnalyticsCommandService --> DailyDashboardRepository : uses >
+AnalyticsCommandService --> ProgressInsightsGenerator : uses >
+AnalyticsCommandService --> PdfReportExporter : uses >
+AnalyticsQueryService --> ProgressReportRepository : uses >
+AnalyticsQueryService --> DailyDashboardRepository : uses >
+
+DashboardController --> AnalyticsCommandService : uses >
+DashboardController --> AnalyticsQueryService : uses >
+DashboardController --> DailyDashboardAssembler : uses >
 AnalyticsController --> AnalyticsCommandService : uses >
 AnalyticsController --> AnalyticsQueryService : uses >
 AnalyticsController --> ProgressReportAssembler : uses >

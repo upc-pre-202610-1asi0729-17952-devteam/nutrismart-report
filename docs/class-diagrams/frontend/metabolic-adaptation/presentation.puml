@@ -1,0 +1,216 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' ─── Boundary stubs: application layer ───────────────────────────────────────
+package "metabolic-adaptation/application [boundary]" {
+  class MetabolicStore <<boundary>> {
+    + currentMetric: Signal<BodyMetric | null>
+    + composition: Signal<BodyComposition | null>
+    + nutritionPlan: Signal<NutritionPlan | null>
+    + metricsHistory: Signal<BodyMetric[]>
+    + loading: Signal<boolean>
+    + error: Signal<string | null>
+    + isGoalLocked: Signal<boolean>
+    + daysUntilUnlock: Signal<number>
+    + hasLoggedToday: Signal<boolean>
+    + chartPoints: Signal<ChartPoint[]>
+    + logWeight(weightKg): Promise<void>
+    + setTargetWeight(target): Promise<void>
+  }
+  class WearableStore <<boundary>> {
+    + connection: Signal<WearableConnection | null>
+    + activityLogs: Signal<ActivityLog[]>
+    + estimatedCalories: Signal<number>
+    + loading: Signal<boolean>
+    + todayLogs: Signal<ActivityLog[]>
+    + connectGoogleFit(userId, token): Promise<void>
+    + syncNow(userId): Promise<void>
+    + logManualActivity(data): Promise<void>
+  }
+}
+
+package "iam/application [boundary]" {
+  class IamStore <<boundary>> {
+    + currentUser: Signal<User | null>
+  }
+}
+
+' ─── ViewModels ──────────────────────────────────────────────────────────────
+package "metabolic-adaptation/presentation/viewmodels" {
+
+  class BodyProgressVm <<view model>> {
+    + weightKg: number
+    + heightCm: number
+    + bmi: number
+    + bmiCategoryKey: string
+    + bmiCategoryClass: string
+    + targetWeightKg: number
+    + projectedDateLabel: string
+    + delta: number
+    + isProgressingToGoal: boolean
+    + hasLoggedToday: boolean
+    + isGoalLocked: boolean
+    + daysUntilUnlock: number
+    + unlockDateLabel: string
+  }
+
+  class WeightChartPointVm <<view model>> {
+    + dateLabel: string
+    + weightKg: number
+    + isMilestone: boolean
+  }
+
+  class BodyCompositionVm <<view model>> {
+    + bodyFatPercent: number
+    + fatMassKg: number
+    + leanMassKg: number
+    + hasFatIncreaseAlert: boolean
+    + measuredAtLabel: string
+  }
+
+  class ActivityLogVm <<view model>> {
+    + id: number
+    + activityTypeKey: string
+    + durationMinutes: number
+    + caloriesBurned: number
+    + timestampLabel: string
+    + isFromToday: boolean
+  }
+
+  class WearableStatusVm <<view model>> {
+    + isConnected: boolean
+    + statusKey: string
+    + providerKey: string
+    + lastSyncedLabel: string
+    + minutesSinceSync: number
+    + isHealthy: boolean
+  }
+}
+
+' ─── Views ───────────────────────────────────────────────────────────────────
+package "metabolic-adaptation/presentation/views" {
+
+  class BodyProgressView <<view>> {
+    - metabolicStore: MetabolicStore
+    - wearableStore: WearableStore
+    - iamStore: IamStore
+    --
+    + bodyProgressVm: Signal<BodyProgressVm>
+    + compositionVm: Signal<BodyCompositionVm>
+    + chartPoints: Signal<WeightChartPointVm[]>
+    + isLoading: Signal<boolean>
+    + showLogModal: WritableSignal<boolean>
+    + weightInput: WritableSignal<string>
+    --
+    + onLogWeight(): void
+    + onSetTargetWeight(): void
+    + onEditComposition(): void
+  }
+
+  class WeightHistoryView <<view>> {
+    - metabolicStore: MetabolicStore
+    --
+    + historyVms: Signal<WeightChartPointVm[]>
+    + isLoading: Signal<boolean>
+  }
+
+  class BodyProgressGoalView <<view>> {
+    - metabolicStore: MetabolicStore
+    - iamStore: IamStore
+    --
+    + onConfirmGoal(): void
+    + onCancel(): void
+  }
+
+  class PhysicalActivityView <<view>> {
+    - wearableStore: WearableStore
+    --
+    + wearableStatusVm: Signal<WearableStatusVm>
+    + activityLogVms: Signal<ActivityLogVm[]>
+    + displayedLogs: Signal<ActivityLogVm[]>
+    + isWearableConnected: Signal<boolean>
+    + showModal: WritableSignal<boolean>
+    --
+    + onSyncNow(): void
+    + onLogManualActivity(): void
+  }
+}
+
+' ─── Components ──────────────────────────────────────────────────────────────
+package "metabolic-adaptation/presentation/components" {
+
+  class GoogleFitConnectCard <<component>> {
+    - wearableStore: WearableStore
+    --
+    + onConnect(): void
+  }
+
+  class WearableConnectedCard <<component>> {
+    + statusVm: InputSignal<WearableStatusVm>
+    --
+    + syncRequested: OutputEmitterRef<void>
+    + disconnectRequested: OutputEmitterRef<void>
+  }
+
+  class WearableChip <<component>> {
+    + providerKey: InputSignal<string>
+    + isConnected: InputSignal<boolean>
+  }
+
+  class SyncFailedBanner <<component>> {
+    + onRetry: OutputEmitterRef<void>
+  }
+
+  class ManualActivityModal <<component>> {
+    - wearableStore: WearableStore
+    --
+    + isOpen: InputSignal<boolean>
+    --
+    + closed: OutputEmitterRef<void>
+    + onSubmit(): void
+  }
+
+  class ManualActivityCard <<component>> {
+    + logVm: InputSignal<ActivityLogVm>
+  }
+
+  class ActivityHistoryPanel <<component>> {
+    + logs: InputSignal<ActivityLogVm[]>
+    + showAll: WritableSignal<boolean>
+  }
+
+  class ActivityPaywallCard <<component>> {
+    + onUpgrade: OutputEmitterRef<void>
+  }
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+BodyProgressView o--> MetabolicStore : uses >
+BodyProgressView o--> WearableStore : uses >
+BodyProgressView o--> IamStore : uses >
+WeightHistoryView o--> MetabolicStore : uses >
+BodyProgressGoalView o--> MetabolicStore : uses >
+BodyProgressGoalView o--> IamStore : uses >
+PhysicalActivityView o--> WearableStore : uses >
+
+BodyProgressView ..> BodyProgressVm : builds >
+BodyProgressView ..> BodyCompositionVm : builds >
+BodyProgressView ..> WeightChartPointVm : builds >
+PhysicalActivityView ..> WearableStatusVm : builds >
+PhysicalActivityView ..> ActivityLogVm : builds >
+
+BodyProgressView --> GoogleFitConnectCard : hosts >
+BodyProgressView --> WearableConnectedCard : hosts >
+PhysicalActivityView --> ManualActivityModal : hosts >
+PhysicalActivityView --> ActivityHistoryPanel : hosts >
+PhysicalActivityView --> ActivityPaywallCard : hosts >
+
+WearableConnectedCard --> WearableChip : contains >
+
+ManualActivityModal o--> WearableStore : uses >
+GoogleFitConnectCard o--> WearableStore : uses >
+
+@enduml

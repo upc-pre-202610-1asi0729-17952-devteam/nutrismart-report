@@ -1,0 +1,115 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' ─── Boundary stubs: shared/infrastructure ───────────────────────────────────
+package "shared/infrastructure [boundary]" {
+  abstract class BaseApi <<boundary>> {
+  }
+  interface BaseAssembler <<boundary>> {
+    + toEntityFromResource(resource: R): E
+    + toResourceFromEntity(entity: E): R
+    + toEntitiesFromResponse(response: Res): E[]
+  }
+  abstract class BaseApiEndpoint <<boundary>> {
+    + getAll(): Observable<E[]>
+    + getById(id: number): Observable<E>
+    + create(entity: E): Observable<E>
+    + update(entity: E, id: number): Observable<E>
+    + delete(id: number): Observable<void>
+  }
+}
+
+' ─── Boundary stubs: iam/domain ───────────────────────────────────────────────
+package "iam/domain [boundary]" {
+  class User <<boundary>> {
+    + id: number
+    + email: string
+  }
+}
+
+' ─── Resources ───────────────────────────────────────────────────────────────
+package "iam/infrastructure/resources" {
+
+  class UserResource <<resource>> {
+    + id: number
+    + firstName: string
+    + lastName: string
+    + email: string
+    + goal: string
+    + weight: number
+    + height: number
+    + activityLevel: string
+    + plan: string
+    + restrictions: string[]
+    + medicalConditions: string[]
+    + dailyCalorieTarget: number
+    + proteinTarget: number
+    + carbsTarget: number
+    + fatTarget: number
+    + fiberTarget: number
+    + birthday: string
+    + biologicalSex: string
+    + homeCity: string
+    + goalStartedAt: string
+    + createdAt: string
+  }
+
+  class UsersResponse <<resource>> {
+    + users: UserResource[]
+  }
+}
+
+' ─── Assemblers ──────────────────────────────────────────────────────────────
+package "iam/infrastructure/assemblers" {
+
+  class UserAssembler <<assembler>> {
+    + toEntityFromResource(resource: UserResource): User
+    + toResourceFromEntity(entity: User): UserResource
+    + toEntitiesFromResponse(response: UsersResponse): User[]
+  }
+}
+
+' ─── HTTP (Endpoint + Facade) ────────────────────────────────────────────────
+package "iam/infrastructure/http" {
+
+  class IamApiEndpoint <<endpoint>> {
+    - assembler: UserAssembler
+    --
+    + getAll(): Observable<User[]>
+    + getById(id: number): Observable<User>
+    + create(entity: User): Observable<User>
+    + update(entity: User, id: number): Observable<User>
+    + delete(id: number): Observable<void>
+  }
+
+  class IamApi <<api>> {
+    - endpoint: IamApiEndpoint
+    --
+    + getUsers(): Observable<User[]>
+    + getUser(id: number): Observable<User>
+    + createUser(user: User): Observable<User>
+    + updateUser(user: User): Observable<User>
+    + deleteUser(id: number): Observable<void>
+  }
+}
+
+' ─── Inheritance ─────────────────────────────────────────────────────────────
+IamApi --|> BaseApi : extends >
+IamApiEndpoint --|> BaseApiEndpoint : extends >
+UserAssembler ..|> BaseAssembler : implements >
+
+' ─── Composition ─────────────────────────────────────────────────────────────
+UsersResponse "1" *--> "0..*" UserResource : contains >
+
+' ─── Dependencies ────────────────────────────────────────────────────────────
+UserAssembler --> UserResource : reads >
+UserAssembler --> UsersResponse : reads >
+UserAssembler ..> User : produces >
+
+IamApiEndpoint --> UserAssembler : uses >
+IamApi o--> IamApiEndpoint : delegates to >
+
+@enduml

@@ -1,0 +1,63 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+package "subscriptions/domain/model" {
+
+  enum SubscriptionPlan {
+    BASIC
+    PRO
+    PREMIUM
+  }
+
+  enum SubscriptionStatus {
+    ACTIVE
+    CANCELLED
+    EXPIRED
+    TRIAL
+  }
+
+  class PlanFeatures <<value object>> {
+    + planKey: string
+    + maxMealLogs: number
+    + hasAnalytics: boolean
+    + hasWearable: boolean
+    + hasRestaurantScanner: boolean
+    + hasPlateScan: boolean
+    + hasRecommendations: boolean
+    + hasPantryManagement: boolean
+    + maxPantryItems: number
+  }
+
+  class Subscription <<entity>> {
+    - _id: number
+    - _userId: number
+    - _plan: SubscriptionPlan
+    - _status: SubscriptionStatus
+    - _startedAt: string
+    - _expiresAt: string | null
+    - _renewedAt: string | null
+    --
+    + features: PlanFeatures
+    + isActive: boolean
+    + isPro: boolean
+    + isPremium: boolean
+    + daysUntilExpiry: number | null
+    --
+    + activate(plan: SubscriptionPlan): void
+    + cancel(date?: string): void
+    + renew(expiresAt: string): void
+    + canAccess(feature: string): boolean
+  }
+}
+
+' ─── Note: Subscription lifecycle events are in shared/domain ────────────────
+' (SubscriptionActivated, SubscriptionCancelled, PlanUpgraded, BenefitsEnabled, BenefitsDisabled)
+
+Subscription "1" *--> "1" SubscriptionPlan : plan type >
+Subscription "1" *--> "1" SubscriptionStatus : has status >
+Subscription ..> PlanFeatures : exposes >
+
+@enduml

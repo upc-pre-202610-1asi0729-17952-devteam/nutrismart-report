@@ -1,0 +1,89 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' ─── Boundary stubs: infrastructure ─────────────────────────────────────────
+package "subscriptions/infrastructure [boundary]" {
+  class SubscriptionApi <<boundary>> {
+  }
+}
+
+' ─── Boundary stubs: domain ──────────────────────────────────────────────────
+package "subscriptions/domain [boundary]" {
+  class Subscription <<boundary>> {
+  }
+}
+
+' ─── Boundary stubs: shared ──────────────────────────────────────────────────
+package "shared/application [boundary]" {
+  class DomainEventBus <<boundary>> {
+    + publish(event: DomainEvent): void
+    + events$: Observable<DomainEvent>
+  }
+}
+
+package "iam/application [boundary]" {
+  class IamStore <<boundary>> {
+    + currentUser: Signal<User | null>
+    + upgradePlan(plan: SubscriptionPlan): Promise<void>
+  }
+}
+
+package "shared/domain [boundary]" {
+  class SubscriptionActivated <<boundary>> {
+  }
+  class SubscriptionCancelled <<boundary>> {
+  }
+  class PlanUpgraded <<boundary>> {
+  }
+  class BenefitsEnabled <<boundary>> {
+  }
+  class BenefitsDisabled <<boundary>> {
+  }
+}
+
+' ─── Application ─────────────────────────────────────────────────────────────
+package "subscriptions/application" {
+
+  class SubscriptionsStore <<store>> {
+    ' Writable signals
+    - _currentSubscription: WritableSignal<Subscription | null>
+    - _loading: WritableSignal<boolean>
+    - _error: WritableSignal<string | null>
+    - _selectedPlan: WritableSignal<SubscriptionPlan | null>
+    ' Read-only signals
+    + currentSubscription: Signal<Subscription | null>
+    + loading: Signal<boolean>
+    + error: Signal<string | null>
+    + selectedPlan: Signal<SubscriptionPlan | null>
+    ' Computed signals
+    + isActive: Signal<boolean>
+    + isPro: Signal<boolean>
+    + isPremium: Signal<boolean>
+    + features: Signal<PlanFeatures>
+    + daysUntilExpiry: Signal<number | null>
+    --
+    + loadSubscription(userId: number): Promise<void>
+    + upgradeToPlan(plan: SubscriptionPlan): Promise<void>
+    + cancelSubscription(): Promise<void>
+    + canAccess(feature: string): boolean
+    + clear(): void
+  }
+}
+
+' ─── Dependencies ────────────────────────────────────────────────────────────
+SubscriptionsStore o--> SubscriptionApi : uses >
+SubscriptionsStore o--> IamStore : uses >
+SubscriptionsStore o--> DomainEventBus : uses >
+SubscriptionsStore ..> Subscription : manages >
+
+' ─── Published events ────────────────────────────────────────────────────────
+SubscriptionsStore ..> SubscriptionActivated : publishes >
+SubscriptionsStore ..> SubscriptionCancelled : publishes >
+SubscriptionsStore ..> PlanUpgraded : publishes >
+SubscriptionsStore ..> BenefitsEnabled : publishes >
+SubscriptionsStore ..> BenefitsDisabled : publishes >
+
+@enduml

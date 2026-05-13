@@ -1,0 +1,113 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+package "analytics/domain/model" {
+
+  enum AnalyticsPeriod {
+    WEEK
+    MONTH
+    THREE_MONTHS
+  }
+
+  enum WeightChangeDirection {
+    UP
+    DOWN
+    STABLE
+  }
+
+  enum WeightChangeStatus {
+    ON_TRACK
+    STAGNATED
+    IMPROVING
+  }
+
+  enum AdherenceStatus {
+    LOGGED
+    SKIPPED
+    PARTIAL
+  }
+
+  class DailyCaloriesHistory <<value object>> {
+    + date: string
+    + consumed: number
+    + goal: number
+    + active: number
+    + net: number
+  }
+
+  class MacroAnalysis <<value object>> {
+    + protein: number
+    + carbs: number
+    + fat: number
+    + fiber: number
+    + proteinPercent: number
+    + carbsPercent: number
+    + fatPercent: number
+  }
+
+  class AdherenceHistoryEntry <<value object>> {
+    + date: string
+    + status: AdherenceStatus
+    + streak: number
+  }
+
+  class BehavioralEvent <<value object>> {
+    + date: string
+    + eventTypeKey: string
+    + descriptionKey: string
+    + severity: string
+  }
+
+  class AnalyticsData <<value object>> {
+    + period: AnalyticsPeriod
+    + userId: number
+    + averageCalorieIntake: number
+    + averageProteinIntake: number
+    + currentStreak: number
+    + weightChange: number
+    + weightChangeDirection: WeightChangeDirection
+    + weightChangeStatus: WeightChangeStatus
+    + dailyCaloriesHistory: DailyCaloriesHistory[]
+    + macroAnalysis: MacroAnalysis
+    + daysWithCompleteLog: number
+    + weightEvolution: WeightPoint[]
+    + goalWeight: number
+    + adherenceHistory: AdherenceHistoryEntry[]
+    + behavioralEvents: BehavioralEvent[]
+    + proteinCompliance: number
+  }
+
+  class WeightPoint <<value object>> {
+    + date: string
+    + weightKg: number
+  }
+}
+
+package "analytics/domain/services" {
+
+  class AnalyticsDomainService <<domain service>> {
+    + {static} computeWeightDirection(history: WeightPoint[]): WeightChangeDirection
+    + {static} computeAdherenceStreak(entries: AdherenceHistoryEntry[]): number
+    + {static} classifyWeightStatus(current: number, target: number, direction: WeightChangeDirection): WeightChangeStatus
+    + {static} aggregateMacros(history: DailyCaloriesHistory[]): MacroAnalysis
+  }
+}
+
+AnalyticsData "1" *--> "1" AnalyticsPeriod : for period >
+AnalyticsData "1" *--> "1" WeightChangeDirection : direction >
+AnalyticsData "1" *--> "1" WeightChangeStatus : status >
+AnalyticsData "1" *--> "1" MacroAnalysis : macros >
+AnalyticsData "1" *--> "0..*" DailyCaloriesHistory : daily history >
+AnalyticsData "1" *--> "0..*" AdherenceHistoryEntry : adherence >
+AnalyticsData "1" *--> "0..*" BehavioralEvent : events >
+AnalyticsData "1" *--> "0..*" WeightPoint : weight evolution >
+AdherenceHistoryEntry "1" *--> "1" AdherenceStatus : status >
+
+AnalyticsDomainService ..> WeightChangeDirection : computes >
+AnalyticsDomainService ..> WeightChangeStatus : classifies >
+AnalyticsDomainService ..> MacroAnalysis : aggregates >
+
+@enduml

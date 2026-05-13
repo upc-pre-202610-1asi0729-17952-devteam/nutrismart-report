@@ -1,0 +1,136 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+package "behavioral-consistency/domain/model" {
+
+  enum AdherenceStatus {
+    ON_TRACK
+    AT_RISK
+    DROPPED
+  }
+
+  enum AdherenceDropTrigger {
+    STRATEGY_MISMATCH
+    BEHAVIORAL_DROP
+    NUTRITIONAL_ABANDONMENT
+  }
+
+  enum BehaviorPatternType {
+    CONSISTENT
+    WEEKDAY_ONLY
+    RECOVERING
+    IRREGULAR
+  }
+
+  enum RecoveryActionType {
+    REDUCE_CALORIE_TARGET
+    FOCUS_SINGLE_MEAL
+    SIMPLIFY_TRACKING
+    LOG_ANY_MEAL
+  }
+
+  enum RecoveryPlanStatus {
+    ACTIVE
+    COMPLETED
+    EXPIRED
+  }
+
+  class RecoveryAction <<value object>> {
+    + type: RecoveryActionType
+    + descriptionKey: string
+    + priority: number
+    --
+    + toJSON(): RecoveryActionProps
+  }
+
+  class BehavioralProgress <<entity>> {
+    - _id: number
+    - _userId: number
+    - _adherenceStatus: AdherenceStatus
+    - _streak: number
+    - _consecutiveMisses: number
+    - _lastGoalMetDate: string
+    - _goalMetDates: string[]
+    --
+    + weekDots: boolean[]
+    + completedDaysThisWeek: number
+    + weeklyCompletionRate: number
+    + nextStreakMilestone: number
+    --
+    + isOnTrack(): boolean
+    + needsReEngagement(): boolean
+    + hasAlert(): boolean
+    + markGoalMet(date: string): void
+    + markGoalMissed(): void
+    + recalculateAdherenceStatus(): void
+    + behavioralSummary(): string
+  }
+
+  class EatingBehaviorPattern <<entity>> {
+    - _id: number
+    - _userId: number
+    - _weeklyCompletionRate: number
+    - _currentStreak: number
+    - _consecutiveMisses: number
+    - _patternType: BehaviorPatternType
+    - _analyzedAt: string
+    --
+    + isImproving(): boolean
+    + isDeclining(): boolean
+    + isConsistent(): boolean
+    + {static} fromProgress(userId: number, progress: BehavioralProgress): EatingBehaviorPattern
+  }
+
+  class RecoveryPlan <<entity>> {
+    - _id: number
+    - _userId: number
+    - _trigger: AdherenceDropTrigger
+    - _status: RecoveryPlanStatus
+    - _actions: RecoveryAction[]
+    - _activatedAt: string
+    - _resolvedAt: string | null
+    --
+    + isActive(): boolean
+    + complete(date?: string): void
+    + expire(date?: string): void
+    + {static} create(userId: number, trigger: AdherenceDropTrigger): RecoveryPlan
+  }
+}
+
+package "behavioral-consistency/domain/events" {
+
+  class BehaviorPatternAnalyzed <<domain event>> {
+    + eventType: string
+    + userId: number
+    + patternType: BehaviorPatternType
+    + analyzedAt: string
+  }
+
+  class RecoveryPlanActivated <<domain event>> {
+    + eventType: string
+    + userId: number
+    + planId: number
+    + trigger: AdherenceDropTrigger
+  }
+
+  class RecoveryPlanCompleted <<domain event>> {
+    + eventType: string
+    + userId: number
+    + planId: number
+  }
+}
+
+BehavioralProgress "1" *--> "1" AdherenceStatus : typed as >
+EatingBehaviorPattern "1" *--> "1" BehaviorPatternType : classified as >
+RecoveryPlan "1" *--> "1..*" RecoveryAction : prescribes >
+RecoveryPlan "1" *--> "1" AdherenceDropTrigger : triggered by >
+RecoveryPlan "1" *--> "1" RecoveryPlanStatus : has status >
+RecoveryAction "1" *--> "1" RecoveryActionType : typed as >
+EatingBehaviorPattern ..> BehavioralProgress : derived from >
+BehaviorPatternAnalyzed ..> BehaviorPatternType : carries >
+RecoveryPlanActivated ..> AdherenceDropTrigger : carries >
+
+@enduml
