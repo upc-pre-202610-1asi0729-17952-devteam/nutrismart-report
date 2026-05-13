@@ -775,74 +775,47 @@ A continuación se presentan screenshots de las principales vistas implementadas
 
 ![Registration view](../assets/img/sprint2/register.png)
 ![Login view](../assets/img/sprint2/login.png)
-![Onboarding step 2 — physical data](../assets/img/sprint2/onboarding-physical-data.png)
+![Onboarding step 2 — physical data](../assets/img/sprint2/onboarding-goal.png)
 ![Onboarding step 4 — targets preview with BMI, BMR, TDEE and macro distribution](../assets/img/sprint2/onboarding-targets-preview.png)
 
 **Dashboard — cuatro estados de adherencia conductual**
 
 ![Dashboard ON_TRACK state](../assets/img/sprint2/dashboard-on-track.png)
-![Dashboard AT_RISK state — BehavioralDropDetected banner with 3 consecutive misses](../assets/img/sprint2/dashboard-at-risk.png)
-![Dashboard DROPPED state — NutritionalAbandonmentRisk banner at 7 days inactive](../assets/img/sprint2/dashboard-dropped.png)
-![Dashboard RECOVERED state — ConsistencyRecovered banner](../assets/img/sprint2/dashboard-recovered.png)
 ![Streak milestone widget at 7 consecutive days](../assets/img/sprint2/streak-milestone.png)
 
 **Nutrition Tracking — Daily Log, análisis semanal y bloqueo de restricciones**
 
 ![Daily log view with meal expansion panels and 5-column summary bar](../assets/img/sprint2/daily-log.png)
-![Add food modal with real-time macro scaling](../assets/img/sprint2/add-food-modal.png)
 ![RestrictedItemBlocked modal with NutritionalRiskLevel indicator](../assets/img/sprint2/restricted-item-blocked.png)
-![MealSkipped badge in meal section header](../assets/img/sprint2/meal-skipped.png)
 ![DailyGoalExceeded alert banner](../assets/img/sprint2/daily-goal-exceeded.png)
 ![DailyGoalMet alert banner](../assets/img/sprint2/daily-goal-met.png)
-![Caloric deficit monitoring widget for WEIGHT_LOSS users](../assets/img/sprint2/caloric-deficit-widget.png)
-![Protein and surplus tracker for MUSCLE_GAIN users](../assets/img/sprint2/protein-surplus-tracker.png)
-![Weekly macro analysis for WEIGHT_LOSS — DailyGoalExceeded pattern detection](../assets/img/sprint2/weekly-macro-analysis-weight-loss.png)
-![Weekly protein and surplus analysis for MUSCLE_GAIN](../assets/img/sprint2/weekly-protein-analysis-muscle-gain.png)
 ![Meal detail panel with per-item macro contribution](../assets/img/sprint2/meal-detail-panel.png)
 
 **Restaurant Intelligence y Smart Scan**
 
 ![Smart Scan mode selection view with plan entitlement check](../assets/img/sprint2/smart-scan-mode-selection.png)
 ![Plate scan result — editable food items list with MealRecorded confirmation](../assets/img/sprint2/plate-scan-result.png)
-![Restaurant menu scan — RestaurantMealAnalyzed result](../assets/img/sprint2/menu-scan-result.png)
 ![RestrictedDishFlagged section in menu scan results](../assets/img/sprint2/restricted-dish-flagged.png)
-![CompatibleDishesRanked — best dish card with macro-based justification](../assets/img/sprint2/compatible-dishes-ranked.png)
 
 **Smart Recommendation y Pantry**
 
-![Recommendations view — hot weather state with light meal suggestions](../assets/img/sprint2/recommendations-hot-weather.png)
-![Recommendations view — AT_RISK preventive card — PreventiveRecommendationGenerated](../assets/img/sprint2/recommendations-at-risk.png)
-![Recommendations view — DROPPED intervention card — InterventionRecommendationGenerated](../assets/img/sprint2/recommendations-dropped.png)
-![Recommendations view — StrategyAdjustmentSuggested card after stagnation](../assets/img/sprint2/recommendations-strategy-adjustment.png)
-![Recommendations view — Travel Mode active with local dish suggestions](../assets/img/sprint2/recommendations-travel-mode.png)
-![Pantry view — ingredient list and recipe suggestions sorted by macro deficit](../assets/img/sprint2/pantry.png)
+![Recommendations view](../assets/img/sprint2/recommendations-hot-weather.png)
+![Pantry view](../assets/img/sprint2/pantry.png)
 
 **Metabolic Adaptation y actividad física**
 
 ![Body Progress view with BMI BMR TDEE metric cards](../assets/img/sprint2/body-progress.png)
-![Weight evolution chart with goal reference line and log history](../assets/img/sprint2/weight-evolution-chart.png)
-![Target weight dialog with projected achievement date](../assets/img/sprint2/target-weight-dialog.png)
-![Body Composition section for MUSCLE_GAIN users — fat excess alert](../assets/img/sprint2/body-composition.png)
-![Activity log view — activity form with MET-based calorie estimation](../assets/img/sprint2/activity-log.png)
-![Daily Log — Active calories row updated after CaloricTargetAdjusted emission](../assets/img/sprint2/caloric-target-adjusted.png)
-![Body Progress — StagnationDetected banner at 14 days without progress](../assets/img/sprint2/stagnation-detected.png)
-![Body Progress — StrategyMismatchDetected banner with GradualAdjustmentSuggested](../assets/img/sprint2/strategy-mismatch-detected.png)
 
 **Analytics y Suscripciones**
 
-![Analytics view — period selector and daily calories bar chart](../assets/img/sprint2/analytics.png)
-![Analytics view — Adherence History timeline for 30-day period](../assets/img/sprint2/analytics-adherence-timeline.png)
-![PDF export button with Premium entitlement check](../assets/img/sprint2/pdf-export.png)
-![Subscription view — plan comparison cards](../assets/img/sprint2/subscription.png)
-![Upgrade confirmation dialog — BenefitsEnabled emission](../assets/img/sprint2/upgrade-dialog.png)
-![Downgrade confirmation dialog — BenefitsDisabled scheduling](../assets/img/sprint2/downgrade-dialog.png)
+![Analytics view](../assets/img/sprint2/analytics.png)
+![Suscription](../assets/img/sprint2/upgrade-dialog.png)
  
 El video de demostración del Sprint 2 ilustra la navegación completa por todos los bounded contexts, la transición entre los cuatro estados de adherencia conductual del dashboard, el flujo de escaneo de plato y menú de restaurante con selección y log del plato compatible, el registro manual de actividad física con deducción en tiempo real en el balance calórico, y la gestión de suscripciones con upgrade de plan.
  
 **URL del video de demostración del Sprint 2:** [Video sprint 2](https://upcedupe-my.sharepoint.com/:v:/g/personal/u202417857_upc_edu_pe/IQDLiegjIZsTQq6qG8EwJNFBATiDuurOIn-XejaMJAToBnc?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=vafcFN)
 
 #### 5.2.2.6. Services Documentation Evidence for Sprint Review
-
 
 El Sprint 2 tuvo como alcance exclusivo la construcción del frontend de la aplicación web autenticada. Todos los datos son servidos mediante una capa mock con `json-server` a partir del archivo `db.json`, sin conexión a endpoints reales de backend. Por esta razón, no se generó documentación OpenAPI ni se desplegaron Web Services durante esta iteración.
  
