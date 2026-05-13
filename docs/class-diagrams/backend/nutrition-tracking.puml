@@ -1,0 +1,352 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "nutrition.domain.model.aggregates" {
+  class NutritionLog {
+    - id: NutritionLogId
+    - userId: UUID
+    - date: LocalDate
+    - entries: List<MealRecord>
+    - dietaryRestrictions: List<String>
+    - dailyCalorieTarget: double
+    - createdAt: Instant
+    + NutritionLog(userId: UUID, date: LocalDate)
+    + addEntry(entry: MealRecord): void
+    + removeEntry(entryId: MealRecordId): void
+    + updateNetTarget(target: double): void
+    + getTotalCalories(): double
+    + getTotalMacros(): MacroNutrients
+    + isGoalExceeded(): boolean
+    + getId(): NutritionLogId
+    + getEntries(): List<MealRecord>
+  }
+}
+
+package "nutrition.domain.model.entities" {
+  class MealRecord {
+    - id: MealRecordId
+    - foodItem: FoodItem
+    - quantity: Quantity
+    - mealType: MealType
+    - source: FoodDataSource
+    - loggedAt: Instant
+    + MealRecord(foodItem: FoodItem, quantity: Quantity, mealType: MealType, source: FoodDataSource)
+    + getCalories(): double
+    + getMacros(): MacroNutrients
+    + getId(): MealRecordId
+  }
+  class FoodItem {
+    - id: FoodItemId
+    - name: String
+    - brand: String
+    - macrosPer100g: MacroNutrients
+    - source: FoodDataSource
+    - externalId: String
+    + FoodItem(name: String, macrosPer100g: MacroNutrients, source: FoodDataSource)
+    + getMacrosForQuantity(quantity: Quantity): MacroNutrients
+    + getCaloriesPer100g(): double
+    + containsRestricted(restrictions: List<String>): boolean
+  }
+}
+
+package "nutrition.domain.model.valueobjects" {
+  class NutritionLogId <<ValueObject>> {
+    - value: UUID
+    + getValue(): UUID
+  }
+  class MealRecordId <<ValueObject>> {
+    - value: UUID
+    + getValue(): UUID
+  }
+  class FoodItemId <<ValueObject>> {
+    - value: UUID
+    + getValue(): UUID
+  }
+  class MacroNutrients <<ValueObject>> {
+    - calories: double
+    - proteinG: double
+    - carbsG: double
+    - fatG: double
+    - fiberG: double
+    + MacroNutrients(calories: double, proteinG: double, carbsG: double, fatG: double)
+    + add(other: MacroNutrients): MacroNutrients
+    + scale(factor: double): MacroNutrients
+  }
+  class Quantity <<ValueObject>> {
+    - amount: double
+    - unit: WeightUnit
+    + Quantity(amount: double, unit: WeightUnit)
+    + toGrams(): double
+  }
+}
+
+package "nutrition.domain.model.enums" {
+  enum MealType {
+    BREAKFAST
+    LUNCH
+    DINNER
+    SNACK
+  }
+  enum WeightUnit {
+    GRAMS
+    ML
+    OUNCE
+    SERVING
+  }
+  enum FoodDataSource {
+    OPEN_FOOD_FACTS
+    USDA
+    MANUAL
+    SMART_SCAN
+    RESTAURANT_SCAN
+  }
+}
+
+package "nutrition.domain.model.events" {
+  class MealRecorded <<DomainEvent>> {
+    + userId: UUID
+    + logId: UUID
+    + date: LocalDate
+    + totalCalories: double
+    + source: String
+    + occurredOn: Instant
+  }
+  class MealSkipped <<DomainEvent>> {
+    + userId: UUID
+    + date: LocalDate
+    + mealType: String
+    + occurredOn: Instant
+  }
+  class DailyGoalMet <<DomainEvent>> {
+    + userId: UUID
+    + date: LocalDate
+    + totalCalories: double
+    + occurredOn: Instant
+  }
+  class DailyGoalExceeded <<DomainEvent>> {
+    + userId: UUID
+    + date: LocalDate
+    + totalCalories: double
+    + target: double
+    + occurredOn: Instant
+  }
+  class RestrictedItemBlocked <<DomainEvent>> {
+    + userId: UUID
+    + foodItemName: String
+    + restriction: String
+    + occurredOn: Instant
+  }
+}
+
+package "nutrition.domain.repositories" {
+  interface NutritionLogRepository {
+    + findByUserIdAndDate(userId: UUID, date: LocalDate): Optional<NutritionLog>
+    + findByUserId(userId: UUID): List<NutritionLog>
+    + findByUserIdBetweenDates(userId: UUID, from: LocalDate, to: LocalDate): List<NutritionLog>
+    + save(log: NutritionLog): NutritionLog
+    + findById(id: NutritionLogId): Optional<NutritionLog>
+  }
+  interface FoodItemRepository {
+    + findById(id: FoodItemId): Optional<FoodItem>
+    + findByNameContaining(name: String): List<FoodItem>
+    + findByExternalId(externalId: String): Optional<FoodItem>
+    + save(item: FoodItem): FoodItem
+  }
+}
+
+package "nutrition.application.internal.commandservices" {
+  class NutritionCommandService {
+    - logRepository: NutritionLogRepository
+    - foodItemRepository: FoodItemRepository
+    - openFoodFactsAdapter: OpenFoodFactsAdapter
+    - usdaAdapter: UsdaFoodDataAdapter
+    + handle(command: RegisterDietaryRestrictionsCommand): NutritionLog
+    + handle(command: LogMealEntryCommand): NutritionLog
+    + handle(command: EditMealEntryCommand): NutritionLog
+    + handle(command: DeleteMealEntryCommand): NutritionLog
+    + handle(command: ConfirmScanResultCommand): NutritionLog
+    + handle(command: SetDailyNutritionalTargetsCommand): NutritionLog
+    + handle(command: UpdateNetDailyTargetCommand): NutritionLog
+  }
+  class RegisterDietaryRestrictionsCommand <<Command>> {
+    + userId: UUID
+    + restrictions: List<String>
+  }
+  class LogMealEntryCommand <<Command>> {
+    + userId: UUID
+    + date: LocalDate
+    + foodItemId: UUID
+    + amount: double
+    + unit: String
+    + mealType: String
+    + source: String
+  }
+  class EditMealEntryCommand <<Command>> {
+    + logId: UUID
+    + entryId: UUID
+    + amount: double
+    + unit: String
+  }
+  class DeleteMealEntryCommand <<Command>> {
+    + logId: UUID
+    + entryId: UUID
+  }
+  class ConfirmScanResultCommand <<Command>> {
+    + userId: UUID
+    + date: LocalDate
+    + scannedItems: List<ScannedItemDto>
+    + mealType: String
+  }
+  class SetDailyNutritionalTargetsCommand <<Command>> {
+    + userId: UUID
+    + dailyCalorieTarget: double
+  }
+  class UpdateNetDailyTargetCommand <<Command>> {
+    + userId: UUID
+    + date: LocalDate
+    + adjustedTarget: double
+  }
+}
+
+package "nutrition.application.internal.queryservices" {
+  class NutritionQueryService {
+    - logRepository: NutritionLogRepository
+    + handle(query: GetDailyLogQuery): Optional<NutritionLog>
+    + handle(query: GetLogHistoryQuery): List<NutritionLog>
+  }
+  class FoodItemQueryService {
+    - foodItemRepository: FoodItemRepository
+    - openFoodFactsAdapter: OpenFoodFactsAdapter
+    - usdaAdapter: UsdaFoodDataAdapter
+    + handle(query: SearchFoodItemsQuery): List<FoodItem>
+    + handle(query: SearchByBarcodeQuery): Optional<FoodItem>
+  }
+  class GetDailyLogQuery <<Query>> {
+    + userId: UUID
+    + date: LocalDate
+  }
+  class GetLogHistoryQuery <<Query>> {
+    + userId: UUID
+    + fromDate: LocalDate
+    + toDate: LocalDate
+  }
+  class SearchFoodItemsQuery <<Query>> {
+    + term: String
+  }
+  class SearchByBarcodeQuery <<Query>> {
+    + barcode: String
+  }
+}
+
+package "nutrition.infrastructure.external" {
+  class OpenFoodFactsAdapter {
+    - httpClient: WebClient
+    + searchByBarcode(barcode: String): Optional<FoodItem>
+    + searchByName(name: String): List<FoodItem>
+  }
+  class UsdaFoodDataAdapter {
+    - httpClient: WebClient
+    - apiKey: String
+    + searchFoodItems(query: String): List<FoodItem>
+    + getFoodDetail(fdcId: String): Optional<FoodItem>
+  }
+}
+
+package "nutrition.interfaces.rest.resources" {
+  class LogMealEntryResource {
+    + foodItemId: UUID
+    + amount: double
+    + unit: String
+    + mealType: String
+    + source: String
+  }
+  class MealRecordResource {
+    + id: UUID
+    + foodName: String
+    + calories: double
+    + proteinG: double
+    + carbsG: double
+    + fatG: double
+    + mealType: String
+    + source: String
+    + loggedAt: String
+  }
+  class DailyLogResource {
+    + date: String
+    + totalCalories: double
+    + dailyCalorieTarget: double
+    + totalProteinG: double
+    + totalCarbsG: double
+    + totalFatG: double
+    + entries: List<MealRecordResource>
+  }
+  class FoodItemResource {
+    + id: UUID
+    + name: String
+    + brand: String
+    + caloriesPer100g: double
+    + proteinPer100g: double
+    + carbsPer100g: double
+    + fatPer100g: double
+    + source: String
+  }
+}
+
+package "nutrition.interfaces.rest.assemblers" {
+  class NutritionLogAssembler {
+    + toResourceFromEntity(log: NutritionLog): DailyLogResource
+    + toMealRecordResource(record: MealRecord): MealRecordResource
+  }
+  class FoodItemAssembler {
+    + toResourceFromEntity(item: FoodItem): FoodItemResource
+  }
+}
+
+package "nutrition.interfaces.rest.controllers" {
+  class NutritionLogController {
+    - commandService: NutritionCommandService
+    - queryService: NutritionQueryService
+    + getDailyLog(userId: UUID, date: LocalDate): ResponseEntity<DailyLogResource>
+    + getLogHistory(userId: UUID, from: LocalDate, to: LocalDate): ResponseEntity<List<DailyLogResource>>
+    + logMealEntry(userId: UUID, resource: LogMealEntryResource): ResponseEntity<DailyLogResource>
+    + editMealEntry(logId: UUID, entryId: UUID, resource: LogMealEntryResource): ResponseEntity<DailyLogResource>
+    + deleteMealEntry(logId: UUID, entryId: UUID): ResponseEntity<DailyLogResource>
+    + confirmScan(userId: UUID, resource: ConfirmScanResultCommand): ResponseEntity<DailyLogResource>
+  }
+  class FoodSearchController {
+    - queryService: FoodItemQueryService
+    + search(term: String): ResponseEntity<List<FoodItemResource>>
+    + searchByBarcode(barcode: String): ResponseEntity<FoodItemResource>
+  }
+}
+
+NutritionLog "1" *--> "0..*" MealRecord : contains >
+MealRecord "1" *--> "1" FoodItem : describes >
+MealRecord "1" *--> "1" Quantity : has >
+MealRecord "1" *--> "1" MealType : has >
+MealRecord "1" *--> "1" FoodDataSource : sourced from >
+FoodItem "1" *--> "1" MacroNutrients : has >
+NutritionLog ..> MealRecorded : publishes >
+NutritionLog ..> MealSkipped : publishes >
+NutritionLog ..> DailyGoalMet : publishes >
+NutritionLog ..> DailyGoalExceeded : publishes >
+NutritionLog ..> RestrictedItemBlocked : publishes >
+
+NutritionCommandService --> NutritionLogRepository : uses >
+NutritionCommandService --> FoodItemRepository : uses >
+NutritionCommandService --> OpenFoodFactsAdapter : uses >
+NutritionCommandService --> UsdaFoodDataAdapter : uses >
+NutritionQueryService --> NutritionLogRepository : uses >
+FoodItemQueryService --> FoodItemRepository : uses >
+FoodItemQueryService --> OpenFoodFactsAdapter : uses >
+FoodItemQueryService --> UsdaFoodDataAdapter : uses >
+
+NutritionLogController --> NutritionCommandService : uses >
+NutritionLogController --> NutritionQueryService : uses >
+NutritionLogController --> NutritionLogAssembler : uses >
+FoodSearchController --> FoodItemQueryService : uses >
+FoodSearchController --> FoodItemAssembler : uses >
+
+@enduml

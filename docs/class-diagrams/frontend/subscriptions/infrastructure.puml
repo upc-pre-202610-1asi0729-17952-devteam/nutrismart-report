@@ -1,0 +1,90 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' ─── Boundary stubs: shared/infrastructure ───────────────────────────────────
+package "shared/infrastructure [boundary]" {
+  abstract class BaseApi <<boundary>> {
+  }
+  interface BaseAssembler <<boundary>> {
+  }
+  abstract class BaseApiEndpoint <<boundary>> {
+  }
+}
+
+' ─── Boundary stubs: subscriptions/domain ────────────────────────────────────
+package "subscriptions/domain [boundary]" {
+  class Subscription <<boundary>> {
+    + id: number
+    + userId: number
+  }
+}
+
+' ─── Resources ───────────────────────────────────────────────────────────────
+package "subscriptions/infrastructure/resources" {
+
+  class SubscriptionResource <<resource>> {
+    + id: number
+    + userId: number
+    + plan: string
+    + status: string
+    + startedAt: string
+    + expiresAt: string | null
+    + renewedAt: string | null
+  }
+
+  class SubscriptionsResponse <<resource>> {
+    + subscriptions: SubscriptionResource[]
+  }
+}
+
+' ─── Assemblers ──────────────────────────────────────────────────────────────
+package "subscriptions/infrastructure/assemblers" {
+
+  class SubscriptionAssembler <<assembler>> {
+    + toEntityFromResource(resource: SubscriptionResource): Subscription
+    + toResourceFromEntity(entity: Subscription): SubscriptionResource
+    + toEntitiesFromResponse(response: SubscriptionsResponse): Subscription[]
+  }
+}
+
+' ─── HTTP ────────────────────────────────────────────────────────────────────
+package "subscriptions/infrastructure/http" {
+
+  class SubscriptionApiEndpoint <<endpoint>> {
+    - assembler: SubscriptionAssembler
+    --
+    + getAll(): Observable<Subscription[]>
+    + getById(id: number): Observable<Subscription>
+    + create(entity: Subscription): Observable<Subscription>
+    + update(entity: Subscription, id: number): Observable<Subscription>
+    + delete(id: number): Observable<void>
+  }
+
+  class SubscriptionApi <<api>> {
+    - endpoint: SubscriptionApiEndpoint
+    --
+    + getSubscriptionByUserId(userId: number): Observable<Subscription | undefined>
+    + createSubscription(sub: Subscription): Observable<Subscription>
+    + updateSubscription(sub: Subscription): Observable<Subscription>
+    + cancelSubscription(id: number): Observable<Subscription>
+    + upgradePlan(userId: number, plan: SubscriptionPlan): Observable<Subscription>
+  }
+}
+
+SubscriptionApi --|> BaseApi : extends >
+SubscriptionApiEndpoint --|> BaseApiEndpoint : extends >
+SubscriptionAssembler ..|> BaseAssembler : implements >
+
+SubscriptionsResponse "1" *--> "0..*" SubscriptionResource : contains >
+
+SubscriptionAssembler --> SubscriptionResource : reads >
+SubscriptionAssembler --> SubscriptionsResponse : reads >
+SubscriptionAssembler ..> Subscription : produces >
+
+SubscriptionApiEndpoint --> SubscriptionAssembler : uses >
+SubscriptionApi o--> SubscriptionApiEndpoint : delegates to >
+
+@enduml

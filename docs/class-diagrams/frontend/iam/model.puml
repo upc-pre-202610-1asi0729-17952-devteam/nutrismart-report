@@ -1,0 +1,131 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+package "iam/domain/model" {
+
+  enum ActivityLevel {
+    SEDENTARY
+    MODERATE
+    ACTIVE
+    VERY_ACTIVE
+  }
+
+  enum DietaryRestriction {
+    VEGETARIAN
+    VEGAN
+    GLUTEN_FREE
+    DAIRY_FREE
+    NUT_FREE
+    LOW_SODIUM
+    LOW_SUGAR
+    HALAL
+  }
+
+  enum MedicalCondition {
+    DIABETES
+    HYPERTENSION
+    CELIAC
+    LACTOSE_INTOLERANCE
+    KIDNEY_DISEASE
+    HEART_DISEASE
+  }
+
+  enum SubscriptionPlan {
+    BASIC
+    PRO
+    PREMIUM
+  }
+
+  enum UserGoal {
+    WEIGHT_LOSS
+    MUSCLE_GAIN
+  }
+
+  class MetabolicTargets <<value object>> {
+    + dailyCalorieTarget: number
+    + proteinTarget: number
+    + carbsTarget: number
+    + fatTarget: number
+    + fiberTarget: number
+    + bmr: number
+    + tdee: number
+    --
+    + {static} calculate(weight, height, age, sex, activityLevel, goal): MetabolicTargets
+    + {static} withActivityAdjustment(base, activityLevel): MetabolicTargets
+  }
+
+  class MedicalDietaryWarning <<value object>> {
+    + condition: MedicalCondition
+    + nutrientToLimitKey: string
+    + descriptionKey: string
+    + severity: MedicalWarningSeverity
+    --
+    + isAdvisory(): boolean
+    + isStrict(): boolean
+  }
+
+  class User <<entity>> {
+    - _id: number
+    - _firstName: string
+    - _lastName: string
+    - _email: string
+    - _goal: UserGoal
+    - _weight: number
+    - _height: number
+    - _activityLevel: ActivityLevel
+    - _plan: SubscriptionPlan
+    - _restrictions: DietaryRestriction[]
+    - _medicalConditions: MedicalCondition[]
+    - _dailyCalorieTarget: number
+    - _proteinTarget: number
+    - _carbsTarget: number
+    - _fatTarget: number
+    - _fiberTarget: number
+    - _birthday: string
+    - _biologicalSex: string
+    - _homeCity: string
+    - _goalStartedAt: string
+    --
+    + fullName: string
+    + initials: string
+    + bmi: number
+    + isPro: boolean
+    + isPremium: boolean
+    + canUpgrade: boolean
+    + derivedRestrictions: DietaryRestriction[]
+    + effectiveRestrictions: DietaryRestriction[]
+    + medicalDietaryWarnings: MedicalDietaryWarning[]
+    --
+    + hasRestriction(r: DietaryRestriction): boolean
+    + addRestriction(r: DietaryRestriction): void
+    + removeRestriction(r: DietaryRestriction): void
+    + addMedicalCondition(c: MedicalCondition): void
+    + removeMedicalCondition(c: MedicalCondition): void
+    + applyMetabolicTargets(targets: MetabolicTargets): void
+    + dailySummary(): string
+  }
+
+  class MedicalRestrictionPolicy <<domain service>> {
+    + {static} deriveRestrictions(conditions: MedicalCondition[]): DietaryRestriction[]
+    + {static} getWarnings(conditions: MedicalCondition[]): MedicalDietaryWarning[]
+  }
+}
+
+' ─── Note: IAM publishes domain events that live in shared/domain ─────────────
+' (AccountCreated, OnboardingCompleted, ProfileUpdated, PlanUpgraded, GoalSwitched)
+
+User "1" *--> "0..*" DietaryRestriction : has restrictions >
+User "1" *--> "0..*" MedicalCondition : has conditions >
+User "1" *--> "1" UserGoal : pursues >
+User "1" *--> "1" ActivityLevel : level >
+User "1" *--> "1" SubscriptionPlan : subscribed to >
+User ..> MetabolicTargets : applies >
+User ..> MedicalDietaryWarning : generates >
+MedicalDietaryWarning "1" *--> "1" MedicalCondition : for condition >
+MedicalRestrictionPolicy ..> DietaryRestriction : derives >
+MedicalRestrictionPolicy ..> MedicalDietaryWarning : produces >
+
+@enduml

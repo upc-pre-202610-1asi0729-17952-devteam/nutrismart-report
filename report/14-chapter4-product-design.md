@@ -1753,141 +1753,205 @@ Incluye los siguientes sub-componentes:
 ![Shared Kernel Diagram](../assets/img/artifacts/22nutrismart-SharedKernelDiagram.png)
 
 ## 4.7. Software Object-Oriented Design
- 
-En total se presentan catorce diagramas, siete por cada capa, uno por cada Bounded Context definido en la arquitectura DDD del producto.
- 
+
+En total se presentan treinta y dos diagramas, cuatro por cada Bounded Context identificado en la arquitectura DDD del producto, cubriendo ocho contextos delimitados.
+
 **Características principales**
 
 **Arquitectura DDD en capas**
- 
-El backend estructura cada Bounded Context en cuatro paquetes:
- 
-- `domain`: contiene aggregates, entities, value objects y domain events.
-- `application`: aloja los command services y query services junto con sus respectivos commands y queries.
-- `infrastructure`: implementa los repositorios JPA y los adaptadores hacia APIs externas.
-- `interfaces`: expone los REST controllers, los assemblers y los recursos de entrada/salida.
-El frontend replica esta separación en las capas `domain/model`, `application/services`, `infrastructure/http` y `presentation/components`.
- 
-**Aggregates como raíz de consistencia**
- 
-Cada Bounded Context define uno o más aggregates raíz que encapsulan la lógica de negocio y controlan el acceso a sus entidades internas. Por ejemplo:
- 
-- `NutritionLog` en el contexto de *Nutrition Tracking*
-- `BodyProfile` en *Body & Health Metrics*
+
+El frontend de NutriSmart estructura cada Bounded Context en cuatro paquetes siguiendo una arquitectura hexagonal:
+
+- `domain/model`: contiene entities, value objects, enumeraciones de dominio y domain events.
+- `application`: aloja los stores reactivos que orquestan la lógica de aplicación mediante Angular Signals.
+- `infrastructure`: implementa los assemblers de transformación, los endpoints HTTP y las APIs que encapsulan la comunicación con el servidor.
+- `presentation`: expone las views (componentes inteligentes), los dumb components y los ViewModels que adaptan los datos del dominio hacia la interfaz de usuario.
+
+**Entities y Value Objects como núcleo del dominio**
+
+Cada Bounded Context define una o más entidades que encapsulan la lógica de negocio y controlan el acceso a sus datos internos. Por ejemplo:
+
+- `NutritionLog` y `MealRecord` en el contexto de *Nutrition Tracking*
+- `BehavioralProgress` y `RecoveryPlan` en *Behavioral Consistency*
 - `Subscription` en *Subscriptions & Billing*
-Ninguna entidad interna es accesible directamente desde fuera del aggregate.
- 
-**Value Objects inmutables**
- 
-Los conceptos del dominio que se identifican por su valor y no por su identidad se modelan como value objects: `Email`, `Weight`, `Height`, `MacroNutrients`, `Money`, `RecommendationContext`, entre otros. Su inmutabilidad se refleja en la ausencia de setters y en constructores que validan su estado inicial.
- 
+- `MenuAnalysis` en *Restaurant Intelligence*
+
+Los conceptos del dominio que se identifican por su valor y no por su identidad se modelan como value objects: `MacroNutrients`, `DailyCaloriesHistory`, `PlanFeatures`, `RecoveryAction`, `RecommendationContext`, entre otros. Su inmutabilidad se refleja en la ausencia de setters y en constructores que validan su estado inicial.
+
 **Domain Events**
- 
-Cada aggregate publica eventos de dominio que representan hechos significativos del negocio:
- 
-- `UserRegistered`
-- `ConsumptionUpdated`
-- `CaloricBalanceAdjusted`
-- `SubscriptionActivated`
+
+Cada entity del dominio puede publicar eventos que representan hechos significativos del negocio, canalizados a través del `DomainEventBus` de la capa `shared/application`:
+
+- `UserRegistered`, `UserLoggedIn` en IAM
+- `DailyGoalMet`, `MealLogged` en Nutrition Tracking
+- `BehaviorPatternAnalyzed`, `RecoveryPlanActivated` en Behavioral Consistency
+- `MetabolicTargetSet`, `CaloricBalanceAdjusted` en Metabolic Adaptation
+- `SubscriptionActivated`, `PlanUpgraded` en Subscriptions & Billing
+
 Estos eventos habilitan la integración reactiva entre contextos, tal como se definió en el Event Storming de diseño.
- 
-**Interfaces de repositorio en el dominio**
- 
-Siguiendo el principio de inversión de dependencias, las interfaces de repositorio se declaran en la capa de dominio (por ejemplo, `UserRepository`, `NutritionLogRepository`) y sus implementaciones concretas residen en la capa de infraestructura (por ejemplo, `UserRepositoryImpl`). Esto garantiza que el dominio no dependa de tecnologías de persistencia específicas.
- 
-**Command/Query Separation**
- 
-Los application services se dividen en:
- 
-- **Command services:** modifican el estado del sistema.
-- **Query services:** solo consultan el estado.
-Siguiendo el patrón CQRS ligero adoptado en el proyecto, los commands y queries son objetos inmutables con los datos necesarios para cada operación.
 
-**Angular Signals en el frontend**
- 
-Los servicios del frontend utilizan `WritableSignal` y `Signal` de Angular para gestionar el estado reactivo de forma eficiente. Los componentes consumen estos signals directamente o mediante `InputSignal` para los inputs declarativos, en línea con el patrón enseñado en los ejemplos de clase.
- 
+**Patrón Assembler en infraestructura**
+
+Siguiendo el principio de inversión de dependencias, los assemblers realizan la conversión bidireccional entre entidades del dominio y los recursos DTO provenientes de la API REST. Por ejemplo, `BehavioralProgressAssembler`, `NutritionLogAssembler` y `SubscriptionAssembler` implementan la interfaz genérica `BaseAssembler<TEntity, TResource, TResponse>`. Esto garantiza que el dominio no dependa de la forma de los datos del servidor.
+
+**Angular Signals en la capa de aplicación**
+
+Los stores del frontend utilizan `WritableSignal` y `Signal` de Angular para gestionar el estado reactivo de forma eficiente. Los signals derivados se definen mediante `computed()`, permitiendo que la UI se actualice automáticamente ante cualquier cambio de estado sin necesidad de suscripciones manuales. Los componentes consumen estos signals directamente o mediante `InputSignal` para los inputs declarativos.
+
+**Separación ViewModel / Dominio en presentación**
+
+Las views traducen los datos del store hacia ViewModels compuestos únicamente por primitivos y strings orientados a la interfaz de usuario. Esto impide que los templates accedan directamente a tipos del dominio, manteniendo una frontera clara entre la lógica de negocio y la representación visual. Los dumb components reciben datos ya transformados mediante `InputSignal<T>` y emiten interacciones mediante `OutputEmitterRef<T>`.
+
 **Integración con APIs externas**
- 
+
 Los adaptadores de infraestructura modelan la comunicación con servicios externos, manteniéndolos aislados del dominio mediante interfaces:
- 
-- **Open Food Facts**
-- **USDA FoodData Central**
-- **OpenWeatherMap**
-- **Google Fit**
 
-Tras definir la estructura arquitectónica de contenedores y componentes, se procede al diseño orientado a objetos del software. En esta etapa, se detallan las clases, sus responsabilidades y las relaciones que darán vida a NutriSmart, permitiendo una transición fluida desde la arquitectura lógica hacia la implementación técnica.
+- **Open Food Facts** y **USDA FoodData Central** en Nutrition Tracking
+- **Gemini Vision API** en Restaurant Intelligence
+- **OpenWeatherMap** y **Google Fit** en Metabolic Adaptation
 
-El diseño se fundamenta en los pilares fundamentales de la Programación Orientada a Objetos (POO) para garantizar un sistema modular, escalable y de fácil mantenimiento:
+Tras definir la estructura arquitectónica de contenedores y componentes, se procede al diseño orientado a objetos del software. En esta etapa se detallan las clases, sus responsabilidades y las relaciones que darán vida a NutriSmart, permitiendo una transición fluida desde la arquitectura lógica hacia la implementación técnica.
 
-- **Encapsulamiento:** Para proteger la integridad de los datos sensibles de salud, asegurando que el estado de los objetos solo sea accesible mediante modificadores de acceso.
-- **Abstracción:** Para simplificar procesos complejos, como la integración con múltiples APIs externas de visión artificial y clima, mediante el uso de interfaces de Spring y clases abstractas.
-- **Herencia y Polimorfismo:** Para promover la reutilización de código y la flexibilidad del sistema, permitiendo que diferentes tipos de registros nutricionales o planes de suscripción compartan comportamientos base pero se especialicen según sus reglas de negocio.
-- **Modularidad:** Estructurando las clases de acuerdo con los 7 Bounded Contexts identificados, asegurando que el diseño esté estrictamente alineado con los requerimientos funcionales del dominio.
+El diseño se fundamenta en los pilares de la Programación Orientada a Objetos (POO) para garantizar un sistema modular, escalable y de fácil mantenimiento:
 
-A continuación, se presentan los diagramas de clases que reflejan la estructura lógica del software, incluyendo sus atributos, métodos y multiplicidad de relaciones.
+- **Encapsulamiento:** Para proteger la integridad de los datos sensibles de salud, los campos privados de las entities solo son accesibles mediante getters y métodos de comportamiento, sin exponer setters públicos.
+- **Abstracción:** Los assemblers, endpoints y APIs se definen sobre clases base e interfaces genéricas (`BaseApi`, `BaseAssembler`, `BaseApiEndpoint`), simplificando la incorporación de nuevos contextos sin modificar el código existente.
+- **Herencia y Polimorfismo:** Los assemblers e infraestructura HTTP extienden clases base comunes y especializan su comportamiento según el contexto, permitiendo que distintos tipos de recursos compartan el mismo contrato de transformación.
+- **Modularidad:** Las clases se estructuran de acuerdo con los ocho Bounded Contexts identificados, asegurando que el diseño esté estrictamente alineado con los requerimientos funcionales del dominio.
+
+A continuación se presentan los diagramas de clases que reflejan la estructura lógica del software, incluyendo sus atributos, métodos y multiplicidad de relaciones.
 
 ### 4.7.1. Class Diagrams
 
 **FrontEnd**
 
-**Identity & Access Management**
+**Nutrition Tracking** *(Core)*
 
-![IAM Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/iam.puml)
+![Nutrition Tracking Application](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/nutrition-tracking/application.puml)
 
-**Nutrition**
+![Nutrition Tracking Infrastructure](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/nutrition-tracking/infrastructure.puml)
 
-![Nutrition Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/nutrition.puml)
+![Nutrition Tracking Model](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/nutrition-tracking/model.puml)
 
-**Body-metrics**
+![Nutrition Tracking Presentation](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/nutrition-tracking/presentation.puml)
 
-![Body-metrics Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/body-metrics.puml)
+---
 
-**Recommendations**
+**Behavioral Consistency** *(Core)*
 
-![Recommendations Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/recommendations.puml)
+![Behavioral Consistency Application](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/behavioral-consistency/application.puml)
 
-**Activity**
+![Behavioral Consistency Infrastructure](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/behavioral-consistency/infrastructure.puml)
 
-![Activity Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/activity.puml)
+![Behavioral Consistency Model](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/behavioral-consistency/model.puml)
 
-**Analytics**
+![Behavioral Consistency Presentation](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/behavioral-consistency/presentation.puml)
 
-![Analytics Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/analytics.puml)
+---
 
-**Billing**
+**Metabolic Adaptation** *(Core)*
 
-![Activity Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/billing.puml)
+![Metabolic Adaptation Application](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/metabolic-adaptation/application.puml)
+
+![Metabolic Adaptation Infrastructure](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/metabolic-adaptation/infrastructure.puml)
+
+![Metabolic Adaptation Model](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/metabolic-adaptation/model.puml)
+
+![Metabolic Adaptation Presentation](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/metabolic-adaptation/presentation.puml)
+
+---
+
+**Smart Recommendation** *(Support)*
+
+![Smart Recommendation Application](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/smart-recommendation/application.puml)
+
+![Smart Recommendation Infrastructure](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/smart-recommendation/infrastructure.puml)
+
+![Smart Recommendation Model](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/smart-recommendation/model.puml)
+
+![Smart Recommendation Presentation](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/smart-recommendation/presentation.puml)
+
+---
+
+**Restaurant Intelligence** *(Support)*
+
+![Restaurant Intelligence Application](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/restaurant-intelligence/application.puml)
+
+![Restaurant Intelligence Infrastructure](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/restaurant-intelligence/infrastructure.puml)
+
+![Restaurant Intelligence Model](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/restaurant-intelligence/model.puml)
+
+![Restaurant Intelligence Presentation](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/restaurant-intelligence/presentation.puml)
+
+---
+
+**Analytics** *(Support)*
+
+![Analytics Application](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/analytics/application.puml)
+
+![Analytics Infrastructure](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/analytics/infrastructure.puml)
+
+![Analytics Model](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/analytics/model.puml)
+
+![Analytics Presentation](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/analytics/presentation.puml)
+
+---
+
+**Identity & Access Management** *(Generic)*
+
+![IAM Application](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/iam/application.puml)
+
+![IAM Infrastructure](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/iam/infrastructure.puml)
+
+![IAM Model](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/iam/model.puml)
+
+![IAM Presentation](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/iam/presentation.puml)
+
+---
+
+**Subscriptions** *(Generic)*
+
+![Subscriptions Application](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/subscriptions/application.puml)
+
+![Subscriptions Infrastructure](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/subscriptions/infrastructure.puml)
+
+![Subscriptions Model](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/subscriptions/model.puml)
+
+![Subscriptions Presentation](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/subscriptions/presentation.puml)
 
 **Backend**
 
 **Identity & Access Management**
 
-![IAM Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/iam.puml)
+![IAM Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/backend/iam.puml)
 
-**Nutrition**
+**Metabolic Adaptation**
 
-![Nutrition Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/nutrition.puml)
+![Metabolic Adaptation Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/backend/metabolic-adaptation.puml)
 
-**Body-metrics**
+**Nutrition Tracking**
 
-![Body-metrics Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/body-metrics.puml)
+![Nutrition Tracking Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/backend/nutrition-tracking.puml)
 
-**Recommendations**
+**Behavioral Consistency**
 
-![Recommendations Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/recommendations.puml)
+![Behavioral Consistency Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/backend/behavioral-consistency.puml)
 
-**Activity**
+**Restaurant Intelligence**
 
-![Activity Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/activity.puml)
+![Restaurant Intelligence Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/backend/restaurant-intelligence.puml)
 
-**Analytics**
+**Smart Recommendations**
 
-![Analytics Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/analytics.puml)
+![Smart Recommendations Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/backend/smart-recommendation.puml)
 
-**Billing**
+**Analytics & Reporting**
 
-![Activity Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/billing.puml)
+![Analytics Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/backend/analytics.puml)
+
+**Subscriptions & Billing**
+
+![Subscriptions Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/backend/suscriptions.puml)
 
 ## 4.8. Database Design
 

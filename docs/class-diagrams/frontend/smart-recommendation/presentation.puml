@@ -1,0 +1,138 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' ─── Boundary stubs: application layer ───────────────────────────────────────
+package "smart-recommendation/application [boundary]" {
+  class PantryStore <<boundary>> {
+    + pantryItems: Signal<PantryItem[]>
+    + recipeSuggestions: Signal<RecipeSuggestion[]>
+    + catalog: Signal<IngredientCatalogItem[]>
+    + loading: Signal<boolean>
+    + isEmpty: Signal<boolean>
+    + addPantryItem(item): Promise<void>
+    + deletePantryItem(id): Promise<void>
+  }
+  class RecommendationsStore <<boundary>> {
+    + activeCards: Signal<RecipeSuggestion[]>
+    + weatherContext: Signal<WeatherContext | null>
+    + travelContext: Signal<TravelContext | null>
+    + loading: Signal<boolean>
+    + isTravelMode: Signal<boolean>
+    + adjustedKcalTarget: Signal<number>
+    + locationDenied: Signal<boolean>
+    + activateTravelMode(destination): void
+    + deactivateTravelMode(): void
+  }
+}
+
+' ─── ViewModels ──────────────────────────────────────────────────────────────
+package "smart-recommendation/presentation/viewmodels" {
+
+  class PantryItemVm <<view model>> {
+    + id: number
+    + nameKey: string
+    + categoryKey: string
+    + quantityGrams: number
+    + caloriesLabel: string
+    + addedAtLabel: string
+  }
+
+  class RecipeSuggestionVm <<view model>> {
+    + id: number
+    + nameKey: string
+    + caloriesLabel: string
+    + prepTimeLabel: string
+    + macroSummary: string
+    + goalBadgeLabel: string
+    + goalBadgeColorClass: string
+    + ingredientList: string
+    + hasConflict: boolean
+  }
+
+  class RecommendationsContextVm <<view model>> {
+    + isTravelMode: boolean
+    + locationKey: string
+    + adjustedKcalLabel: string
+    + weatherSummaryKey: string
+    + filterKeys: string[]
+    + showPreventiveCard: boolean
+    + showInterventionCard: boolean
+  }
+
+  class PantryVm <<view model>> {
+    + items: PantryItemVm[]
+    + isEmpty: boolean
+    + dailyCaloriesLabel: string
+    + remainingCaloriesLabel: string
+    + suggestions: RecipeSuggestionVm[]
+  }
+}
+
+' ─── Views ───────────────────────────────────────────────────────────────────
+package "smart-recommendation/presentation/views" {
+
+  class PantryView <<view>> {
+    - pantryStore: PantryStore
+    --
+    + pantryVm: Signal<PantryVm>
+    + searchQuery: WritableSignal<string>
+    + isLoading: Signal<boolean>
+    --
+    + onAddItem(item: PantryItemVm): void
+    + onDeleteItem(id: number): void
+  }
+
+  class RecommendationsView <<view>> {
+    - recommendationsStore: RecommendationsStore
+    --
+    + contextVm: Signal<RecommendationsContextVm>
+    + cardVms: Signal<RecipeSuggestionVm[]>
+    + isLoading: Signal<boolean>
+    + locationDenied: Signal<boolean>
+    --
+    + onEnableTravelMode(city: string): void
+    + onDisableTravelMode(): void
+    + onAllowLocation(): void
+  }
+
+  class LocationSearchView <<view>> {
+    - recommendationsStore: RecommendationsStore
+    --
+    + onSelectCity(city: string): void
+  }
+}
+
+' ─── Components ──────────────────────────────────────────────────────────────
+package "smart-recommendation/presentation/components" {
+
+  class LocationPicker <<component>> {
+    + availableLocations: InputSignal<string[]>
+    --
+    + locationSelected: OutputEmitterRef<string>
+    --
+    + onSearch(query: string): void
+    + onSelect(city: string): void
+  }
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+PantryView o--> PantryStore : uses >
+RecommendationsView o--> RecommendationsStore : uses >
+LocationSearchView o--> RecommendationsStore : uses >
+
+PantryView ..> PantryVm : builds >
+RecommendationsView ..> RecommendationsContextVm : builds >
+RecommendationsView ..> RecipeSuggestionVm : builds >
+PantryView ..> RecipeSuggestionVm : builds >
+PantryView ..> PantryItemVm : builds >
+
+PantryVm "1" *--> "0..*" PantryItemVm : contains >
+PantryVm "1" *--> "0..*" RecipeSuggestionVm : contains >
+
+RecommendationsView --> LocationPicker : hosts >
+LocationSearchView --> LocationPicker : hosts >
+
+@enduml
