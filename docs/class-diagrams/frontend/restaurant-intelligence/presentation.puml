@@ -1,0 +1,80 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' ─── Boundary stub: application layer ────────────────────────────────────────
+package "restaurant-intelligence/application [boundary]" {
+  class RestaurantMenuStore <<boundary>> {
+    + currentAnalysis: Signal<MenuAnalysis | null>
+    + loading: Signal<boolean>
+    + error: Signal<string | null>
+    + capturedImage: Signal<string | null>
+    + hasAnalysis: Signal<boolean>
+    + bestDishes: Signal<AnalyzedDish[]>
+    + goalAlignedDishes: Signal<AnalyzedDish[]>
+    + analyzeMenu(userId, imageBase64, name): Promise<void>
+    + setCapturedImage(imageBase64): void
+    + clearAnalysis(): void
+  }
+}
+
+' ─── ViewModels ──────────────────────────────────────────────────────────────
+package "restaurant-intelligence/presentation/viewmodels" {
+
+  class AnalyzedDishVm <<view model>> {
+    + name: string
+    + caloriesLabel: string
+    + macroSummary: string
+    + goalScore: number
+    + goalScoreClass: string
+    + conflictKeys: string[]
+    + isRecommended: boolean
+  }
+
+  class MenuAnalysisVm <<view model>> {
+    + restaurantName: string
+    + analyzedAtLabel: string
+    + totalDishes: number
+    + bestDishes: AnalyzedDishVm[]
+    + goalAlignedDishes: AnalyzedDishVm[]
+    + hasConflicts: boolean
+  }
+
+  class RestaurantMenuVm <<view model>> {
+    + hasAnalysis: boolean
+    + isLoading: boolean
+    + errorKey: string | null
+    + restaurantName: string
+    + analysis: MenuAnalysisVm | null
+  }
+}
+
+' ─── Views ───────────────────────────────────────────────────────────────────
+package "restaurant-intelligence/presentation/views" {
+
+  class RestaurantMenuView <<view>> {
+    - restaurantMenuStore: RestaurantMenuStore
+    --
+    + menuVm: Signal<RestaurantMenuVm>
+    + isLoading: Signal<boolean>
+    + capturedImage: Signal<string | null>
+    --
+    + onCapture(imageBase64: string): void
+    + onSetRestaurantName(name: string): void
+    + onAnalyze(): void
+    + onClear(): void
+  }
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+RestaurantMenuView o--> RestaurantMenuStore : uses >
+RestaurantMenuView ..> RestaurantMenuVm : builds >
+RestaurantMenuView ..> MenuAnalysisVm : builds >
+RestaurantMenuView ..> AnalyzedDishVm : builds >
+
+RestaurantMenuVm "1" *--> "0..1" MenuAnalysisVm : contains >
+MenuAnalysisVm "1" *--> "0..*" AnalyzedDishVm : contains >
+
+@enduml

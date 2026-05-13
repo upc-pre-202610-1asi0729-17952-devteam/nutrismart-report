@@ -1,0 +1,143 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' ─── Boundary stubs: infrastructure ─────────────────────────────────────────
+package "behavioral-consistency/infrastructure [boundary]" {
+  class BehavioralConsistencyApi <<boundary>> {
+  }
+  class EatingBehaviorPatternApi <<boundary>> {
+  }
+  class RecoveryPlanApi <<boundary>> {
+  }
+}
+
+' ─── Boundary stubs: domain entities ────────────────────────────────────────
+package "behavioral-consistency/domain [boundary]" {
+  class BehavioralProgress <<boundary>> {
+  }
+  class EatingBehaviorPattern <<boundary>> {
+  }
+  class RecoveryPlan <<boundary>> {
+  }
+}
+
+' ─── Boundary stubs: domain events (context-owned) ───────────────────────────
+package "behavioral-consistency/domain/events [boundary]" {
+  class BehaviorPatternAnalyzed <<boundary>> {
+  }
+  class RecoveryPlanActivated <<boundary>> {
+  }
+  class RecoveryPlanCompleted <<boundary>> {
+  }
+}
+
+' ─── Boundary stubs: shared/application ─────────────────────────────────────
+package "shared/application [boundary]" {
+  class DomainEventBus <<boundary>> {
+    + publish(event: DomainEvent): void
+    + events$: Observable<DomainEvent>
+  }
+  class NotificationService <<boundary>> {
+    + notify(type: string, key: string, params?: object): void
+  }
+}
+
+' ─── Boundary stubs: shared/domain (cross-context events) ────────────────────
+package "shared/domain [boundary]" {
+  class BehavioralDropDetected <<boundary>> {
+  }
+  class ConsistencyRecovered <<boundary>> {
+  }
+  class DailyGoalMet <<boundary>> {
+  }
+  class MealSkipped <<boundary>> {
+  }
+  class MetabolicTargetSet <<boundary>> {
+  }
+  class NutritionalAbandonmentRisk <<boundary>> {
+  }
+  class RestrictedItemBlocked <<boundary>> {
+  }
+  class StrategyMismatchDetected <<boundary>> {
+  }
+  class StreakMilestoneReached <<boundary>> {
+  }
+}
+
+' ─── Application ─────────────────────────────────────────────────────────────
+package "behavioral-consistency/application" {
+
+  class BehavioralConsistencyStore <<store>> {
+    ' Writable signals
+    - _currentProgress: WritableSignal<BehavioralProgress | null>
+    - _currentPattern: WritableSignal<EatingBehaviorPattern | null>
+    - _activeRecoveryPlan: WritableSignal<RecoveryPlan | null>
+    - _loading: WritableSignal<boolean>
+    - _error: WritableSignal<string | null>
+    - _lastMissedDate: WritableSignal<string | null>
+    ' Read-only signals
+    + currentProgress: Signal<BehavioralProgress | null>
+    + currentPattern: Signal<EatingBehaviorPattern | null>
+    + activeRecoveryPlan: Signal<RecoveryPlan | null>
+    + loading: Signal<boolean>
+    + error: Signal<string | null>
+    ' Computed signals
+    + patternType: Signal<BehaviorPatternType | null>
+    + isPatternImproving: Signal<boolean>
+    + isPatternDeclining: Signal<boolean>
+    + adherenceStatus: Signal<AdherenceStatus | null>
+    + streak: Signal<number>
+    + consecutiveMisses: Signal<number>
+    + weekDots: Signal<boolean[]>
+    + completedDaysThisWeek: Signal<number>
+    + weeklyCompletionRate: Signal<number>
+    + isOnTrack: Signal<boolean>
+    + needsReEngagement: Signal<boolean>
+    + behavioralSummary: Signal<string>
+    --
+    + ensureProgressForUser(userId: number): Observable<BehavioralProgress>
+    + clear(): void
+    + markGoalMet(date?: string): void
+    + markGoalMissed(): void
+    + setAdherenceStatus(status: AdherenceStatus): void
+    + analyzePattern(userId: number): Promise<void>
+    + loadRecoveryPlan(userId: number): void
+  }
+}
+
+' ─── Infrastructure dependencies ─────────────────────────────────────────────
+BehavioralConsistencyStore o--> BehavioralConsistencyApi : uses >
+BehavioralConsistencyStore o--> EatingBehaviorPatternApi : uses >
+BehavioralConsistencyStore o--> RecoveryPlanApi : uses >
+BehavioralConsistencyStore o--> DomainEventBus : uses >
+BehavioralConsistencyStore o--> NotificationService : uses >
+
+' ─── Domain entity management ────────────────────────────────────────────────
+BehavioralConsistencyStore ..> BehavioralProgress : manages >
+BehavioralConsistencyStore ..> EatingBehaviorPattern : analyzes >
+BehavioralConsistencyStore ..> RecoveryPlan : activates >
+
+' ─── Events published ────────────────────────────────────────────────────────
+BehavioralConsistencyStore ..> BehaviorPatternAnalyzed : publishes >
+BehavioralConsistencyStore ..> RecoveryPlanActivated : publishes >
+BehavioralConsistencyStore ..> RecoveryPlanCompleted : publishes >
+BehavioralConsistencyStore ..> StreakMilestoneReached : publishes >
+BehavioralConsistencyStore ..> ConsistencyRecovered : publishes >
+BehavioralConsistencyStore ..> BehavioralDropDetected : publishes >
+BehavioralConsistencyStore ..> NutritionalAbandonmentRisk : publishes >
+BehavioralConsistencyStore ..> StrategyMismatchDetected : publishes >
+
+' ─── Events subscribed ───────────────────────────────────────────────────────
+DailyGoalMet ..> BehavioralConsistencyStore : triggers markGoalMet >
+MealSkipped ..> BehavioralConsistencyStore : triggers markGoalMissed (once/day) >
+MetabolicTargetSet ..> BehavioralConsistencyStore : triggers strategy check >
+BehavioralDropDetected ..> BehavioralConsistencyStore : triggers recovery plan >
+NutritionalAbandonmentRisk ..> BehavioralConsistencyStore : triggers recovery plan >
+StrategyMismatchDetected ..> BehavioralConsistencyStore : triggers recovery plan >
+ConsistencyRecovered ..> BehavioralConsistencyStore : triggers plan completion >
+RestrictedItemBlocked ..> BehavioralConsistencyStore : triggers pattern re-analysis >
+
+@enduml

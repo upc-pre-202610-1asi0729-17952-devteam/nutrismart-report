@@ -1,0 +1,83 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' ─── Boundary stubs: infrastructure ─────────────────────────────────────────
+package "restaurant-intelligence/infrastructure [boundary]" {
+  class RestaurantMenuApi <<boundary>> {
+  }
+}
+
+' ─── Boundary stubs: domain ──────────────────────────────────────────────────
+package "restaurant-intelligence/domain [boundary]" {
+  class MenuAnalysis <<boundary>> {
+  }
+}
+
+' ─── Boundary stubs: domain events ───────────────────────────────────────────
+package "restaurant-intelligence/domain/events [boundary]" {
+  class RestaurantMealAnalyzed <<boundary>> {
+  }
+}
+
+' ─── Boundary stubs: shared ──────────────────────────────────────────────────
+package "shared/application [boundary]" {
+  class DomainEventBus <<boundary>> {
+    + publish(event: DomainEvent): void
+    + events$: Observable<DomainEvent>
+  }
+}
+
+package "shared/domain [boundary]" {
+  class CompatibleDishesRanked <<boundary>> {
+  }
+  class BehaviorPatternAnalyzed <<boundary>> {
+  }
+}
+
+' ─── Application ─────────────────────────────────────────────────────────────
+package "restaurant-intelligence/application" {
+
+  class RestaurantMenuStore <<store>> {
+    ' Writable signals
+    - _currentAnalysis: WritableSignal<MenuAnalysis | null>
+    - _analysisHistory: WritableSignal<MenuAnalysis[]>
+    - _loading: WritableSignal<boolean>
+    - _error: WritableSignal<string | null>
+    - _capturedImage: WritableSignal<string | null>
+    - _restaurantName: WritableSignal<string>
+    ' Read-only signals
+    + currentAnalysis: Signal<MenuAnalysis | null>
+    + analysisHistory: Signal<MenuAnalysis[]>
+    + loading: Signal<boolean>
+    + error: Signal<string | null>
+    + capturedImage: Signal<string | null>
+    + restaurantName: Signal<string>
+    ' Computed signals
+    + hasAnalysis: Signal<boolean>
+    + bestDishes: Signal<AnalyzedDish[]>
+    + goalAlignedDishes: Signal<AnalyzedDish[]>
+    --
+    + analyzeMenu(userId: number, imageBase64: string, name: string): Promise<void>
+    + loadHistory(userId: number): Promise<void>
+    + setCapturedImage(imageBase64: string): void
+    + setRestaurantName(name: string): void
+    + clearAnalysis(): void
+  }
+}
+
+' ─── Dependencies ────────────────────────────────────────────────────────────
+RestaurantMenuStore o--> RestaurantMenuApi : uses >
+RestaurantMenuStore o--> DomainEventBus : uses >
+RestaurantMenuStore ..> MenuAnalysis : manages >
+
+' ─── Published events ────────────────────────────────────────────────────────
+RestaurantMenuStore ..> RestaurantMealAnalyzed : publishes >
+RestaurantMenuStore ..> CompatibleDishesRanked : publishes >
+
+' ─── Subscribed events ───────────────────────────────────────────────────────
+BehaviorPatternAnalyzed ..> RestaurantMenuStore : triggers dish re-ranking >
+
+@enduml

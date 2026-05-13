@@ -1249,41 +1249,359 @@ https://upcedupe-my.sharepoint.com/:v:/g/personal/u202411669_upc_edu_pe/IQARIaNn
 
 ## 4.6. Domain-Driven Software Architecture
 
-La arquitectura de NutriSmart se basa en Domain-Driven Design (DDD), centrando el diseño en los procesos críticos de salud y nutrición. El sistema se organiza en 7 Bounded Contexts independientes, lo que garantiza una separación clara de responsabilidades y un lenguaje común entre el equipo técnico y el negocio. Este enfoque modular permite que funcionalidades clave, como el análisis de imágenes y el motor de recomendaciones, sean altamente escalables, facilitando un mantenimiento eficiente y una evolución alineada con los requerimientos del dominio.
+La arquitectura de NutriSmart se basa en Domain-Driven Design (DDD), centrando el diseño en los procesos críticos de salud y nutrición. El sistema se organiza en 8 Bounded Contexts independientes, lo que garantiza una separación clara de responsabilidades y un lenguaje común entre el equipo técnico y el negocio. Este enfoque modular permite que funcionalidades clave, como el análisis de imágenes y el motor de recomendaciones, sean altamente escalables, facilitando un mantenimiento eficiente y una evolución alineada con los requerimientos del dominio.
 
 A continuación, se identifican y describen los contextos delimitados que componen la solución:
+
+### Nivel Core
+
 | Bounded Context | Descripción | Módulos incluidos |
 | :--- | :--- | :--- |
-| **Identity & Access** | Gestión de autenticación, autorización y perfiles de usuario. | User & Auth |
-| **Nutrition Tracking** | Registro y análisis de alimentos mediante logs y Smart Scan. | Nutrition Log, Smart Scan |
-| **Body & Health Metrics** | Seguimiento de indicadores corporales (IMC, TDEE) y metas. | Body Tracking |
-| **Smart Recommendations** | Motor de sugerencias personalizadas según contexto y clima. | Recommendations Engine |
-| **Activity & Wearable Sync** | Integración y sincronización con dispositivos físicos (Google Fit). | Wearable Sync |
-| **Analytics & Reporting** | Generación de dashboards, progreso visual y reportes. | Dashboard & Analytics |
-| **Subscriptions & Billing** | Gestión de planes, facturación y control de features Premium. | Subscriptions |
+| **Metabolic Adaptation** | Cálculo de métricas corporales (BMI, BMR, TDEE), metas calóricas y sincronización con wearables. | Body Tracking, Wearable Sync, Activity Log |
+| **Nutrition Tracking** | Registro y análisis de alimentos mediante logs y Smart Scan. | Nutrition Log, Smart Scan, Dietary Restrictions |
+| **Behavioral Consistency** | Seguimiento de adherencia, detección de caídas conductuales y gestión de rachas. | Adherence Tracking, Streak Engine |
+
+### Nivel Supporting
+
+| Bounded Context | Descripción | Módulos incluidos |
+| :--- | :--- | :--- |
+| **Restaurant Intelligence** | Análisis de menús físicos mediante foto y ranking de platos compatibles con el perfil del usuario. | Menu Scan, Dish Ranking |
+| **Smart Recommendations** | Motor de sugerencias personalizadas según contexto, clima, despensa y estado conductual. | Recommendations Engine, Travel Mode, Pantry |
+| **Analytics & Reporting** | Generación de dashboards, progreso visual y reportes en PDF. | Dashboard & Analytics |
+
+### Nivel Genéricos
+
+| Bounded Context | Descripción | Módulos incluidos |
+| :--- | :--- | :--- |
+| **Subscriptions & Billing** | Gestión de planes, facturación y control de features Premium. | Subscriptions, Stripe Integration |
+| **Identity & Access** | Gestión de autenticación, autorización y perfiles de usuario. | User & Auth, Onboarding |
 
 ### 4.6.1. Design-Level EventStorming
 
-En esta sección se presenta el modelado del comportamiento del sistema mediante la técnica de EventStorming a nivel de diseño. Este proceso permitió identificar los eventos de dominio y los comandos que disparan la lógica de negocio en cada Bounded Context, estableciendo las reglas de reacción del sistema ante acciones del usuario o políticas automaticas.
+En esta sección se presenta el modelado del comportamiento del sistema mediante la técnica de EventStorming a nivel de diseño. Este proceso permitió identificar los eventos de dominio, los comandos que disparan la lógica de negocio y las políticas automáticas que rigen la reactividad del sistema en cada Bounded Context.
 
-A continuación, se detalla la matriz de interdependencias que asegura la reactividad y sincronización de datos entre los distintos módulos:
-| Origen (Evento) | Destino (Comando) | Descripción |
+---
+ 
+## Nivel Core
+ 
+---
+ 
+### Metabolic Adaptation
+ 
+Este contexto calcula y mantiene actualizados los targets metabólicos del usuario. Consta de 5 swimlanes.
+ 
+#### Initial Metabolic Calculation
+ 
+Disparado por `OnboardingCompleted` (desde IAM), el sistema ejecuta `CalculateInitialTargets`. El cálculo sigue la secuencia: **BMI → BMR (Mifflin-St Jeor) → TDEE**. Según el objetivo:
+ 
+- `lose_weight` → `SetCaloricDeficitTarget`: `TDEE - 500 kcal`, macros P30%/C40%/F30%
+- `gain_muscle` → `SetCaloricSurplusTarget`: `TDEE + 300 kcal`, macros P35%/C45%/F20%
+El evento `MetabolicTargetSet` notifica a **Nutrition Tracking** para inicializar los objetivos diarios.
+ 
+#### Body Metrics Update
+ 
+El usuario ejecuta `UpdateBodyMetrics` (nuevo peso/talla). Las políticas de validación de entrada preceden la emisión de `BodyMetricsUpdated`, que recalcula BMI, BMR y TDEE. El evento `MetabolicTargetsRecalculated` propaga actualizaciones hacia **Nutrition Tracking** y **Behavioral Consistency**.
+ 
+#### Stagnation Detection
+ 
+El sistema evalúa diariamente el progreso. Si transcurren **14 días consecutivos sin avance**, ejecuta `DetectWeightPlateau`, emitiendo `StagnationDetected`, que activa en **Smart Recommendation** el comando `SuggestStrategyAdjustment`.
+ 
+#### Wearable Sync *(requiere Premium)*
+ 
+Habilitado por `BenefitsEnabled` (Premium), el usuario conecta Google Fit con `ConnectGoogleFit`. Una vez activo, el sistema sincroniza cada hora mediante `SyncWearableActivity`, emitiendo `ActivitySynced`. La política subsecuente ejecuta `AdjustDailyCalorieTarget`, que emite `CaloricTargetAdjusted` y actualiza el objetivo neto en **Nutrition Tracking**.
+ 
+#### Manual Activity Log
+ 
+El usuario registra actividad manualmente con `LogManualActivity`. La política calcula las calorías activas con la fórmula `MET × peso_kg × horas`, emitiendo `ActiveCaloriesCalculated`, y ajusta el balance calórico diario del mismo modo que el wearable.
+ 
+---
+
+### Nutrition Tracking
+ 
+Este contexto centraliza el registro de alimentos y la validación diaria de macros. Consta de 8 swimlanes.
+ 
+#### Dietary Restrictions Registration
+ 
+Disparado por `OnboardingCompleted`, el sistema ejecuta `RegisterDietaryRestrictions`, activando la lista de restricciones que filtrará todo registro posterior.
+ 
+#### Food Search
+ 
+El usuario busca alimentos con `SearchFoodItem`, consultando las APIs **Open Food Facts** y **USDA FoodData Central**. El evento `FoodSearchExecuted` presenta la vista **Food Results List** con valores nutricionales por ítem.
+ 
+#### Meal Logging
+ 
+El usuario registra una comida con `LogMealEntry`. La política **CheckDietaryRestrictions** bloquea el registro si el alimento contiene algún ingrediente restringido, emitiendo `RestrictedItemBlocked` con notificación push. Si pasa la validación, se emite `MealRecorded`, actualizando el **Daily Macro Summary** y notificando a **Behavioral Consistency**.
+ 
+#### Daily Macro Validation
+ 
+Cada vez que se emite `MealRecorded`, la política **ValidateDailyMacros** compara el consumo total contra el objetivo:
+ 
+- Consumo ≤ objetivo → `DailyProgressUpdated` (estado: `on_track`)
+- Consumo > objetivo → `DailyGoalExceeded` con notificación push y desvío reportado a **Behavioral Consistency**
+#### End of Day Evaluation
+ 
+A las 23:59, el sistema evalúa si el usuario completó el día dentro del ±10% de su objetivo calórico. Si se cumple, emite `DailyGoalMet`, propagándose hacia **Behavioral Consistency** y **Analytics**. Si una ventana horaria de comida (desayuno 06-10h / almuerzo 11-15h / cena 18-22h) pasa sin registro, se emite `MealSkipped` con notificación push y se notifica a **Behavioral Consistency**.
+ 
+#### Edit and Delete Meal Entry
+ 
+El usuario puede corregir un registro con `EditMealEntry` (emite `MealEntryUpdated`) o eliminarlo con `DeleteMealEntry` (emite `MealEntryRemoved`). Ambos eventos relanzan automáticamente la política **ValidateDailyMacros**.
+ 
+#### Smart Scan — Food Plate Photo *(Pro / Premium)*
+ 
+El usuario escanea un plato con `ScanMealPhoto`. La imagen se procesa mediante **Google Cloud Vision API** y **Open Food Facts API**. La política **Image Valid** rechaza imágenes que no sean de comida. El evento `MealPhotoAnalyzed` presenta la vista **Scan Preview Card** con ítems y macros estimados. El usuario confirma con `ConfirmScanResult`, emitiendo `MealRecorded` (fuente: `smart_scan`), que sigue el mismo flujo que el log manual.
+ 
+#### Incoming Events *(receptores)*
+ 
+Este swimlane recibe eventos de otros contextos:
+ 
+| Evento entrante | Origen | Comando disparado |
 | :--- | :--- | :--- |
-| **Identity:** User Registered | **Body Metrics:** Register Body Metrics | Inicializa el perfil de salud y metas al crear la cuenta. |
-| **Nutrition:** Consumption Updated (Created/Updated/Deleted) | **Analytics:** Generate Progress Insights | Sincroniza indicadores y gráficas de consumo diario ante cualquier cambio en el log. |
-| **Nutrition:** Consumption Updated (Created/Updated/Deleted) | **Smart Recs:** Generate Recommendation | Ajusta las sugerencias alimenticias en tiempo real según los macros consumidos y el déficit calórico del día. |
-| **Activity:** Caloric Balance Adjusted | **Analytics:** Generate Progress Insights | Refleja el gasto energético por actividad física o sincronización con wearable en los reportes de progreso. |
-| **Body Metrics:** TDEE Calculated | **Analytics:** Generate Progress Insights | Compara objetivos metabólicos teóricos frente al progreso real registrado. |
-| **Body Metrics:** TDEE Calculated | **Smart Recs:** Generate Recommendation | Personaliza las porciones y sugerencias de comida según el perfil físico y la meta calórica actualizada del usuario. |
-| **Subscriptions:** Benefits Enabled | **Smart Recs:** Unlock Premium Features | Habilita el acceso a algoritmos de recomendación avanzada y análisis detallado por IA. |
-| **Subscriptions:** Benefits Disabled | **Smart Recs:** Lock Premium Features | Restringe el acceso a funcionalidades avanzadas tras la expiración o cancelación del plan. |
+| `MetabolicTargetSet` | Metabolic Adaptation | `SetDailyNutritionalTargets` |
+| `CaloricTargetAdjusted` | Metabolic Adaptation | `UpdateNetDailyTarget` |
+| `CompatibleDishesRanked` | Restaurant Intelligence | [Read Model] Menu Analysis Result |
+ 
+---
+
+### Behavioral Consistency
+ 
+Este contexto evalúa la adherencia conductual del usuario y escala respuestas ante desviaciones. Consta de 7 swimlanes.
+ 
+#### Behavioral Tracking Initialization
+ 
+Disparado por `OnboardingCompleted`, el sistema ejecuta `InitializeBehavioralTracking`, estableciendo el estado inicial: `adherence_status: ON_TRACK`, `streak: 0`, `consecutive_misses: 0`.
+ 
+#### Daily Adherence Evaluation
+ 
+Ante cada `MealRecorded` o `DailyGoalMet` desde Nutrition Tracking, el sistema evalúa el estado de adherencia. Si todo está en orden, emite `AdherenceUpdated` (`status: ON_TRACK`, `streak +1`).
+ 
+#### Behavioral Drop Detection
+ 
+Si `MealSkipped` o `DailyGoalExceeded` ocurren durante **3 días consecutivos**, la política dispara `DetectBehavioralDrop`, emitiendo `BehavioralDropDetected` (`status: AT_RISK`). Se envía una notificación push motivacional y se activa en **Smart Recommendation** el comando `GeneratePreventiveRecommendation`.
+ 
+#### Abandonment Risk Escalation
+ 
+Si tras `BehavioralDropDetected` no hay recuperación en los siguientes **4 días** (total: 7 días sin adherencia), el sistema ejecuta `EscalateAbandonmentRisk`, emitiendo `NutritionalAbandonmentRisk` (`status: DROPPED`). Se envía una notificación push empática y se activa `RequestInterventionRecommendation` en **Smart Recommendation**.
+ 
+#### Consistency Recovery
+ 
+Cuando el usuario vuelve a registrar una comida luego de estar en estado `AT_RISK` o `DROPPED`, la política detecta la recuperación y ejecuta `RegisterConsistencyRecovery`, emitiendo `ConsistencyRecovered`. Se envía notificación positiva y se notifica a **Analytics** para actualizar el historial de adherencia.
+ 
+#### Streak Milestone
+ 
+Cuando `DailyGoalMet` se acumula **7 días consecutivos**, el sistema ejecuta `RegisterStreakMilestone`, emitiendo `StreakMilestoneReached` (hitos: 7 / 14 / 21 / 30 días). El usuario recibe una notificación de celebración y se actualiza la vista **Streak Badge**.
+ 
+#### Strategy Consistency Evaluation
+ 
+Disparado por `MetabolicTargetsRecalculated` (desde Metabolic Adaptation), el sistema evalúa si el nuevo objetivo es compatible con el historial de adherencia del usuario:
+ 
+- Compatible → `StrategyConsistencyConfirmed`
+- Muy agresivo → `StrategyMismatchDetected` → **Smart Recommendation**: `SuggestGradualAdjustment`
+
+---
+ 
+## Nivel Supporting
+ 
+---
+
+### Restaurant Intelligence
+ 
+Este contexto analiza menús de restaurantes y rankea platos compatibles con el perfil del usuario. Consta de 4 swimlanes. Requiere plan **Premium**.
+ 
+#### Menu Photo Scan
+ 
+Habilitado por `BenefitsEnabled` (Premium), el usuario escanea un menú con `ScanMenuPhoto`. La imagen se procesa mediante **Google Cloud Vision API**. La política **Image Valid** rechaza imágenes ilegibles, y se emite `MenuPhotoProcessed` con el texto extraído y los ítems detectados.
+ 
+#### Menu Items Analysis
+ 
+La política **When MenuPhotoProcessed** dispara `AnalyzeMenuItems`, que consulta la **Open Food Facts API** y la **USDA FoodData Central** para estimar macros de cada plato, emitiendo `RestaurantMealAnalyzed`.
+ 
+#### Dietary Restrictions Filter
+ 
+La política **CheckDishRestrictions** cruza cada plato con las restricciones del usuario. Los platos incompatibles emiten `RestrictedDishFlagged` con la razón (alergia o condición médica).
+ 
+#### Compatible Dishes Ranking
+ 
+Los platos sin restricciones se rankean según el criterio del objetivo del usuario:
+ 
+- `lose_weight` → menor densidad calórica
+- `gain_muscle` → mayor contenido proteico (>20g)
+Se emite `CompatibleDishesRanked` con el ranking completo y el `best_dish` en la primera posición. La vista **Menu Analysis Result** presenta el resultado al usuario. El evento propaga hacia **Smart Recommendation** (`SuggestBestDish`) y **Nutrition Tracking** (el usuario puede loggear el plato elegido).
+
+---
+ 
+### Smart Recommendations
+ 
+Este contexto centraliza la generación de sugerencias personalizadas basadas en el contexto del usuario. Consta de 9 swimlanes.
+ 
+#### Preventive Recommendation
+ 
+Disparado por `BehavioralDropDetected`, el sistema ejecuta `GeneratePreventiveRecommendation`, emitiendo `PreventiveRecommendationGenerated` con una sugerencia de comida simple y alcanzable acorde al perfil. Se envía notificación push y se presenta la vista **Active Recommendation Card**.
+ 
+#### Intervention Recommendation
+ 
+Disparado por `NutritionalAbandonmentRisk`, el sistema ejecuta `RequestInterventionRecommendation`, emitiendo `InterventionRecommendationGenerated` con un plan simplificado de reactivación gradual.
+ 
+#### Strategy Adjustment Recommendation
+ 
+Disparado por `StagnationDetected` (desde Metabolic Adaptation), el sistema ejecuta `SuggestStrategyAdjustment`, emitiendo `StrategyAdjustmentSuggested` con una nueva distribución de macros sugerida. Si el usuario acepta, se propaga `RecalculateMetabolicTargets` hacia **Metabolic Adaptation**.
+ 
+#### Gradual Adjustment Suggestion
+ 
+Disparado por `StrategyMismatchDetected` (desde Behavioral Consistency), el sistema ejecuta `SuggestGradualAdjustment`, emitiendo `GradualAdjustmentSuggested` con un objetivo más suave acorde al historial de adherencia.
+ 
+#### Best Dish Suggestion
+ 
+Disparado por `CompatibleDishesRanked` (desde Restaurant Intelligence), el sistema ejecuta `SuggestBestDish`, emitiendo `BestDishRecommended` con el plato y su justificación nutricional (e.g., *"Este plato cubre el 80% de tu proteína restante del día"*).
+ 
+#### Weather-Based Recommendation *(Pro / Premium)*
+ 
+El usuario activa la detección de ubicación mediante la **Geolocation API**. Tras obtener `LocationDetected`, el sistema consulta la **OpenWeatherMap API**. Según la temperatura, la política aplica el criterio:
+ 
+- > 28°C → sugerencia ligera/hidratante
+- < 12°C → sugerencia cálida/densa
+Se emite `WeatherAdaptedMealSuggested` con las restricciones activas aplicadas.
+ 
+#### Travel Mode *(Pro / Premium)*
+ 
+El usuario activa el Travel Mode manualmente o por detección automática de ubicación. El evento `TravelModeActivated` desencadena `GenerateTravelRecommendation`, que filtra platos locales de la ciudad según las restricciones del perfil y emite `LocalDishesRecommended` para la vista **Local Dishes Card**.
+ 
+#### Pantry & Recipe Suggestions *(Pro / Premium)*
+ 
+El usuario registra ingredientes disponibles con `RegisterPantryItems`, emitiendo `PantryUpdated`. La política **Macro Deficit Check** prioriza recetas que cubran el macro más deficitario del día, aplicando además el filtro de restricciones. Se emite `RecipeSuggested` con la vista **Recipe Card**, y el usuario puede loggear directamente la receta en **Nutrition Tracking**.
+ 
+#### Premium Features Lock / Unlock
+ 
+| Evento entrante | Origen | Comando | Evento emitido |
+| :--- | :--- | :--- | :--- |
+| `BenefitsEnabled` | Subscriptions & Billing | `UnlockPremiumFeatures` | `PremiumFeaturesUnlocked` |
+| `BenefitsDisabled` | Subscriptions & Billing | `LockPremiumFeatures` | `PremiumFeaturesLocked` |
+ 
+---
+ 
+### Analytics & Reporting
+ 
+Este contexto centraliza la generación de dashboards, métricas de progreso y reportes. Consta de 4 swimlanes.
+ 
+#### Dashboard Update *(consumidor pasivo)*
+ 
+El dashboard se actualiza automáticamente ante los siguientes eventos entrantes: `MealRecorded`, `DailyGoalMet`, `DailyGoalExceeded`, `CaloricTargetAdjusted`, `ConsistencyRecovered` y `MetabolicTargetsRecalculated`. El comando `UpdateDailyDashboard` emite `DashboardUpdated` con el resumen calórico, macros y estado de adherencia actualizados.
+ 
+#### View Dashboard
+ 
+El usuario consulta el dashboard con `ViewDashboard`, emitiendo `DashboardViewed` y presentando la vista **Progress Summary** (resumen diario, semanal y mensual). La política subsecuente ejecuta `UpdateUsageStreak`, actualizando la vista **Streak Badge**.
+ 
+#### Export PDF Report *(Premium)*
+ 
+El usuario exporta un reporte con `ExportReportPDF` (rango de fechas). La política **Premium Plan Required** valida el acceso antes de emitir `PDFReportGenerated`, que incluye resúmenes calóricos diarios, promedios de macros, evolución de peso, historial de adherencia y datos de actividad.
+ 
+#### Adherence Progress Update
+ 
+Disparado por `ConsistencyRecovered` (desde Behavioral Consistency), el sistema ejecuta `UpdateAdherenceProgress`, emitiendo `AdherenceProgressUpdated` y actualizando la sección de adherencia en la vista **Progress Summary**.
+
+---
+ 
+## Nivel Genéricos
+ 
+---
+
+### Subscriptions & Billing
+ 
+Este contexto gestiona los planes de suscripción y la integración con Stripe. Consta de 3 swimlanes.
+ 
+#### Plan Selection and Payment
+ 
+El usuario selecciona un plan con `SelectSubscriptionPlan` (Basic / Pro / Premium). La política **Valid Plan Selected** valida la elección, emite `PlanSelected` y encadena automáticamente `SubmitPayment` hacia **Stripe API**. Tras el pago exitoso (`PaymentSuccessful`), se ejecuta `ActivateSubscription`, que emite `SubscriptionActivated`. A continuación, la política **When SubscriptionActivated** ejecuta `EnablePlanFeatures`, desbloqueando las funcionalidades según el plan:
+ 
+| Plan | Funcionalidades |
+| :--- | :--- |
+| **Basic** | NutritionLog, BasicDashboard, BMI/BMR/TDEE |
+| **Pro** | + SmartScan, TravelMode, WeatherRecs, Pantry |
+| **Premium** | + WearableSync, RestaurantMenuAnalysis, UnlimitedHistory, PDFReports |
+ 
+El evento `BenefitsEnabled` propaga habilitaciones hacia:
+ 
+- **Smart Recommendation** → `UnlockPremiumFeatures`
+- **Restaurant Intelligence** → `EnableMenuScan` (solo Premium)
+- **Metabolic Adaptation** → `EnableWearableSync` (solo Premium)
+#### Unsubscribe
+ 
+El usuario ejecuta `CancelSubscription` (validado contra **Stripe API**), emitiendo `SubscriptionCancelled`. La política subsecuente ejecuta `DisablePlanFeatures`, lo que emite `BenefitsDisabled` y propaga bloqueos hacia Smart Recommendation, Restaurant Intelligence y Metabolic Adaptation.
+ 
+#### Automatic Renewal
+ 
+El sistema ejecuta `RenewSubscription` de forma programada a través de **Stripe API**. Al emitirse `SubscriptionRenewed`, se reactiva automáticamente `EnablePlanFeatures` y vuelve a propagarse `BenefitsEnabled` hacia Smart Recommendation.
+ 
+---
+
+### Identity & Access Management
+ 
+Este contexto gestiona el ciclo de vida de la sesión y el perfil del usuario. Consta de 5 swimlanes.
+ 
+#### User Registration
+ 
+El visitante ejecuta el comando `RegisterAccount`. Las políticas **Unique Email Validation** y **Strong Password Validation** bloquean el registro si el email ya existe o la contraseña es débil. Si ambas se cumplen, se emite el evento `AccountCreated`, que genera la vista **Welcome Screen** y activa, dentro del mismo contexto, el flujo de onboarding.
+ 
+#### Onboarding
+ 
+El usuario recién registrado ejecuta `SubmitOnboardingProfile` con sus datos físicos (peso, talla, objetivo, nivel de actividad, restricciones dietéticas). Las políticas **Valid Weight Input** y **Valid Height Input** validan los datos antes de emitir `OnboardingCompleted`. Este evento cruza contextos y dispara:
+ 
+- **Metabolic Adaptation** → `CalculateInitialTargets`
+- **Behavioral Consistency** → `InitializeBehavioralTracking`
+- **Nutrition Tracking** → `RegisterDietaryRestrictions`
+#### Log In
+ 
+El usuario ejecuta `LoginToAccount`. La política **Valid Credentials** bloquea temporalmente la cuenta tras 5 intentos fallidos. Si las credenciales son correctas, se emite `SessionStarted`.
+ 
+#### Log Out
+ 
+El usuario ejecuta `LogoutFromAccount`, lo que emite `SessionTerminated` y expone la vista **Session Ended**.
+ 
+#### Profile Settings
+ 
+El usuario actualiza su perfil mediante `UpdateProfile`. Al emitirse `ProfileUpdated`, si el nivel de actividad cambió, se notifica a **Metabolic Adaptation** para disparar `RecalculateMetabolicTargets`.
+ 
+---
+
+## Mapa de interdependencias entre niveles
+ 
+| Evento (Origen) | Contexto Origen | Comando (Destino) | Contexto Destino |
+| :--- | :--- | :--- | :--- |
+| `OnboardingCompleted` | IAM | `CalculateInitialTargets` | Metabolic Adaptation |
+| `OnboardingCompleted` | IAM | `InitializeBehavioralTracking` | Behavioral Consistency |
+| `OnboardingCompleted` | IAM | `RegisterDietaryRestrictions` | Nutrition Tracking |
+| `ProfileUpdated` | IAM | `RecalculateMetabolicTargets` | Metabolic Adaptation |
+| `BenefitsEnabled` | Subscriptions & Billing | `UnlockPremiumFeatures` | Smart Recommendation |
+| `BenefitsEnabled` | Subscriptions & Billing | `EnableMenuScan` | Restaurant Intelligence |
+| `BenefitsEnabled` | Subscriptions & Billing | `EnableWearableSync` | Metabolic Adaptation |
+| `BenefitsDisabled` | Subscriptions & Billing | `LockPremiumFeatures` | Smart Recommendation |
+| `BenefitsDisabled` | Subscriptions & Billing | `DisableMenuScan` | Restaurant Intelligence |
+| `BenefitsDisabled` | Subscriptions & Billing | `DisableWearableSync` | Metabolic Adaptation |
+| `MetabolicTargetSet` | Metabolic Adaptation | `SetDailyNutritionalTargets` | Nutrition Tracking |
+| `MetabolicTargetsRecalculated` | Metabolic Adaptation | `UpdateDailyTargets` | Nutrition Tracking |
+| `MetabolicTargetsRecalculated` | Metabolic Adaptation | `EvaluateStrategyConsistency` | Behavioral Consistency |
+| `CaloricTargetAdjusted` | Metabolic Adaptation | `UpdateNetDailyTarget` | Nutrition Tracking |
+| `StagnationDetected` | Metabolic Adaptation | `SuggestStrategyAdjustment` | Smart Recommendation |
+| `MealRecorded` | Nutrition Tracking | `EvaluateAdherenceStatus` | Behavioral Consistency |
+| `DailyGoalMet` | Nutrition Tracking | `EvaluateAdherenceStatus` | Behavioral Consistency |
+| `DailyGoalMet` | Nutrition Tracking | `UpdateDailyDashboard` | Analytics & Reporting |
+| `DailyGoalExceeded` | Nutrition Tracking | `RegisterDeviation` | Behavioral Consistency |
+| `MealSkipped` | Nutrition Tracking | `EvaluateAdherenceImpact` | Behavioral Consistency |
+| `BehavioralDropDetected` | Behavioral Consistency | `GeneratePreventiveRecommendation` | Smart Recommendation |
+| `NutritionalAbandonmentRisk` | Behavioral Consistency | `RequestInterventionRecommendation` | Smart Recommendation |
+| `ConsistencyRecovered` | Behavioral Consistency | `UpdateAdherenceProgress` | Analytics & Reporting |
+| `StrategyMismatchDetected` | Behavioral Consistency | `SuggestGradualAdjustment` | Smart Recommendation |
+| `CompatibleDishesRanked` | Restaurant Intelligence | `SuggestBestDish` | Smart Recommendation |
+| `CompatibleDishesRanked` | Restaurant Intelligence | [Read Model] Menu Analysis Result | Nutrition Tracking |
+| `StrategyAdjustmentSuggested` | Smart Recommendation | `RecalculateMetabolicTargets` | Metabolic Adaptation |
+ 
+---
 
 **EventStorming**
 
-![EventStorming Diagram](../assets/img/artifacts/eventStorming.png)
+![EventStorming Diagram](../assets/img/artifacts/eventStorming.jpg)
 
 Para poder apreciar mejor el EventStorming le recomendamos ingresar al siguiente link:
-<br>[Visualizar EventStorming en Miro](https://miro.com/welcomeonboard/ZGpHbU1hMVZnYmpjUWg4NFQzOGcyVllGYndBSGRLa2dNcFErY0RnMVJKMWt5ekRVbUhQWXBQV2RFVTFZYzdwTVFnUmJYVHRwN2ZuanhYcDhGaHFFdXpqSXhvNThQV28wWnlBTXZDMFE5SXBGVTBCWk9SdmtWR3dDT0Q3WU82eXN0R2lncW1vRmFBVnlLcVJzTmdFdlNRPT0hdjE=?share_link_id=642611168323)
+<br>[Visualizar EventStorming en Miro](https://miro.com/app/live-embed/uXjVHXMvsmU=/?embedMode=view_only_without_ui&moveToViewport=-66936%2C-26975%2C145750%2C52483&embedId=331104344485)
 
 ### 4.6.2. Software Architecture Context Diagram
 
@@ -1299,8 +1617,9 @@ El Diagrama de Contexto (Nivel 1 del modelo C4) representa a NutriSmart como un 
 	- `Google Fit API:` Sincroniza datos de actividad física y gasto energético.
 	- `OpenWeatherMap:` Provee datos climáticos para ajustar las sugerencias de comidas.
 	- `Stripe:` Gestiona de forma segura los pagos y el estado de las suscripciones.
+	- `Geolocation API:` Provee la ubicación actual del usuario para el Modo Viaje y las recomendaciones contextuales(plan Pro/Premium).
 
-![Context Diagram](../assets/img/artifacts/nutrismart-SystemContext.png)
+![Context Diagram](../assets/img/artifacts/1nutrismart-SystemContext.png)
 
 ### 4.6.3. Software Architecture Container Diagrams
 
@@ -1310,6 +1629,8 @@ El Diagrama de Contenedores (Nivel 2 del modelo C4) desglosa el sistema NutriSma
 
  - **Web Application:** Servidor web que entrega los archivos estáticos al navegador del usuario para inicializar la aplicación.
     - **Tecnología:** `Nginx`.
+ - **Landing Page:** Sitio web estático que presenta la propuesta de valor de NutriSmart y redirige a los usuarios hacia la aplicación web.
+    - **Tecnología:** `HTML5 + CSS3 + JavaScript`.
  - **Single Page Application:** Frontend donde los usuarios interactúan con la plataforma, gestionan sus metas y visualizan sus progresos. Se ejecuta completamente en el navegador del usuario.
     - **Tecnología:** `Angular (con Angular Material para UI y RxJS para la gestión de servicios)`.
  - **API Application:** Backend que maneja la lógica de negocio, el motor de recomendaciones, el procesamiento de imágenes y la integración con servicios externos.
@@ -1319,9 +1640,9 @@ El Diagrama de Contenedores (Nivel 2 del modelo C4) desglosa el sistema NutriSma
  - **External Systems:** APIs de terceros que se integran con el backend para extender las capacidades del sistema.
     - **Tecnología:** `JSON/HTTPS (REST)`.
 
-![Container Diagram](../assets/img/artifacts/nutrismart-ContainerDiagram.png)
+![Container Diagram](../assets/img/artifacts/2nutrismart-ContainerDiagram.png)
 
-![Container Diagram Summarized](../assets/img/artifacts/nutrismart-ContainerDiagram1.png)
+![Container Diagram Summarized](../assets/img/artifacts/3nutrismart-ContainerDiagram1.png)
 
 ### 4.6.4. Software Architecture Components Diagrams
 
@@ -1329,174 +1650,308 @@ El Diagrama de Componentes (Nivel 3 del modelo C4) describe la estructura intern
 
 **A. Single Page Application Components (Frontend)**
 
-Este contenedor se organiza para garantizar una interfaz reactiva siguiendo el patrón de arquitectura de Angular.
+El Single Page Application se organiza en 7 Bounded Contexts, cada uno con 4 capas siguiendo el patrón de arquitectura del Domain-Driven Design.
 
-**Elementos:**
+El diagrama a continuación muestra todos los componentes de la arquitectura en un único bloque, dado que Structurizr no soporta la agrupación visual por Bounded Context en las vistas de componentes.
 
- - **UI Components:** Biblioteca de vistas y elementos visuales basados en Material Design.
-    - **Tecnología:** `Angular Material`.
- - **Angular Router:** Componente encargado de la navegación y el enrutamiento del lado del cliente.
-    - **Tecnología:** `Angular Router`.
- - **Data Services:** Servicios encargados de la lógica de negocio del lado del cliente y el manejo de flujos de datos asíncronos.
-    - **Tecnología:** `RxJS`.
- - **HTTP Client:** Encargado de orquestar las peticiones asíncronas y la comunicación con el servidor de API.
-    - **Tecnología:** `HttpClient (Angular)`.
+![Web Component Diagram](../assets/img/artifacts/4nutrismart-WebComponentsDiagram.png)
 
-![Web Component Diagram](../assets/img/artifacts/nutrismart-WebComponentsDiagram.png)
+Cada Bounded Context contiene una capa de Presentation con las vistas Angular, una capa de Application con los servicios TypeScript que orquestan la lógica del cliente, una capa de Domain con los modelos e interfaces, y una capa de Infrastructure con el cliente HTTP Angular que se comunica con el API Application.
 
-![Web Component Diagram Summarized](../assets/img/artifacts/nutrismart-WebComponentsDiagram1.png)
+Para apreciar la separación por capas Domain-Driven Design de cada Bounded Context, se presenta a continuación un diagrama de detalle individual por cada uno.
+
+**Bounded Contexts:**
+
+ - **Identity & Access:** Gestiona las vistas de login, registro y perfil del usuario.
+
+   ![IAM Frontend Diagram](../assets/img/artifacts/5nutrismart-IAMFrontendDiagram.png)
+
+ - **Nutrition Tracking:** Gestiona las vistas de registro de comidas, Smart Scan y  búsqueda de alimentos.
+
+   ![Nutrition Frontend Diagram](../assets/img/artifacts/6nutrismart-NutritionFrontendDiagram.png)
+
+ - **Metabolic Adaptation:** Gestiona las vistas de métricas corporales, historial de peso, objetivos metabólicos y registro de actividad.
+
+   ![Metabolic Frontend Diagram](../assets/img/artifacts/7nutrismart-MetabolicFrontendDiagram.png)
+
+- **Behavioral Consistency:** Gestiona las vistas de estado de adherencia, rachas y resumen de progreso conductual.
+
+   ![Behavioral Frontend Diagram](../assets/img/artifacts/8nutrismart-BehavioralFrontendDiagram.png)
+
+- **Restaurant Intelligence:** Gestiona las vistas de escaneo de menú, platos compatibles y mejor plato sugerido.
+
+   ![Restaurant Frontend Diagram](../assets/img/artifacts/9nutrismart-RestaurantFrontendDiagram.png)
+
+ - **Smart Recommendations:** Gestiona las vistas de recomendaciones personalizadas, Modo Viaje, Despensa y recomendaciones por clima.
+
+   ![Recs Frontend Diagram](../assets/img/artifacts/10nutrismart-RecsFrontendDiagram.png)
+
+ - **Analytics & Reporting:** Gestiona las vistas del dashboard, gráficas de progreso y rachas.
+
+   ![Analytics Frontend Diagram](../assets/img/artifacts/11nutrismart-AnalyticsFrontendDiagram.png)
+
+ - **Subscriptions & Billing:** Gestiona las vistas de planes de suscripción y pagos.
+
+   ![Billing Frontend Diagram](../assets/img/artifacts/12nutrismart-BillingFrontendDiagram.png)
 
 **B. API Application Components (Backend)**
 
-El backend se divide en módulos que representan los 7 Bounded Contexts del dominio, asegurando una arquitectura desacoplada y escalable. Adicionalmente, cuenta con un Data Access Layer que centraliza la persistencia de datos mediante el patrón Repository, gestionando todas las operaciones de lectura y escritura hacia la base de datos.
+El API Application se organiza en 7 Bounded Contexts y un Shared Kernel, cada uno siguiendo el patrón de arquitectura del Domain-Driven Design.
 
-**Elementos:**
+El diagrama a continuación muestra todos los componentes de la arquitectura en un único bloque, dado que Structurizr no soporta la agrupación visual por Bounded Context en las vistas de componentes.
 
- - **Modulos de Dominio (Identity, Nutrition, Health, Recs, Activity, Analytics, Billing):** Implementan las reglas de negocio específicas para cada contexto identificado.
-    - **Tecnología:** `Java / Spring Boot (Services & Controllers)`.
- - **Data Access Layer (Repository):** Componente que centraliza la persistencia de la información mediante el uso de abstracciones de datos.
-    - **Tecnología:** `Spring Data JPA / Hibernate`.
+![API Component Diagram](../assets/img/artifacts/13nutrismart-APIComponentsDiagram.png)
 
-![API Component Diagram](../assets/img/artifacts/nutrismart-APIComponentsDiagram.png)
+Cada Bounded Context contiene una capa de Interfaces con los Controllers de Spring Boot que reciben las peticiones HTTP, una capa de Application con los servicios y comandos que orquestan los casos de uso, una capa de Domain con los agregados y entidades del dominio, y una capa de Infrastructure con los repositorios de Spring Data JPA y los clientes de APIs externas cuando corresponda.
 
-![API Component Diagram Summarized](../assets/img/artifacts/nutrismart-APIComponentsDiagram1.png)
+Para apreciar la separación por capas Domain-Driven Design de cada Bounded Context, se presenta a continuación un diagrama de detalle individual por cada uno.
+
+**Bounded Contexts:**
+
+ - **Identity & Access:** Maneja la autenticación, autorización y perfiles de usuario.
+
+   ![IAM Backend Diagram](../assets/img/artifacts/14nutrismart-IAMBackendDiagram.png)
+
+ - **Nutrition Tracking:** Gestiona el registro de comidas y el procesamiento de Smart Scan. Se integra con Google Cloud Vision y Nutrition Data Providers.
+
+   ![Nutrition Backend Diagram](../assets/img/artifacts/15nutrismart-NutritionBackendDiagram.png)
+
+ - **Metabolic Adaptation:** Calcula BMI, BMR y TDEE, gestiona los objetivos calóricos y sincroniza datos de actividad desde Google Fit (Premium).
+
+   ![Metabolic Backend Diagram](../assets/img/artifacts/16nutrismart-MetabolicBackendDiagram.png)
+
+- **Behavioral Consistency:** Evalúa la adherencia diaria, detecta caídas conductuales y gestiona el sistema de rachas.
+
+   ![Behavioral Backend Diagram](../assets/img/artifacts/17nutrismart-BehavioralBackendDiagram.png)
+
+- **Restaurant Intelligence:** Procesa fotos de menús, filtra platos por restricciones y rankea las opciones más compatibles con el perfil del usuario. Se integra con Google Cloud Vision API y Nutritional Data Providers.
+
+   ![Restaurant Backend Diagram](../assets/img/artifacts/18nutrismart-RestaurantBackendDiagram.png)
+
+ - **Smart Recommendations:** Procesa datos contextuales para generar sugerencias personalizadas. Se integra con OpenWeatherMap y Geolocation API.
+
+   ![Recs Backend Diagram](../assets/img/artifacts/19nutrismart-RecsBackendDiagram.png)
+
+ - **Analytics & Reporting:** Genera gráficas de progreso, rachas y reportes del usuario.
+
+   ![Analytics Backend Diagram](../assets/img/artifacts/20nutrismart-AnalyticsBackendDiagram.png)
+
+ - **Subscriptions & Billing:** Gestiona los niveles de suscripción e integra con Stripe para el procesamiento de pagos.
+
+   ![Billing Backend Diagram](../assets/img/artifacts/21nutrismart-BillingBackendDiagram.png)
+
+**Shared Kernel:**
+
+Componente transversal utilizado por todos los Bounded Contexts que agrupa clases base, interfaces compartidas y objetos de valor reutilizables. No contiene lógica de negocio propia ni acceso a base de datos.
+
+Incluye los siguientes sub-componentes:
+ 
+- **Base Domain:** Clases abstractas base para agregados, entidades y objetos de valor.
+- **Common Interfaces:** Interfaces compartidas como `IRepository` y `IDomainEvent`.
+- **Common Value Objects:** Objetos de valor reutilizables como `Money`, `DateRange` y `Pagination`.
+
+![Shared Kernel Diagram](../assets/img/artifacts/22nutrismart-SharedKernelDiagram.png)
 
 ## 4.7. Software Object-Oriented Design
- 
-En total se presentan catorce diagramas, siete por cada capa, uno por cada Bounded Context definido en la arquitectura DDD del producto.
- 
+
+En total se presentan treinta y dos diagramas, cuatro por cada Bounded Context identificado en la arquitectura DDD del producto, cubriendo ocho contextos delimitados.
+
 **Características principales**
 
 **Arquitectura DDD en capas**
- 
-El backend estructura cada Bounded Context en cuatro paquetes:
- 
-- `domain`: contiene aggregates, entities, value objects y domain events.
-- `application`: aloja los command services y query services junto con sus respectivos commands y queries.
-- `infrastructure`: implementa los repositorios JPA y los adaptadores hacia APIs externas.
-- `interfaces`: expone los REST controllers, los assemblers y los recursos de entrada/salida.
-El frontend replica esta separación en las capas `domain/model`, `application/services`, `infrastructure/http` y `presentation/components`.
- 
-**Aggregates como raíz de consistencia**
- 
-Cada Bounded Context define uno o más aggregates raíz que encapsulan la lógica de negocio y controlan el acceso a sus entidades internas. Por ejemplo:
- 
-- `NutritionLog` en el contexto de *Nutrition Tracking*
-- `BodyProfile` en *Body & Health Metrics*
+
+El frontend de NutriSmart estructura cada Bounded Context en cuatro paquetes siguiendo una arquitectura hexagonal:
+
+- `domain/model`: contiene entities, value objects, enumeraciones de dominio y domain events.
+- `application`: aloja los stores reactivos que orquestan la lógica de aplicación mediante Angular Signals.
+- `infrastructure`: implementa los assemblers de transformación, los endpoints HTTP y las APIs que encapsulan la comunicación con el servidor.
+- `presentation`: expone las views (componentes inteligentes), los dumb components y los ViewModels que adaptan los datos del dominio hacia la interfaz de usuario.
+
+**Entities y Value Objects como núcleo del dominio**
+
+Cada Bounded Context define una o más entidades que encapsulan la lógica de negocio y controlan el acceso a sus datos internos. Por ejemplo:
+
+- `NutritionLog` y `MealRecord` en el contexto de *Nutrition Tracking*
+- `BehavioralProgress` y `RecoveryPlan` en *Behavioral Consistency*
 - `Subscription` en *Subscriptions & Billing*
-Ninguna entidad interna es accesible directamente desde fuera del aggregate.
- 
-**Value Objects inmutables**
- 
-Los conceptos del dominio que se identifican por su valor y no por su identidad se modelan como value objects: `Email`, `Weight`, `Height`, `MacroNutrients`, `Money`, `RecommendationContext`, entre otros. Su inmutabilidad se refleja en la ausencia de setters y en constructores que validan su estado inicial.
- 
+- `MenuAnalysis` en *Restaurant Intelligence*
+
+Los conceptos del dominio que se identifican por su valor y no por su identidad se modelan como value objects: `MacroNutrients`, `DailyCaloriesHistory`, `PlanFeatures`, `RecoveryAction`, `RecommendationContext`, entre otros. Su inmutabilidad se refleja en la ausencia de setters y en constructores que validan su estado inicial.
+
 **Domain Events**
- 
-Cada aggregate publica eventos de dominio que representan hechos significativos del negocio:
- 
-- `UserRegistered`
-- `ConsumptionUpdated`
-- `CaloricBalanceAdjusted`
-- `SubscriptionActivated`
+
+Cada entity del dominio puede publicar eventos que representan hechos significativos del negocio, canalizados a través del `DomainEventBus` de la capa `shared/application`:
+
+- `UserRegistered`, `UserLoggedIn` en IAM
+- `DailyGoalMet`, `MealLogged` en Nutrition Tracking
+- `BehaviorPatternAnalyzed`, `RecoveryPlanActivated` en Behavioral Consistency
+- `MetabolicTargetSet`, `CaloricBalanceAdjusted` en Metabolic Adaptation
+- `SubscriptionActivated`, `PlanUpgraded` en Subscriptions & Billing
+
 Estos eventos habilitan la integración reactiva entre contextos, tal como se definió en el Event Storming de diseño.
- 
-**Interfaces de repositorio en el dominio**
- 
-Siguiendo el principio de inversión de dependencias, las interfaces de repositorio se declaran en la capa de dominio (por ejemplo, `UserRepository`, `NutritionLogRepository`) y sus implementaciones concretas residen en la capa de infraestructura (por ejemplo, `UserRepositoryImpl`). Esto garantiza que el dominio no dependa de tecnologías de persistencia específicas.
- 
-**Command/Query Separation**
- 
-Los application services se dividen en:
- 
-- **Command services:** modifican el estado del sistema.
-- **Query services:** solo consultan el estado.
-Siguiendo el patrón CQRS ligero adoptado en el proyecto, los commands y queries son objetos inmutables con los datos necesarios para cada operación.
 
-**Angular Signals en el frontend**
- 
-Los servicios del frontend utilizan `WritableSignal` y `Signal` de Angular para gestionar el estado reactivo de forma eficiente. Los componentes consumen estos signals directamente o mediante `InputSignal` para los inputs declarativos, en línea con el patrón enseñado en los ejemplos de clase.
- 
+**Patrón Assembler en infraestructura**
+
+Siguiendo el principio de inversión de dependencias, los assemblers realizan la conversión bidireccional entre entidades del dominio y los recursos DTO provenientes de la API REST. Por ejemplo, `BehavioralProgressAssembler`, `NutritionLogAssembler` y `SubscriptionAssembler` implementan la interfaz genérica `BaseAssembler<TEntity, TResource, TResponse>`. Esto garantiza que el dominio no dependa de la forma de los datos del servidor.
+
+**Angular Signals en la capa de aplicación**
+
+Los stores del frontend utilizan `WritableSignal` y `Signal` de Angular para gestionar el estado reactivo de forma eficiente. Los signals derivados se definen mediante `computed()`, permitiendo que la UI se actualice automáticamente ante cualquier cambio de estado sin necesidad de suscripciones manuales. Los componentes consumen estos signals directamente o mediante `InputSignal` para los inputs declarativos.
+
+**Separación ViewModel / Dominio en presentación**
+
+Las views traducen los datos del store hacia ViewModels compuestos únicamente por primitivos y strings orientados a la interfaz de usuario. Esto impide que los templates accedan directamente a tipos del dominio, manteniendo una frontera clara entre la lógica de negocio y la representación visual. Los dumb components reciben datos ya transformados mediante `InputSignal<T>` y emiten interacciones mediante `OutputEmitterRef<T>`.
+
 **Integración con APIs externas**
- 
+
 Los adaptadores de infraestructura modelan la comunicación con servicios externos, manteniéndolos aislados del dominio mediante interfaces:
- 
-- **Open Food Facts**
-- **USDA FoodData Central**
-- **OpenWeatherMap**
-- **Google Fit**
 
-Tras definir la estructura arquitectónica de contenedores y componentes, se procede al diseño orientado a objetos del software. En esta etapa, se detallan las clases, sus responsabilidades y las relaciones que darán vida a NutriSmart, permitiendo una transición fluida desde la arquitectura lógica hacia la implementación técnica.
+- **Open Food Facts** y **USDA FoodData Central** en Nutrition Tracking
+- **Gemini Vision API** en Restaurant Intelligence
+- **OpenWeatherMap** y **Google Fit** en Metabolic Adaptation
 
-El diseño se fundamenta en los pilares fundamentales de la Programación Orientada a Objetos (POO) para garantizar un sistema modular, escalable y de fácil mantenimiento:
+Tras definir la estructura arquitectónica de contenedores y componentes, se procede al diseño orientado a objetos del software. En esta etapa se detallan las clases, sus responsabilidades y las relaciones que darán vida a NutriSmart, permitiendo una transición fluida desde la arquitectura lógica hacia la implementación técnica.
 
-- **Encapsulamiento:** Para proteger la integridad de los datos sensibles de salud, asegurando que el estado de los objetos solo sea accesible mediante modificadores de acceso.
-- **Abstracción:** Para simplificar procesos complejos, como la integración con múltiples APIs externas de visión artificial y clima, mediante el uso de interfaces de Spring y clases abstractas.
-- **Herencia y Polimorfismo:** Para promover la reutilización de código y la flexibilidad del sistema, permitiendo que diferentes tipos de registros nutricionales o planes de suscripción compartan comportamientos base pero se especialicen según sus reglas de negocio.
-- **Modularidad:** Estructurando las clases de acuerdo con los 7 Bounded Contexts identificados, asegurando que el diseño esté estrictamente alineado con los requerimientos funcionales del dominio.
+El diseño se fundamenta en los pilares de la Programación Orientada a Objetos (POO) para garantizar un sistema modular, escalable y de fácil mantenimiento:
 
-A continuación, se presentan los diagramas de clases que reflejan la estructura lógica del software, incluyendo sus atributos, métodos y multiplicidad de relaciones.
+- **Encapsulamiento:** Para proteger la integridad de los datos sensibles de salud, los campos privados de las entities solo son accesibles mediante getters y métodos de comportamiento, sin exponer setters públicos.
+- **Abstracción:** Los assemblers, endpoints y APIs se definen sobre clases base e interfaces genéricas (`BaseApi`, `BaseAssembler`, `BaseApiEndpoint`), simplificando la incorporación de nuevos contextos sin modificar el código existente.
+- **Herencia y Polimorfismo:** Los assemblers e infraestructura HTTP extienden clases base comunes y especializan su comportamiento según el contexto, permitiendo que distintos tipos de recursos compartan el mismo contrato de transformación.
+- **Modularidad:** Las clases se estructuran de acuerdo con los ocho Bounded Contexts identificados, asegurando que el diseño esté estrictamente alineado con los requerimientos funcionales del dominio.
+
+A continuación se presentan los diagramas de clases que reflejan la estructura lógica del software, incluyendo sus atributos, métodos y multiplicidad de relaciones.
 
 ### 4.7.1. Class Diagrams
 
 **FrontEnd**
 
-**Identity & Access Management**
+**Nutrition Tracking** *(Core)*
 
-![IAM Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/iam.puml)
+![Nutrition Tracking Application](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/nutrition-tracking/application.puml)
 
-**Nutrition**
+![Nutrition Tracking Infrastructure](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/nutrition-tracking/infrastructure.puml)
 
-![Nutrition Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/nutrition.puml)
+![Nutrition Tracking Model](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/nutrition-tracking/model.puml)
 
-**Body-metrics**
+![Nutrition Tracking Presentation](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/nutrition-tracking/presentation.puml)
 
-![Body-metrics Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/body-metrics.puml)
+---
 
-**Recommendations**
+**Behavioral Consistency** *(Core)*
 
-![Recommendations Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/recommendations.puml)
+![Behavioral Consistency Application](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/behavioral-consistency/application.puml)
 
-**Activity**
+![Behavioral Consistency Infrastructure](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/behavioral-consistency/infrastructure.puml)
 
-![Activity Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/activity.puml)
+![Behavioral Consistency Model](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/behavioral-consistency/model.puml)
 
-**Analytics**
+![Behavioral Consistency Presentation](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/behavioral-consistency/presentation.puml)
 
-![Analytics Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/analytics.puml)
+---
 
-**Billing**
+**Metabolic Adaptation** *(Core)*
 
-![Activity Frontend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/frontend/billing.puml)
+![Metabolic Adaptation Application](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/metabolic-adaptation/application.puml)
+
+![Metabolic Adaptation Infrastructure](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/metabolic-adaptation/infrastructure.puml)
+
+![Metabolic Adaptation Model](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/metabolic-adaptation/model.puml)
+
+![Metabolic Adaptation Presentation](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/metabolic-adaptation/presentation.puml)
+
+---
+
+**Smart Recommendation** *(Support)*
+
+![Smart Recommendation Application](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/smart-recommendation/application.puml)
+
+![Smart Recommendation Infrastructure](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/smart-recommendation/infrastructure.puml)
+
+![Smart Recommendation Model](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/smart-recommendation/model.puml)
+
+![Smart Recommendation Presentation](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/smart-recommendation/presentation.puml)
+
+---
+
+**Restaurant Intelligence** *(Support)*
+
+![Restaurant Intelligence Application](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/restaurant-intelligence/application.puml)
+
+![Restaurant Intelligence Infrastructure](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/restaurant-intelligence/infrastructure.puml)
+
+![Restaurant Intelligence Model](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/restaurant-intelligence/model.puml)
+
+![Restaurant Intelligence Presentation](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/restaurant-intelligence/presentation.puml)
+
+---
+
+**Analytics** *(Support)*
+
+![Analytics Application](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/analytics/application.puml)
+
+![Analytics Infrastructure](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/analytics/infrastructure.puml)
+
+![Analytics Model](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/analytics/model.puml)
+
+![Analytics Presentation](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/analytics/presentation.puml)
+
+---
+
+**Identity & Access Management** *(Generic)*
+
+![IAM Application](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/iam/application.puml)
+
+![IAM Infrastructure](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/iam/infrastructure.puml)
+
+![IAM Model](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/iam/model.puml)
+
+![IAM Presentation](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/iam/presentation.puml)
+
+---
+
+**Subscriptions** *(Generic)*
+
+![Subscriptions Application](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/subscriptions/application.puml)
+
+![Subscriptions Infrastructure](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/subscriptions/infrastructure.puml)
+
+![Subscriptions Model](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/subscriptions/model.puml)
+
+![Subscriptions Presentation](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/frontend/subscriptions/presentation.puml)
 
 **Backend**
 
 **Identity & Access Management**
 
-![IAM Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/iam.puml)
+![IAM Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/backend/iam.puml)
 
-**Nutrition**
+**Metabolic Adaptation**
 
-![Nutrition Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/nutrition.puml)
+![Metabolic Adaptation Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/backend/metabolic-adaptation.puml)
 
-**Body-metrics**
+**Nutrition Tracking**
 
-![Body-metrics Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/body-metrics.puml)
+![Nutrition Tracking Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/backend/nutrition-tracking.puml)
 
-**Recommendations**
+**Behavioral Consistency**
 
-![Recommendations Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/recommendations.puml)
+![Behavioral Consistency Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/backend/behavioral-consistency.puml)
 
-**Activity**
+**Restaurant Intelligence**
 
-![Activity Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/activity.puml)
+![Restaurant Intelligence Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/backend/restaurant-intelligence.puml)
 
-**Analytics**
+**Smart Recommendations**
 
-![Analytics Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/analytics.puml)
+![Smart Recommendations Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/backend/smart-recommendation.puml)
 
-**Billing**
+**Analytics & Reporting**
 
-![Activity Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/class-diagrams/backend/billing.puml)
+![Analytics Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/backend/analytics.puml)
+
+**Subscriptions & Billing**
+
+![Subscriptions Backend](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/class-diagrams/backend/suscriptions.puml)
 
 ## 4.8. Database Design
 
@@ -1504,11 +1959,11 @@ Los diagramas de base de datos de NutriSmart se presentan a nivel físico, detal
 
 **Características principales consideradas en los diagramas**
 
-**Prefijos de esquema por Bounded Context.** Cada contexto agrupa sus tablas bajo un prefijo propio: `iam_` para Identity & Access Management, `nutrition_` para Nutrition Tracking, `body_` para Body & Health Metrics, `recs_` para Smart Recommendations, `activity_` para Activity & Wearable Sync, `analytics_` para Analytics & Reporting, y `billing_` para Subscriptions & Billing. Esto refleja los límites del dominio directamente en la capa de persistencia y evita colisiones de nombres entre contextos.
+**Prefijos de esquema por Bounded Context.** Cada contexto agrupa sus tablas bajo un prefijo propio: `iam_` para Identity & Access Management, `metabolic_` para Metabolic Adaptation, `nutrition_` para Nutrition Tracking, `behavioral_` para Behavioral Consistency, `restaurant_` para Restaurant Intelligence, `recs_` para Smart Recommendations, `analytics_` para Analytics & Reporting, y `billing_` para Subscriptions & Billing. Esto refleja los límites del dominio directamente en la capa de persistencia y evita colisiones de nombres entre contextos.
 
-**Primary Keys con UUID.** Todas las tablas utilizan `UUID` como tipo de dato para sus claves primarias, generadas mediante `gen_random_uuid()`. Esta decisión es consistente con los Value Objects de identidad definidos en el dominio (`UserId`, `NutritionLogId`, `BodyProfileId`, etc.) y permite la generación distribuida de identificadores sin dependencia de secuencias de base de datos.
+**Primary Keys con UUID.** Todas las tablas utilizan `UUID` como tipo de dato para sus claves primarias, generadas mediante `gen_random_uuid()`. Esta decisión es consistente con los Value Objects de identidad definidos en el dominio (`UserId`, `NutritionLogId`, `MetabolicProfileId`, etc.) y permite la generación distribuida de identificadores sin dependencia de secuencias de base de datos.
 
-**Foreign Keys e integridad referencial.** Las relaciones entre tablas se establecen mediante `FOREIGN KEY`, aplicando `ON DELETE CASCADE` cuando los registros hijos no tienen sentido sin su padre (por ejemplo, `nutrition_food_entries` respecto a `nutrition_logs`), y `ON DELETE RESTRICT` implícito en casos donde la eliminación debe bloquearse para proteger la integridad del negocio.
+**Foreign Keys e integridad referencial.** Las relaciones entre tablas se establecen mediante `FOREIGN KEY`, aplicando `ON DELETE CASCADE` cuando los registros hijos no tienen sentido sin su padre (por ejemplo, `nutrition_meal_records` respecto a `nutrition_logs`, o `behavioral_recovery_actions` respecto a `behavioral_recovery_plans`), y `ON DELETE RESTRICT` implícito en casos donde la eliminación debe bloquearse para proteger la integridad del negocio.
 
 **Normalización en tercera forma normal (3NF).** El diseño evita la redundancia de datos. Los Value Objects compuestos como `MacroNutrients` se persisten como columnas individuales dentro de la tabla de su entidad contenedora, dado que no tienen identidad propia y su ciclo de vida está ligado al aggregate raíz.
 
@@ -1516,12 +1971,12 @@ Los diagramas de base de datos de NutriSmart se presentan a nivel físico, detal
 
 **Tipos de datos PostgreSQL.** Se utilizan tipos nativos: `UUID` para identificadores, `NUMERIC(p,s)` para valores monetarios y medidas con precisión decimal, `TEXT` para cadenas sin límite fijo, `VARCHAR(n)` para cadenas con restricción de longitud conocida, `DATE` para fechas sin componente horario, `TIMESTAMP` para marcas de tiempo completas, `INTEGER` para conteos enteros y `BOOLEAN` para flags binarios.
 
-**Índices.** Se definen índices sobre las columnas de búsqueda más frecuentes: `user_id` en todas las tablas asociadas a un usuario, `email` en `iam_users`, y la combinación `(user_id, date)` en tablas de registros diarios como `nutrition_logs` y `activity_logs`, optimizando las consultas de dashboard y reportes.
+**Índices.** Se definen índices sobre las columnas de búsqueda más frecuentes: `user_id` en todas las tablas asociadas a un usuario, `email` en `iam_users`, la combinación `(user_id, date)` en tablas de registros diarios como `nutrition_logs`, `metabolic_activity_logs` y `analytics_daily_dashboards`, y `(user_id, status)` en `behavioral_recovery_plans`, optimizando las consultas de dashboard y reportes.
 
 **`iam_users` como tabla central.** La tabla `iam_users` del contexto Identity & Access Management actúa como referencia central del sistema. Todos los demás contextos referencian a esta tabla mediante `user_id`, respetando el principio de que la identidad del usuario es gestionada exclusivamente por el contexto IAM.
 
 ### 4.8.1. Database Diagrams
 
-El diagrama a continuación presenta el modelo entidad-relación físico general de NutriSmart, consolidando las tablas de los siete Bounded Contexts y sus relaciones de integridad referencial.
+El diagrama a continuación presenta el modelo entidad-relación físico general de NutriSmart, consolidando las tablas de los ocho Bounded Contexts y sus relaciones de integridad referencial.
 
-![NutriSmart ERD](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/main/docs/database-diagrams/nutrismart-erd.puml)
+![NutriSmart ERD](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-report/develop/docs/database-diagrams/nutrismart-erd.puml)

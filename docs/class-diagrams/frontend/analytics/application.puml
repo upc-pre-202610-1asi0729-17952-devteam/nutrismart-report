@@ -1,0 +1,80 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' ─── Boundary stubs: infrastructure ─────────────────────────────────────────
+package "analytics/infrastructure [boundary]" {
+  class AnalyticsApi <<boundary>> {
+  }
+}
+
+' ─── Boundary stubs: domain ──────────────────────────────────────────────────
+package "analytics/domain [boundary]" {
+  class AnalyticsData <<boundary>> {
+  }
+}
+
+' ─── Boundary stubs: shared ──────────────────────────────────────────────────
+package "shared/application [boundary]" {
+  class DomainEventBus <<boundary>> {
+    + publish(event: DomainEvent): void
+    + events$: Observable<DomainEvent>
+  }
+}
+
+package "iam/application [boundary]" {
+  class IamStore <<boundary>> {
+    + currentUser: Signal<User | null>
+  }
+}
+
+' ─── Application ─────────────────────────────────────────────────────────────
+package "analytics/application" {
+
+  class AnalyticsStore <<store>> {
+    ' Writable signals
+    - _currentAnalyticsData: WritableSignal<AnalyticsData | null>
+    - _loading: WritableSignal<boolean>
+    - _error: WritableSignal<string | null>
+    - _selectedPeriod: WritableSignal<AnalyticsPeriod>
+    - _exportPdfModalOpen: WritableSignal<boolean>
+    ' Read-only signals
+    + currentAnalyticsData: Signal<AnalyticsData | null>
+    + loading: Signal<boolean>
+    + error: Signal<string | null>
+    + selectedPeriod: Signal<AnalyticsPeriod>
+    + exportPdfModalOpen: Signal<boolean>
+    ' Computed signals
+    + averageCalorieIntake: Signal<number>
+    + averageProteinIntake: Signal<number>
+    + currentStreak: Signal<number>
+    + weightChange: Signal<number>
+    + weightChangeDirection: Signal<WeightChangeDirection>
+    + weightChangeStatus: Signal<WeightChangeStatus>
+    + dailyCaloriesHistory: Signal<DailyCaloriesHistory[]>
+    + macroAnalysis: Signal<MacroAnalysis>
+    + daysWithCompleteLog: Signal<number>
+    + weightEvolution: Signal<WeightPoint[]>
+    + goalWeight: Signal<number>
+    + adherenceHistory: Signal<AdherenceHistoryEntry[]>
+    + behavioralEvents: Signal<BehavioralEvent[]>
+    + proteinCompliance: Signal<number>
+    + isPremiumUser: Signal<boolean>
+    + allowedPeriods: Signal<AnalyticsPeriod[]>
+    --
+    + loadAnalyticsData(userId: number, period: AnalyticsPeriod): Promise<void>
+    + exportReport(userId: number): Promise<void>
+    + openExportPdfModal(): void
+    + closeExportPdfModal(): void
+    + clear(): void
+  }
+}
+
+' ─── Dependencies ────────────────────────────────────────────────────────────
+AnalyticsStore o--> AnalyticsApi : uses >
+AnalyticsStore o--> IamStore : uses >
+AnalyticsStore ..> AnalyticsData : manages >
+
+@enduml

@@ -43,6 +43,13 @@ package "iam.domain.model.valueobjects" {
     - firstName: String
     - lastName: String
     - avatarUrl: String
+    - weightKg: double
+    - heightCm: double
+    - birthDate: LocalDate
+    - biologicalSex: String
+    - activityLevel: String
+    - goal: String
+    - dietaryRestrictions: List<String>
     + UserProfile(firstName: String, lastName: String)
     + getFullName(): String
     + getAvatarUrl(): String
@@ -57,15 +64,27 @@ package "iam.domain.model.enums" {
 }
 
 package "iam.domain.model.events" {
-  class UserRegistered <<DomainEvent>> {
+  class AccountCreated <<DomainEvent>> {
     + userId: UUID
     + email: String
     + occurredOn: Instant
-    + UserRegistered(userId: UUID, email: String)
   }
-  class UserProfileUpdated <<DomainEvent>> {
+  class OnboardingCompleted <<DomainEvent>> {
     + userId: UUID
-    + fullName: String
+    + weightKg: double
+    + heightCm: double
+    + goal: String
+    + activityLevel: String
+    + dietaryRestrictions: List<String>
+    + occurredOn: Instant
+  }
+  class SessionStarted <<DomainEvent>> {
+    + userId: UUID
+    + occurredOn: Instant
+  }
+  class ProfileUpdated <<DomainEvent>> {
+    + userId: UUID
+    + activityLevelChanged: boolean
     + occurredOn: Instant
   }
 }
@@ -90,32 +109,33 @@ package "iam.application.internal.commandservices" {
   class UserCommandService {
     - userRepository: UserRepository
     - userDomainService: UserDomainService
-    + handle(command: RegisterUserCommand): User
+    + handle(command: RegisterAccountCommand): User
+    + handle(command: SubmitOnboardingProfileCommand): User
     + handle(command: UpdateProfileCommand): User
     + handle(command: ChangePasswordCommand): void
   }
-}
-
-package "iam.application.internal.queryservices" {
-  class UserQueryService {
-    - userRepository: UserRepository
-    + handle(query: GetUserByIdQuery): Optional<User>
-    + handle(query: GetUserByEmailQuery): Optional<User>
-  }
-}
-
-package "iam.application.internal.commandservices" {
-  class RegisterUserCommand <<Command>> {
+  class RegisterAccountCommand <<Command>> {
     + email: String
     + password: String
     + firstName: String
     + lastName: String
+  }
+  class SubmitOnboardingProfileCommand <<Command>> {
+    + userId: UUID
+    + weightKg: double
+    + heightCm: double
+    + birthDate: LocalDate
+    + biologicalSex: String
+    + activityLevel: String
+    + goal: String
+    + dietaryRestrictions: List<String>
   }
   class UpdateProfileCommand <<Command>> {
     + userId: UUID
     + firstName: String
     + lastName: String
     + avatarUrl: String
+    + activityLevel: String
   }
   class ChangePasswordCommand <<Command>> {
     + userId: UUID
@@ -125,6 +145,11 @@ package "iam.application.internal.commandservices" {
 }
 
 package "iam.application.internal.queryservices" {
+  class UserQueryService {
+    - userRepository: UserRepository
+    + handle(query: GetUserByIdQuery): Optional<User>
+    + handle(query: GetUserByEmailQuery): Optional<User>
+  }
   class GetUserByIdQuery <<Query>> {
     + userId: UUID
   }
@@ -133,7 +158,7 @@ package "iam.application.internal.queryservices" {
   }
 }
 
-package "iam.infrastructure.persistence.jpa.repositories" {
+package "iam.infrastructure.persistence.jpa" {
   class UserRepositoryImpl {
     - jpaRepository: UserJpaRepository
     + findById(id: UserId): Optional<User>
@@ -154,15 +179,30 @@ package "iam.infrastructure.tokens" {
 }
 
 package "iam.interfaces.rest.resources" {
-  class RegisterUserResource {
+  class RegisterAccountResource {
     + email: String
     + password: String
     + firstName: String
     + lastName: String
   }
+  class OnboardingProfileResource {
+    + weightKg: double
+    + heightCm: double
+    + birthDate: String
+    + biologicalSex: String
+    + activityLevel: String
+    + goal: String
+    + dietaryRestrictions: List<String>
+  }
   class AuthenticateUserResource {
     + email: String
     + password: String
+  }
+  class UpdateProfileResource {
+    + firstName: String
+    + lastName: String
+    + avatarUrl: String
+    + activityLevel: String
   }
   class UserProfileResource {
     + id: UUID
@@ -170,6 +210,13 @@ package "iam.interfaces.rest.resources" {
     + fullName: String
     + role: String
     + avatarUrl: String
+    + goal: String
+    + activityLevel: String
+  }
+  class AuthTokenResource {
+    + token: String
+    + userId: UUID
+    + role: String
   }
 }
 
@@ -177,34 +224,35 @@ package "iam.interfaces.rest.assemblers" {
   class UserResourceAssembler {
     + toResourceFromEntity(user: User): UserProfileResource
   }
-  class UserCommandAssembler {
-    + toCommandFromResource(resource: RegisterUserResource): RegisterUserCommand
-  }
 }
 
 package "iam.interfaces.rest.controllers" {
   class AuthController {
-    - userCommandService: UserCommandService
-    - userQueryService: UserQueryService
+    - commandService: UserCommandService
+    - queryService: UserQueryService
     - jwtTokenProvider: JwtTokenProvider
-    + register(resource: RegisterUserResource): ResponseEntity<UserProfileResource>
-    + authenticate(resource: AuthenticateUserResource): ResponseEntity<String>
+    + register(resource: RegisterAccountResource): ResponseEntity<UserProfileResource>
+    + authenticate(resource: AuthenticateUserResource): ResponseEntity<AuthTokenResource>
   }
   class UserController {
-    - userQueryService: UserQueryService
-    - userCommandService: UserCommandService
+    - commandService: UserCommandService
+    - queryService: UserQueryService
     + getProfile(userId: UUID): ResponseEntity<UserProfileResource>
-    + updateProfile(userId: UUID, command: UpdateProfileCommand): ResponseEntity<UserProfileResource>
+    + submitOnboarding(userId: UUID, resource: OnboardingProfileResource): ResponseEntity<UserProfileResource>
+    + updateProfile(userId: UUID, resource: UpdateProfileResource): ResponseEntity<UserProfileResource>
+    + changePassword(userId: UUID, resource: ChangePasswordCommand): ResponseEntity<Void>
   }
 }
 
-User "1" *--> "1" UserId : has >
+User "1" *--> "1" UserId : identified by >
 User "1" *--> "1" Email : has >
 User "1" *--> "1" PasswordHash : has >
 User "1" *--> "1" UserProfile : has >
 User "1" *--> "1" UserRole : has >
-User ..> UserRegistered : publishes >
-User ..> UserProfileUpdated : publishes >
+User ..> AccountCreated : publishes >
+User ..> OnboardingCompleted : publishes >
+User ..> SessionStarted : publishes >
+User ..> ProfileUpdated : publishes >
 
 UserRepositoryImpl ..|> UserRepository : implements
 UserCommandService --> UserRepository : uses >
@@ -212,12 +260,11 @@ UserCommandService --> UserDomainService : uses >
 UserQueryService --> UserRepository : uses >
 
 AuthController --> UserCommandService : uses >
+AuthController --> UserQueryService : uses >
 AuthController --> JwtTokenProvider : uses >
-UserController --> UserQueryService : uses >
 UserController --> UserCommandService : uses >
-
-UserCommandAssembler --> RegisterUserCommand : creates >
+UserController --> UserQueryService : uses >
+UserController --> UserResourceAssembler : uses >
 UserResourceAssembler --> UserProfileResource : creates >
-UserResourceAssembler --> User : uses >
 
 @enduml

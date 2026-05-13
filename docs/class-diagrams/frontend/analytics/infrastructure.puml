@@ -1,0 +1,131 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' ─── Boundary stubs: shared/infrastructure ───────────────────────────────────
+package "shared/infrastructure [boundary]" {
+  abstract class BaseApi <<boundary>> {
+  }
+  interface BaseAssembler <<boundary>> {
+  }
+  abstract class BaseApiEndpoint <<boundary>> {
+  }
+}
+
+' ─── Boundary stubs: analytics/domain ────────────────────────────────────────
+package "analytics/domain [boundary]" {
+  class AnalyticsData <<boundary>> {
+    + period: AnalyticsPeriod
+    + userId: number
+  }
+}
+
+' ─── Resources ───────────────────────────────────────────────────────────────
+package "analytics/infrastructure/resources" {
+
+  class DailyCaloriesHistoryResource <<resource>> {
+    + date: string
+    + consumed: number
+    + goal: number
+    + active: number
+    + net: number
+  }
+
+  class MacroAnalysisResource <<resource>> {
+    + protein: number
+    + carbs: number
+    + fat: number
+    + fiber: number
+  }
+
+  class AdherenceHistoryEntryResource <<resource>> {
+    + date: string
+    + status: string
+    + streak: number
+  }
+
+  class BehavioralEventResource <<resource>> {
+    + date: string
+    + eventTypeKey: string
+    + descriptionKey: string
+    + severity: string
+  }
+
+  class WeightPointResource <<resource>> {
+    + date: string
+    + weightKg: number
+  }
+
+  class AnalyticsResource <<resource>> {
+    + period: string
+    + userId: number
+    + averageCalorieIntake: number
+    + averageProteinIntake: number
+    + currentStreak: number
+    + weightChange: number
+    + weightChangeDirection: string
+    + weightChangeStatus: string
+    + dailyCaloriesHistory: DailyCaloriesHistoryResource[]
+    + macroAnalysis: MacroAnalysisResource
+    + daysWithCompleteLog: number
+    + weightEvolution: WeightPointResource[]
+    + goalWeight: number
+    + adherenceHistory: AdherenceHistoryEntryResource[]
+    + behavioralEvents: BehavioralEventResource[]
+    + proteinCompliance: number
+  }
+
+  class AnalyticsResponse <<resource>> {
+    + analytics: AnalyticsResource[]
+  }
+}
+
+' ─── Assemblers ──────────────────────────────────────────────────────────────
+package "analytics/infrastructure/assemblers" {
+
+  class AnalyticsAssembler <<assembler>> {
+    + toEntityFromResource(resource: AnalyticsResource): AnalyticsData
+    + toResourceFromEntity(entity: AnalyticsData): AnalyticsResource
+    + toEntitiesFromResponse(response: AnalyticsResponse): AnalyticsData[]
+  }
+}
+
+' ─── HTTP ────────────────────────────────────────────────────────────────────
+package "analytics/infrastructure/http" {
+
+  class AnalyticsApiEndpoint <<endpoint>> {
+    - assembler: AnalyticsAssembler
+    --
+    + getAll(): Observable<AnalyticsData[]>
+    + getById(id: number): Observable<AnalyticsData>
+  }
+
+  class AnalyticsApi <<api>> {
+    - endpoint: AnalyticsApiEndpoint
+    --
+    + getAnalyticsData(userId: number, period: string): Observable<AnalyticsData>
+    + exportReport(userId: number, period: string): Observable<Blob>
+  }
+}
+
+AnalyticsApi --|> BaseApi : extends >
+AnalyticsApiEndpoint --|> BaseApiEndpoint : extends >
+AnalyticsAssembler ..|> BaseAssembler : implements >
+
+AnalyticsResponse "1" *--> "0..*" AnalyticsResource : contains >
+AnalyticsResource "1" *--> "0..*" DailyCaloriesHistoryResource : contains >
+AnalyticsResource "1" *--> "0..*" AdherenceHistoryEntryResource : contains >
+AnalyticsResource "1" *--> "0..*" BehavioralEventResource : contains >
+AnalyticsResource "1" *--> "0..*" WeightPointResource : contains >
+AnalyticsResource "1" *--> "1" MacroAnalysisResource : contains >
+
+AnalyticsAssembler --> AnalyticsResource : reads >
+AnalyticsAssembler --> AnalyticsResponse : reads >
+AnalyticsAssembler ..> AnalyticsData : produces >
+
+AnalyticsApiEndpoint --> AnalyticsAssembler : uses >
+AnalyticsApi o--> AnalyticsApiEndpoint : delegates to >
+
+@enduml

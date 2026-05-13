@@ -1,0 +1,200 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' ─── Boundary stub: application layer ────────────────────────────────────────
+package "nutrition-tracking/application [boundary]" {
+  class NutritionStore <<boundary>> {
+    + foodItems: Signal<FoodItem[]>
+    + mealRecords: Signal<MealRecord[]>
+    + dailyIntakes: Signal<DailyIntake[]>
+    + loading: Signal<boolean>
+    + error: Signal<string | null>
+    + preLogGuardrails: Signal<PreLogGuardrail[]>
+    + hasBlockingGuardrail: Signal<boolean>
+    + recordsByMealType: Signal<Record<string, MealRecord[]>>
+    + dailyTotals: Signal<MacroTotals>
+    + searchFoods(query): void
+    + recordMeal(food, qty, unit, type): Promise<void>
+    + removeMeal(id): Promise<void>
+  }
+  class PlateScanStore <<boundary>> {
+    + currentScan: Signal<ScanResult | null>
+    + loading: Signal<boolean>
+    + analyzePlate(imageBase64, mealType): Promise<void>
+    + confirmScan(): Promise<void>
+  }
+}
+
+package "iam/application [boundary]" {
+  class IamStore <<boundary>> {
+    + currentUser: Signal<User | null>
+  }
+}
+
+' ─── ViewModels ──────────────────────────────────────────────────────────────
+package "nutrition-tracking/presentation/viewmodels" {
+
+  class MealEntryVm <<view model>> {
+    + id: number
+    + foodName: string
+    + caloriesLabel: string
+    + macroSummary: string
+    + loggedAtLabel: string
+    + mealTypeKey: string
+  }
+
+  class MealSectionVm <<view model>> {
+    + mealTypeKey: string
+    + color: string
+    + entries: MealEntryVm[]
+    + isSkipped: boolean
+    + totalCalories: number
+  }
+
+  class DailyBalanceVm <<view model>> {
+    + consumed: number
+    + dailyGoal: number
+    + active: number
+    + exceeded: boolean
+    + percentConsumed: number
+    + netCalories: number
+    + remaining: number
+  }
+
+  class FoodSearchResultVm <<view model>> {
+    + id: number
+    + name: string
+    + brand: string
+    + caloriesLabel: string
+    + hasRestrictionConflict: boolean
+    + conflictTags: string[]
+  }
+
+  class DailyLogSummaryVm <<view model>> {
+    + dateLabel: string
+    + isToday: boolean
+    + isEditable: boolean
+    + totalCalories: number
+    + totalProtein: number
+    + totalCarbs: number
+    + totalFat: number
+    + isDailyGoalExceeded: boolean
+    + allMealsLogged: boolean
+    + sections: MealSectionVm[]
+  }
+}
+
+' ─── Views ───────────────────────────────────────────────────────────────────
+package "nutrition-tracking/presentation/views" {
+
+  ' ⚠️ DDD VIOLATION: DailyLog.selectedFood is WritableSignal<FoodItem | null> (domain entity)
+  ' Consider WritableSignal<FoodSearchResultVm | null> and resolve to FoodItem inside NutritionStore
+  class DailyLog <<view>> {
+    - nutritionStore: NutritionStore
+    - iamStore: IamStore
+    --
+    + selectedFood: WritableSignal<FoodItem | null>
+    + targetMealType: WritableSignal<MealType | null>
+    + selectedDate: WritableSignal<Date>
+    + showFoodSearchModal: WritableSignal<boolean>
+    + showGoalMetAlert: WritableSignal<boolean>
+    --
+    + isToday: Signal<boolean>
+    + isEditable: Signal<boolean>
+    + formattedDate: Signal<string>
+    + mealSections: Signal<MealSectionVm[]>
+    + filteredTotals: Signal<MacroTotals>
+    + isDailyGoalExceeded: Signal<boolean>
+    + allMealsLogged: Signal<boolean>
+    --
+    + onDateChange(date: Date): void
+    + onAddFood(food: FoodItem, qty: number, type: MealType): void
+    + onRemoveMeal(id: number): void
+  }
+}
+
+' ─── Components ──────────────────────────────────────────────────────────────
+package "nutrition-tracking/presentation/components" {
+
+  ' ⚠️ DDD VIOLATION: MealSection.records is InputSignal<MealRecord[]> (domain entity array)
+  ' ⚠️ DDD VIOLATION: MealSection.mealType is InputSignal<MealType> (domain enum)
+  ' Consider: InputSignal<MealEntryVm[]> and InputSignal<string>
+  class MealSection <<component>> {
+    + mealType: InputSignal<MealType>
+    + color: InputSignal<string>
+    + records: InputSignal<MealRecord[]>
+    + isSkipped: InputSignal<boolean>
+    --
+    + mealRemoved: OutputEmitterRef<number>
+    + entryViewed: OutputEmitterRef<MealRecord>
+  }
+
+  class FoodSearchPanel <<component>> {
+    - nutritionStore: NutritionStore
+    --
+    + userRestrictions: Signal<string[]>
+    + hasAnyRestriction: Signal<boolean>
+    + conflictingRestrictionNames: Signal<string[]>
+    + isRestricted: Signal<boolean>
+    + getConflictTags: Signal<string[]>
+    --
+    + foodSelected: OutputEmitterRef<FoodItem>
+  }
+
+  ' DailyBalancePanel is clean — accepts only primitives
+  class DailyBalancePanel <<component>> {
+    + consumed: InputSignal<number>
+    + dailyGoal: InputSignal<number>
+    + active: InputSignal<number>
+    --
+    + exceeded: Signal<boolean>
+    + percentConsumed: Signal<number>
+    + netCalories: Signal<number>
+  }
+
+  class MealEntryDetail <<component>> {
+    + entry: InputSignal<MealEntryVm>
+    --
+    + closed: OutputEmitterRef<void>
+  }
+
+  class AddFoodDialog <<component>> {
+    - nutritionStore: NutritionStore
+    --
+    + selectedFood: InputSignal<FoodItem | null>
+    + targetMealType: InputSignal<MealType>
+    --
+    + confirmed: OutputEmitterRef<void>
+    + cancelled: OutputEmitterRef<void>
+  }
+
+  class RestrictedItemDialog <<component>> {
+    + guardrails: InputSignal<PreLogGuardrail[]>
+    --
+    + proceed: OutputEmitterRef<void>
+    + cancel: OutputEmitterRef<void>
+  }
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+DailyLog o--> NutritionStore : uses >
+DailyLog o--> IamStore : uses >
+DailyLog ..> DailyLogSummaryVm : builds >
+DailyLog ..> MealSectionVm : builds >
+
+DailyLog --> MealSection : hosts >
+DailyLog --> FoodSearchPanel : hosts >
+DailyLog --> DailyBalancePanel : hosts >
+DailyLog --> AddFoodDialog : hosts >
+DailyLog --> RestrictedItemDialog : hosts >
+
+FoodSearchPanel o--> NutritionStore : uses >
+AddFoodDialog o--> NutritionStore : uses >
+
+MealSectionVm "1" *--> "0..*" MealEntryVm : contains >
+DailyLogSummaryVm "1" *--> "0..*" MealSectionVm : contains >
+
+@enduml

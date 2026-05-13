@@ -1,0 +1,363 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "metabolic.domain.model.aggregates" {
+  class MetabolicProfile {
+    - id: MetabolicProfileId
+    - userId: UUID
+    - weight: Weight
+    - height: Height
+    - birthDate: LocalDate
+    - biologicalSex: BiologicalSex
+    - activityLevel: ActivityLevel
+    - goal: FitnessGoal
+    - bmi: double
+    - bmr: double
+    - tdee: double
+    - dailyCalorieTarget: double
+    - macroTargets: MacroTargets
+    - updatedAt: Instant
+    + MetabolicProfile(userId: UUID, weight: Weight, height: Height, birthDate: LocalDate, sex: BiologicalSex, activityLevel: ActivityLevel, goal: FitnessGoal)
+    + recalculate(): void
+    + updateWeight(weight: Weight): void
+    + updateActivityLevel(level: ActivityLevel): void
+    + calculateBMI(): double
+    + calculateBMR(): double
+    + calculateTDEE(): double
+    + calculateDailyCalorieTarget(): double
+    + getId(): MetabolicProfileId
+  }
+  class ActivityLog {
+    - id: ActivityLogId
+    - userId: UUID
+    - date: LocalDate
+    - activities: List<ActivityRecord>
+    - totalCaloriesBurned: double
+    - source: ActivitySource
+    - syncedAt: Instant
+    + ActivityLog(userId: UUID, date: LocalDate)
+    + addActivity(record: ActivityRecord): void
+    + recalculateTotalCalories(): void
+    + getId(): ActivityLogId
+  }
+  class ActivityRecord {
+    - id: ActivityRecordId
+    - activityType: ActivityType
+    - durationMinutes: int
+    - caloriesBurned: double
+    - steps: int
+    - recordedAt: Instant
+    + ActivityRecord(type: ActivityType, durationMinutes: int, caloriesBurned: double)
+    + getCaloriesBurned(): double
+  }
+}
+
+package "metabolic.domain.model.valueobjects" {
+  class MetabolicProfileId <<ValueObject>> {
+    - value: UUID
+    + getValue(): UUID
+  }
+  class ActivityLogId <<ValueObject>> {
+    - value: UUID
+    + getValue(): UUID
+  }
+  class ActivityRecordId <<ValueObject>> {
+    - value: UUID
+    + getValue(): UUID
+  }
+  class Weight <<ValueObject>> {
+    - value: double
+    - unit: WeightUnit
+    + Weight(value: double, unit: WeightUnit)
+    + toKilograms(): double
+  }
+  class Height <<ValueObject>> {
+    - value: double
+    - unit: HeightUnit
+    + Height(value: double, unit: HeightUnit)
+    + toCentimeters(): double
+  }
+  class MacroTargets <<ValueObject>> {
+    - proteinG: double
+    - carbsG: double
+    - fatG: double
+    + MacroTargets(proteinG: double, carbsG: double, fatG: double)
+    + getProteinG(): double
+    + getCarbsG(): double
+    + getFatG(): double
+  }
+  class FitnessGoal <<ValueObject>> {
+    - type: GoalType
+    - targetWeightKg: double
+    + FitnessGoal(type: GoalType, targetWeightKg: double)
+    + getCalorieAdjustment(): int
+    + getMacroDistribution(): MacroTargets
+  }
+  class WearableToken <<ValueObject>> {
+    - accessToken: String
+    - refreshToken: String
+    - expiresAt: Instant
+    + WearableToken(accessToken: String, refreshToken: String, expiresAt: Instant)
+    + isExpired(): boolean
+  }
+}
+
+package "metabolic.domain.model.enums" {
+  enum BiologicalSex {
+    MALE
+    FEMALE
+  }
+  enum ActivityLevel {
+    SEDENTARY
+    LIGHTLY_ACTIVE
+    MODERATELY_ACTIVE
+    VERY_ACTIVE
+    EXTRA_ACTIVE
+    + getTdeeMultiplier(): double
+  }
+  enum GoalType {
+    LOSE_WEIGHT
+    GAIN_MUSCLE
+  }
+  enum ActivityType {
+    WALKING
+    RUNNING
+    CYCLING
+    SWIMMING
+    STRENGTH_TRAINING
+    YOGA
+    OTHER
+    + getMETValue(): double
+  }
+  enum ActivitySource {
+    GOOGLE_FIT
+    MANUAL
+  }
+  enum WeightUnit {
+    KG
+    LB
+  }
+  enum HeightUnit {
+    CM
+    INCH
+  }
+}
+
+package "metabolic.domain.model.events" {
+  class MetabolicTargetSet <<DomainEvent>> {
+    + userId: UUID
+    + dailyCalorieTarget: double
+    + proteinG: double
+    + carbsG: double
+    + fatG: double
+    + occurredOn: Instant
+  }
+  class MetabolicTargetsRecalculated <<DomainEvent>> {
+    + userId: UUID
+    + dailyCalorieTarget: double
+    + occurredOn: Instant
+  }
+  class CaloricTargetAdjusted <<DomainEvent>> {
+    + userId: UUID
+    + date: LocalDate
+    + adjustedTarget: double
+    + caloriesBurned: double
+    + occurredOn: Instant
+  }
+  class StagnationDetected <<DomainEvent>> {
+    + userId: UUID
+    + daysWithoutProgress: int
+    + occurredOn: Instant
+  }
+  class ActivitySynced <<DomainEvent>> {
+    + userId: UUID
+    + date: LocalDate
+    + caloriesBurned: double
+    + occurredOn: Instant
+  }
+}
+
+package "metabolic.domain.repositories" {
+  interface MetabolicProfileRepository {
+    + findByUserId(userId: UUID): Optional<MetabolicProfile>
+    + save(profile: MetabolicProfile): MetabolicProfile
+  }
+  interface ActivityLogRepository {
+    + findByUserIdAndDate(userId: UUID, date: LocalDate): Optional<ActivityLog>
+    + findByUserId(userId: UUID): List<ActivityLog>
+    + save(log: ActivityLog): ActivityLog
+  }
+  interface WearableTokenRepository {
+    + findByUserId(userId: UUID): Optional<WearableToken>
+    + save(userId: UUID, token: WearableToken): void
+    + deleteByUserId(userId: UUID): void
+  }
+}
+
+package "metabolic.application.internal.commandservices" {
+  class MetabolicCommandService {
+    - profileRepository: MetabolicProfileRepository
+    - activityLogRepository: ActivityLogRepository
+    - wearableTokenRepository: WearableTokenRepository
+    - googleFitAdapter: GoogleFitAdapter
+    + handle(command: CalculateInitialTargetsCommand): MetabolicProfile
+    + handle(command: UpdateBodyMetricsCommand): MetabolicProfile
+    + handle(command: LogManualActivityCommand): ActivityLog
+    + handle(command: ConnectGoogleFitCommand): void
+    + handle(command: SyncWearableActivityCommand): ActivityLog
+  }
+  class CalculateInitialTargetsCommand <<Command>> {
+    + userId: UUID
+    + weightKg: double
+    + heightCm: double
+    + birthDate: LocalDate
+    + biologicalSex: String
+    + activityLevel: String
+    + goal: String
+    + targetWeightKg: double
+  }
+  class UpdateBodyMetricsCommand <<Command>> {
+    + userId: UUID
+    + weightKg: double
+    + activityLevel: String
+  }
+  class LogManualActivityCommand <<Command>> {
+    + userId: UUID
+    + date: LocalDate
+    + activityType: String
+    + durationMinutes: int
+  }
+  class ConnectGoogleFitCommand <<Command>> {
+    + userId: UUID
+    + authCode: String
+  }
+  class SyncWearableActivityCommand <<Command>> {
+    + userId: UUID
+    + date: LocalDate
+  }
+}
+
+package "metabolic.application.internal.queryservices" {
+  class MetabolicQueryService {
+    - profileRepository: MetabolicProfileRepository
+    - activityLogRepository: ActivityLogRepository
+    + handle(query: GetMetabolicProfileQuery): Optional<MetabolicProfile>
+    + handle(query: GetDailyActivityQuery): Optional<ActivityLog>
+    + handle(query: GetActivityHistoryQuery): List<ActivityLog>
+  }
+  class GetMetabolicProfileQuery <<Query>> {
+    + userId: UUID
+  }
+  class GetDailyActivityQuery <<Query>> {
+    + userId: UUID
+    + date: LocalDate
+  }
+  class GetActivityHistoryQuery <<Query>> {
+    + userId: UUID
+    + days: int
+  }
+}
+
+package "metabolic.infrastructure.external" {
+  class GoogleFitAdapter {
+    - httpClient: WebClient
+    + fetchActivities(token: WearableToken, date: LocalDate): List<ActivityRecord>
+    + exchangeAuthCode(code: String): WearableToken
+    + refreshToken(token: WearableToken): WearableToken
+  }
+}
+
+package "metabolic.interfaces.rest.resources" {
+  class MetabolicProfileResource {
+    + userId: UUID
+    + weightKg: double
+    + heightCm: double
+    + bmi: double
+    + bmr: double
+    + tdee: double
+    + dailyCalorieTarget: double
+    + goal: String
+    + proteinG: double
+    + carbsG: double
+    + fatG: double
+  }
+  class UpdateBodyMetricsResource {
+    + weightKg: double
+    + activityLevel: String
+  }
+  class ManualActivityResource {
+    + activityType: String
+    + durationMinutes: int
+    + date: String
+  }
+  class ActivityLogResource {
+    + date: String
+    + totalCaloriesBurned: double
+    + source: String
+    + activities: List<ActivityRecordResource>
+  }
+  class ActivityRecordResource {
+    + activityType: String
+    + durationMinutes: int
+    + caloriesBurned: double
+    + recordedAt: String
+  }
+}
+
+package "metabolic.interfaces.rest.assemblers" {
+  class MetabolicProfileAssembler {
+    + toResourceFromEntity(profile: MetabolicProfile): MetabolicProfileResource
+  }
+  class ActivityLogAssembler {
+    + toResourceFromEntity(log: ActivityLog): ActivityLogResource
+    + toRecordResource(record: ActivityRecord): ActivityRecordResource
+  }
+}
+
+package "metabolic.interfaces.rest.controllers" {
+  class MetabolicProfileController {
+    - commandService: MetabolicCommandService
+    - queryService: MetabolicQueryService
+    + getProfile(userId: UUID): ResponseEntity<MetabolicProfileResource>
+    + updateMetrics(userId: UUID, resource: UpdateBodyMetricsResource): ResponseEntity<MetabolicProfileResource>
+  }
+  class ActivityController {
+    - commandService: MetabolicCommandService
+    - queryService: MetabolicQueryService
+    + getDailyActivity(userId: UUID, date: LocalDate): ResponseEntity<ActivityLogResource>
+    + logManualActivity(userId: UUID, resource: ManualActivityResource): ResponseEntity<ActivityLogResource>
+    + syncWearable(userId: UUID): ResponseEntity<ActivityLogResource>
+    + connectGoogleFit(userId: UUID, code: String): ResponseEntity<Void>
+  }
+}
+
+MetabolicProfile "1" *--> "1" Weight : has >
+MetabolicProfile "1" *--> "1" Height : has >
+MetabolicProfile "1" *--> "1" FitnessGoal : has >
+MetabolicProfile "1" *--> "1" ActivityLevel : has >
+MetabolicProfile "1" *--> "1" MacroTargets : has >
+ActivityLog "1" *--> "0..*" ActivityRecord : contains >
+ActivityRecord "1" *--> "1" ActivityType : classified as >
+MetabolicProfile ..> MetabolicTargetSet : publishes >
+MetabolicProfile ..> MetabolicTargetsRecalculated : publishes >
+MetabolicProfile ..> StagnationDetected : publishes >
+ActivityLog ..> CaloricTargetAdjusted : publishes >
+ActivityLog ..> ActivitySynced : publishes >
+
+MetabolicCommandService --> MetabolicProfileRepository : uses >
+MetabolicCommandService --> ActivityLogRepository : uses >
+MetabolicCommandService --> WearableTokenRepository : uses >
+MetabolicCommandService --> GoogleFitAdapter : uses >
+MetabolicQueryService --> MetabolicProfileRepository : uses >
+MetabolicQueryService --> ActivityLogRepository : uses >
+
+MetabolicProfileController --> MetabolicCommandService : uses >
+MetabolicProfileController --> MetabolicQueryService : uses >
+MetabolicProfileController --> MetabolicProfileAssembler : uses >
+ActivityController --> MetabolicCommandService : uses >
+ActivityController --> MetabolicQueryService : uses >
+ActivityController --> ActivityLogAssembler : uses >
+
+@enduml

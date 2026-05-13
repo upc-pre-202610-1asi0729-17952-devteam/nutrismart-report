@@ -1,0 +1,127 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' ─── Boundary stubs: infrastructure ─────────────────────────────────────────
+package "iam/infrastructure [boundary]" {
+  class IamApi <<boundary>> {
+  }
+}
+
+' ─── Boundary stubs: domain ──────────────────────────────────────────────────
+package "iam/domain [boundary]" {
+  class User <<boundary>> {
+  }
+}
+
+' ─── Boundary stubs: shared ──────────────────────────────────────────────────
+package "shared/application [boundary]" {
+  class DomainEventBus <<boundary>> {
+    + publish(event: DomainEvent): void
+    + events$: Observable<DomainEvent>
+  }
+}
+
+' ─── Boundary stubs: shared/domain (published events) ────────────────────────
+package "shared/domain [boundary]" {
+  class AccountCreated <<boundary>> {
+  }
+  class OnboardingCompleted <<boundary>> {
+  }
+  class ProfileUpdated <<boundary>> {
+  }
+  class PlanUpgraded <<boundary>> {
+  }
+  class GoalSwitched <<boundary>> {
+  }
+  class MetabolicTargetSet <<boundary>> {
+  }
+  class RestrictionsChanged <<boundary>> {
+  }
+}
+
+' ─── Application ─────────────────────────────────────────────────────────────
+package "iam/application" {
+
+  class IamStore <<store>> {
+    ' Writable signals
+    - _currentUser: WritableSignal<User | null>
+    - _isAuthenticated: WritableSignal<boolean>
+    - _loading: WritableSignal<boolean>
+    - _error: WritableSignal<string | null>
+    - _failedLoginAttempts: WritableSignal<number>
+    - _blockedUntil: WritableSignal<Date | null>
+    ' Read-only signals
+    + currentUser: Signal<User | null>
+    + isAuthenticated: Signal<boolean>
+    + loading: Signal<boolean>
+    + error: Signal<string | null>
+    + isLoginBlocked: Signal<boolean>
+    + loginBlockedUntil: Signal<Date | null>
+    --
+    + login(email: string, password: string): Promise<void>
+    + register(data: RegisterDto): Promise<void>
+    + logout(): void
+    + updateProfile(data: ProfileDto): Promise<void>
+    + updatePhysicalDetails(data: PhysicalDto): Promise<void>
+    + updateWeightOnly(weightKg: number): Promise<void>
+    + changeGoal(goal: UserGoal): Promise<void>
+    + addRestriction(restriction: DietaryRestriction): Promise<void>
+    + removeRestriction(restriction: DietaryRestriction): Promise<void>
+    + addMedicalCondition(condition: MedicalCondition): Promise<void>
+    + addMedicalConditionEnum(condition: MedicalCondition): Promise<void>
+    + removeMedicalCondition(condition: MedicalCondition): Promise<void>
+    + setRestrictions(restrictions: DietaryRestriction[]): Promise<void>
+    + setMedicalConditions(conditions: MedicalCondition[]): Promise<void>
+    + upgradePlan(plan: SubscriptionPlan): Promise<void>
+    + restoreSession(): void
+    + saveSession(): void
+  }
+
+  class AuthGuard <<guard>> {
+    - iamStore: IamStore
+    --
+    + canActivate(route, state): boolean | UrlTree
+  }
+
+  class OnboardingGuard <<guard>> {
+    - iamStore: IamStore
+    --
+    + canActivate(route, state): boolean | UrlTree
+  }
+
+  class PlanGuard <<guard>> {
+    - iamStore: IamStore
+    --
+    + canActivate(route, state): boolean | UrlTree
+  }
+
+  class SubscriptionGuard <<guard>> {
+    - iamStore: IamStore
+    --
+    + canActivate(route, state): boolean | UrlTree
+  }
+}
+
+' ─── Dependencies ────────────────────────────────────────────────────────────
+IamStore o--> IamApi : uses >
+IamStore o--> DomainEventBus : uses >
+IamStore ..> User : manages >
+
+AuthGuard o--> IamStore : uses >
+OnboardingGuard o--> IamStore : uses >
+PlanGuard o--> IamStore : uses >
+SubscriptionGuard o--> IamStore : uses >
+
+' ─── Published events ────────────────────────────────────────────────────────
+IamStore ..> AccountCreated : publishes >
+IamStore ..> OnboardingCompleted : publishes >
+IamStore ..> ProfileUpdated : publishes >
+IamStore ..> PlanUpgraded : publishes >
+IamStore ..> GoalSwitched : publishes >
+IamStore ..> MetabolicTargetSet : publishes >
+IamStore ..> RestrictionsChanged : publishes >
+
+@enduml

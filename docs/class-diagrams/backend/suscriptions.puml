@@ -1,0 +1,305 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "billing.domain.model.aggregates" {
+  class Subscription {
+    - id: SubscriptionId
+    - userId: UUID
+    - plan: SubscriptionPlan
+    - status: SubscriptionStatus
+    - currentPeriodStart: LocalDate
+    - currentPeriodEnd: LocalDate
+    - stripeSubscriptionId: String
+    - canceledAt: Instant
+    + Subscription(userId: UUID, plan: SubscriptionPlan, stripeSubId: String)
+    + cancel(): void
+    + renew(newPeriodEnd: LocalDate): void
+    + enableFeatures(): void
+    + disableFeatures(): void
+    + isActive(): boolean
+    + isPremium(): boolean
+    + isPro(): boolean
+    + getId(): SubscriptionId
+  }
+  class Invoice {
+    - id: InvoiceId
+    - subscriptionId: SubscriptionId
+    - userId: UUID
+    - amount: Money
+    - currency: String
+    - status: InvoiceStatus
+    - stripeInvoiceId: String
+    - createdAt: Instant
+    - paidAt: Instant
+    + Invoice(subscriptionId: SubscriptionId, amount: Money, stripeInvoiceId: String)
+    + markPaid(paidAt: Instant): void
+    + markFailed(): void
+    + getId(): InvoiceId
+    + getAmount(): Money
+  }
+}
+
+package "billing.domain.model.valueobjects" {
+  class SubscriptionId <<ValueObject>> {
+    - value: UUID
+    + getValue(): UUID
+  }
+  class InvoiceId <<ValueObject>> {
+    - value: UUID
+    + getValue(): UUID
+  }
+  class Money <<ValueObject>> {
+    - amount: BigDecimal
+    - currency: String
+    + Money(amount: BigDecimal, currency: String)
+    + getAmount(): BigDecimal
+    + getCurrency(): String
+    + add(other: Money): Money
+  }
+  class SubscriptionPlan <<ValueObject>> {
+    - type: PlanType
+    - priceMonthly: Money
+    - features: List<String>
+    + SubscriptionPlan(type: PlanType, priceMonthly: Money)
+    + includes(feature: String): boolean
+    + getType(): PlanType
+    + getStripePriceId(): String
+  }
+  class PlanFeatures <<ValueObject>> {
+    - nutritionLog: boolean
+    - basicDashboard: boolean
+    - bmiCalculation: boolean
+    - smartScan: boolean
+    - travelMode: boolean
+    - weatherRecommendations: boolean
+    - pantry: boolean
+    - wearableSync: boolean
+    - restaurantMenuAnalysis: boolean
+    - unlimitedHistory: boolean
+    - pdfReports: boolean
+    + PlanFeatures(type: PlanType)
+    + isFeatureEnabled(feature: String): boolean
+  }
+}
+
+package "billing.domain.model.enums" {
+  enum PlanType {
+    BASIC
+    PRO
+    PREMIUM
+  }
+  enum SubscriptionStatus {
+    ACTIVE
+    CANCELED
+    PAST_DUE
+    EXPIRED
+  }
+  enum InvoiceStatus {
+    PENDING
+    PAID
+    FAILED
+    REFUNDED
+  }
+}
+
+package "billing.domain.model.events" {
+  class SubscriptionActivated <<DomainEvent>> {
+    + userId: UUID
+    + planType: String
+    + occurredOn: Instant
+  }
+  class BenefitsEnabled <<DomainEvent>> {
+    + userId: UUID
+    + planType: String
+    + features: List<String>
+    + occurredOn: Instant
+  }
+  class SubscriptionCanceled <<DomainEvent>> {
+    + userId: UUID
+    + occurredOn: Instant
+  }
+  class BenefitsDisabled <<DomainEvent>> {
+    + userId: UUID
+    + occurredOn: Instant
+  }
+  class SubscriptionRenewed <<DomainEvent>> {
+    + userId: UUID
+    + planType: String
+    + newPeriodEnd: LocalDate
+    + occurredOn: Instant
+  }
+  class InvoicePaid <<DomainEvent>> {
+    + userId: UUID
+    + invoiceId: UUID
+    + amount: BigDecimal
+    + occurredOn: Instant
+  }
+}
+
+package "billing.domain.repositories" {
+  interface SubscriptionRepository {
+    + findByUserId(userId: UUID): Optional<Subscription>
+    + findById(id: SubscriptionId): Optional<Subscription>
+    + save(subscription: Subscription): Subscription
+  }
+  interface InvoiceRepository {
+    + findByUserId(userId: UUID): List<Invoice>
+    + findBySubscriptionId(subId: SubscriptionId): List<Invoice>
+    + findByStripeInvoiceId(stripeId: String): Optional<Invoice>
+    + save(invoice: Invoice): Invoice
+  }
+}
+
+package "billing.application.internal.commandservices" {
+  class SubscriptionCommandService {
+    - subscriptionRepository: SubscriptionRepository
+    - invoiceRepository: InvoiceRepository
+    - stripeAdapter: StripePaymentAdapter
+    + handle(command: SelectSubscriptionPlanCommand): Subscription
+    + handle(command: CancelSubscriptionCommand): Subscription
+    + handle(command: RenewSubscriptionCommand): Subscription
+    + handle(command: ProcessStripeWebhookCommand): void
+  }
+  class SelectSubscriptionPlanCommand <<Command>> {
+    + userId: UUID
+    + planType: String
+    + paymentMethodId: String
+  }
+  class CancelSubscriptionCommand <<Command>> {
+    + userId: UUID
+  }
+  class RenewSubscriptionCommand <<Command>> {
+    + stripeSubscriptionId: String
+    + newPeriodEnd: LocalDate
+  }
+  class ProcessStripeWebhookCommand <<Command>> {
+    + eventType: String
+    + stripeEventId: String
+    + payload: String
+    + signature: String
+  }
+}
+
+package "billing.application.internal.queryservices" {
+  class SubscriptionQueryService {
+    - subscriptionRepository: SubscriptionRepository
+    - invoiceRepository: InvoiceRepository
+    + handle(query: GetSubscriptionQuery): Optional<Subscription>
+    + handle(query: GetInvoicesQuery): List<Invoice>
+    + handle(query: GetPlanFeaturesQuery): PlanFeatures
+  }
+  class GetSubscriptionQuery <<Query>> {
+    + userId: UUID
+  }
+  class GetInvoicesQuery <<Query>> {
+    + userId: UUID
+  }
+  class GetPlanFeaturesQuery <<Query>> {
+    + userId: UUID
+  }
+}
+
+package "billing.infrastructure.external" {
+  class StripePaymentAdapter {
+    - stripeApiKey: String
+    + createSubscription(userId: UUID, stripePriceId: String, paymentMethodId: String): String
+    + cancelSubscription(stripeSubId: String): void
+    + constructEvent(payload: String, signature: String): StripeEvent
+    + createInvoice(stripeSubId: String, amount: Money): String
+  }
+  class StripeEvent {
+    + id: String
+    + type: String
+    + data: Map<String, Object>
+  }
+}
+
+package "billing.interfaces.rest.resources" {
+  class SelectPlanResource {
+    + planType: String
+    + paymentMethodId: String
+  }
+  class SubscriptionResource {
+    + id: UUID
+    + planType: String
+    + status: String
+    + currentPeriodEnd: String
+    + isPremium: boolean
+    + isPro: boolean
+    + features: List<String>
+  }
+  class InvoiceResource {
+    + id: UUID
+    + amount: BigDecimal
+    + currency: String
+    + status: String
+    + createdAt: String
+    + paidAt: String
+  }
+  class PlanFeaturesResource {
+    + planType: String
+    + smartScan: boolean
+    + travelMode: boolean
+    + weatherRecommendations: boolean
+    + pantry: boolean
+    + wearableSync: boolean
+    + restaurantMenuAnalysis: boolean
+    + unlimitedHistory: boolean
+    + pdfReports: boolean
+  }
+}
+
+package "billing.interfaces.rest.assemblers" {
+  class SubscriptionAssembler {
+    + toResourceFromEntity(sub: Subscription): SubscriptionResource
+  }
+  class InvoiceAssembler {
+    + toResourceFromEntity(invoice: Invoice): InvoiceResource
+  }
+}
+
+package "billing.interfaces.rest.controllers" {
+  class SubscriptionController {
+    - commandService: SubscriptionCommandService
+    - queryService: SubscriptionQueryService
+    + getSubscription(userId: UUID): ResponseEntity<SubscriptionResource>
+    + selectPlan(userId: UUID, resource: SelectPlanResource): ResponseEntity<SubscriptionResource>
+    + cancelSubscription(userId: UUID): ResponseEntity<SubscriptionResource>
+    + getInvoices(userId: UUID): ResponseEntity<List<InvoiceResource>>
+    + getPlanFeatures(userId: UUID): ResponseEntity<PlanFeaturesResource>
+  }
+  class StripeWebhookController {
+    - commandService: SubscriptionCommandService
+    + handleWebhook(payload: String, signature: String): ResponseEntity<Void>
+  }
+}
+
+Subscription "1" *--> "1" SubscriptionPlan : has >
+Subscription "1" *--> "1" SubscriptionStatus : has >
+Subscription "1" *--> "1" SubscriptionId : identified by >
+SubscriptionPlan "1" *--> "1" PlanFeatures : defines >
+Invoice "1" *--> "1" Money : amounts to >
+Invoice "1" *--> "1" InvoiceStatus : has >
+
+Subscription ..> SubscriptionActivated : publishes >
+Subscription ..> BenefitsEnabled : publishes >
+Subscription ..> SubscriptionCanceled : publishes >
+Subscription ..> BenefitsDisabled : publishes >
+Subscription ..> SubscriptionRenewed : publishes >
+Invoice ..> InvoicePaid : publishes >
+
+SubscriptionCommandService --> SubscriptionRepository : uses >
+SubscriptionCommandService --> InvoiceRepository : uses >
+SubscriptionCommandService --> StripePaymentAdapter : uses >
+SubscriptionQueryService --> SubscriptionRepository : uses >
+SubscriptionQueryService --> InvoiceRepository : uses >
+
+SubscriptionController --> SubscriptionCommandService : uses >
+SubscriptionController --> SubscriptionQueryService : uses >
+SubscriptionController --> SubscriptionAssembler : uses >
+SubscriptionController --> InvoiceAssembler : uses >
+StripeWebhookController --> SubscriptionCommandService : uses >
+
+@enduml

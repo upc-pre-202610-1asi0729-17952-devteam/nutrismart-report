@@ -1,0 +1,148 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' ─── Boundary stubs: shared/infrastructure ───────────────────────────────────
+package "shared/infrastructure [boundary]" {
+  abstract class BaseApi <<boundary>> {
+  }
+  interface BaseAssembler <<boundary>> {
+  }
+  abstract class BaseApiEndpoint <<boundary>> {
+  }
+}
+
+' ─── Boundary stubs: smart-recommendation/domain ─────────────────────────────
+package "smart-recommendation/domain [boundary]" {
+  class PantryItem <<boundary>> {
+    + id: number
+  }
+  class RecipeSuggestion <<boundary>> {
+    + id: number
+  }
+  class RecommendationSession <<boundary>> {
+    + id: number
+  }
+  class IngredientCatalogItem <<boundary>> {
+    + id: number
+  }
+}
+
+' ─── Resources ───────────────────────────────────────────────────────────────
+package "smart-recommendation/infrastructure/resources" {
+
+  class PantryItemResource <<resource>> {
+    + id: number
+    + name: string
+    + nameKey: string
+    + category: string
+    + quantityGrams: number
+    + caloriesPer100g: number
+    + userId: number
+    + addedAt: string
+  }
+
+  class PantryItemsResponse <<resource>> {
+    + pantryItems: PantryItemResource[]
+  }
+
+  class IngredientCatalogResource <<resource>> {
+    + id: number
+    + name: string
+    + nameKey: string
+    + category: string
+    + caloriesPer100g: number
+    + proteinPer100g: number
+    + carbsPer100g: number
+    + fatPer100g: number
+  }
+
+  class RecipeSuggestionResource <<resource>> {
+    + id: number
+    + name: string
+    + nameKey: string
+    + calories: number
+    + protein: number
+    + carbs: number
+    + fat: number
+    + ingredients: string[]
+    + goalType: string
+    + prepTimeMinutes: number
+    + coversMacroPct: number
+    + restrictionsConflict: boolean
+  }
+
+  class RecommendationSessionResource <<resource>> {
+    + id: number
+    + userId: number
+    + adherenceStatus: string
+    + consecutiveMisses: number
+    + simplifiedKcalTarget: number
+    + createdAt: string
+    + isActive: boolean
+  }
+
+  class RecommendationsResponse <<resource>> {
+    + sessions: RecommendationSessionResource[]
+    + suggestions: RecipeSuggestionResource[]
+  }
+}
+
+' ─── Assemblers ──────────────────────────────────────────────────────────────
+package "smart-recommendation/infrastructure/assemblers" {
+
+  class PantryAssembler <<assembler>> {
+    + toEntityFromResource(resource: PantryItemResource): PantryItem
+    + toResourceFromEntity(entity: PantryItem): PantryItemResource
+    + toEntitiesFromResponse(response: PantryItemsResponse): PantryItem[]
+  }
+
+  class RecommendationsAssembler <<assembler>> {
+    + toEntityFromResource(resource: RecommendationSessionResource): RecommendationSession
+    + toResourceFromEntity(entity: RecommendationSession): RecommendationSessionResource
+    + toEntitiesFromResponse(response: RecommendationsResponse): RecommendationSession[]
+  }
+}
+
+' ─── HTTP ────────────────────────────────────────────────────────────────────
+package "smart-recommendation/infrastructure/http" {
+
+  class PantryApi <<api>> {
+    - assembler: PantryAssembler
+    --
+    + getPantryItems(userId: number): Observable<PantryItem[]>
+    + getIngredientCatalog(): Observable<IngredientCatalogItem[]>
+    + addPantryItem(item: PantryItem): Observable<PantryItem>
+    + deletePantryItem(id: number): Observable<void>
+    + getSuggestions(userId: number): Observable<RecipeSuggestion[]>
+  }
+
+  class RecommendationsApi <<api>> {
+    - assembler: RecommendationsAssembler
+    --
+    + getSession(userId: number): Observable<RecommendationSession>
+    + createSession(session: RecommendationSession): Observable<RecommendationSession>
+    + updateSession(session: RecommendationSession): Observable<RecommendationSession>
+    + getSuggestions(userId: number, context: object): Observable<RecipeSuggestion[]>
+  }
+}
+
+PantryApi --|> BaseApi : extends >
+RecommendationsApi --|> BaseApi : extends >
+
+PantryAssembler ..|> BaseAssembler : implements >
+RecommendationsAssembler ..|> BaseAssembler : implements >
+
+PantryItemsResponse "1" *--> "0..*" PantryItemResource : contains >
+RecommendationsResponse "1" *--> "0..*" RecipeSuggestionResource : contains >
+RecommendationsResponse "1" *--> "0..*" RecommendationSessionResource : contains >
+
+PantryAssembler ..> PantryItem : produces >
+RecommendationsAssembler ..> RecommendationSession : produces >
+
+PantryApi o--> PantryAssembler : uses >
+RecommendationsApi o--> RecommendationsAssembler : uses >
+
+@enduml
