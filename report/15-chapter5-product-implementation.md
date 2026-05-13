@@ -697,73 +697,73 @@ URL del Board (Trello):
 
 
 Durante este sprint, el equipo completó la implementación del frontend completo de la aplicación web autenticada de NutriSmart. El desarrollo cubrió los bounded contexts de IAM, Behavioral Consistency, Nutrition Tracking, Subscriptions, Restaurant Intelligence, Smart Scan, Pantry, Smart Recommendation y Metabolic Adaptation, incluyendo el módulo de registro manual de actividad física con emisión de `CaloricTargetAdjusted`. Todo el trabajo fue gestionado mediante GitFlow, con ramas `feature/` individuales por bounded context fusionadas en `develop` y liberadas en `main` como versión `2.0.0`.
- 
+
 | Repository | Branch | Commit Id | Commit Message | Commit Message Body | Committed on |
 |---|---|---|---|---|---|
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/set-up | — | feat: scaffold angular project with ddd folder structure | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/set-up | — | chore: configure json-server with db.json fixtures | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/set-up | — | chore: add shared auth mock with fully populated user | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/iam | — | feat(iam): add user-credentials and user-profile domain entities | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/iam | — | feat(iam): add iam-api and iam-store with signals | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/iam | — | feat(iam): add registration view with account-created emission | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/iam | — | feat(iam): add login view with session-started emission | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/iam | — | feat(iam): add forgot and reset password views | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/iam | — | feat(iam): add 5-step onboarding with onboarding-completed and metabolic-target-set | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/iam | — | feat(iam): add auth guard and session-terminated on logout | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/iam | — | feat(iam): add profile settings view with 5 sub-panels | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/behavioral-consistency | — | feat(behavioral): add behavioral-progress and adherence-state domain entities | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/behavioral-consistency | — | feat(behavioral): add behavioral-api and behavioral-store | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/behavioral-consistency | — | feat(behavioral): add dashboard on-track state | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/behavioral-consistency | — | feat(behavioral): add dashboard at-risk state with behavioral-drop-detected banner | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/behavioral-consistency | — | feat(behavioral): add dashboard dropped state with nutritional-abandonment-risk banner | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/behavioral-consistency | — | feat(behavioral): add dashboard recovered state with consistency-recovered banner | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/behavioral-consistency | — | feat(behavioral): add streak milestone widget with streak-milestone-reached notification | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/analytics | — | feat(analytics): add analytics-api and analytics-store | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/analytics | — | feat(analytics): add analytics view with period selector and charts | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/analytics | — | feat(analytics): add adherence history timeline for 30-day period | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/analytics | — | feat(analytics): add pdf export with premium entitlement check | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | — | feat(nutrition-tracking): add food-item meal-record and daily-intake domain entities | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | — | feat(nutrition-tracking): add nutrition-api and nutrition-store | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | — | feat(nutrition-tracking): add food search with nutritional-risk-level flags | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | — | feat(nutrition-tracking): add daily log view with meal expansion panels | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | — | feat(nutrition-tracking): add add-food modal and restricted-item-blocked modal | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | — | feat(nutrition-tracking): add meal-skipped daily-goal-exceeded and daily-goal-met states | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | — | feat(nutrition-tracking): add caloric deficit widget for weight-loss users | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | — | feat(nutrition-tracking): add protein and surplus tracker for muscle-gain users | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | — | feat(nutrition-tracking): add weekly history and macro analysis views | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | — | feat(nutrition-tracking): add meal detail panel with per-item macro contribution | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/subscriptions | — | feat(subscriptions): add subscription and billing-record domain entities | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/subscriptions | — | feat(subscriptions): add subscriptions-api and subscriptions-store | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/subscriptions | — | feat(subscriptions): add subscription view with plan comparison cards | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/subscriptions | — | feat(subscriptions): add upgrade dialog with benefits-enabled emission | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/subscriptions | — | feat(subscriptions): add downgrade dialog with benefits-disabled scheduling | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/restaurant-intelligence | — | feat(restaurant): add menu-analysis and ranked-dish domain entities | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/restaurant-intelligence | — | feat(restaurant): add restaurant-api and restaurant-store | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/restaurant-intelligence | — | feat(restaurant): add menu scan view with restaurant-meal-analyzed result | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/restaurant-intelligence | — | feat(restaurant): add restricted-dish-flagged section | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/restaurant-intelligence | — | feat(restaurant): add compatible-dishes-ranked view with log-from-ranking action | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-scan | — | feat(smart-scan): add scan-result domain entities and smart-scan-api | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-scan | — | feat(smart-scan): add scan mode selection view with plan entitlement check | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-scan | — | feat(smart-scan): add plate scan result view with meal-recorded confirmation | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | — | feat(recommendations): add recommendation-session and travel-context domain entities | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | — | feat(recommendations): add recommendations-api and recommendations-store | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | — | feat(recommendations): add recommendations view with weather context banner | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | — | feat(recommendations): add at-risk preventive card with preventive-recommendation-generated | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | — | feat(recommendations): add dropped intervention card with intervention-recommendation-generated | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | — | feat(recommendations): add strategy-adjustment-suggested card | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | — | feat(recommendations): add travel mode panel with local dish suggestions | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | — | feat(recommendations): add best-dish-recommended card with macro justification | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | — | feat(pantry): add pantry domain entities and pantry-api | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | — | feat(pantry): add pantry view with ingredient list and recipe suggestions | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | — | feat(metabolic): add nutrition-plan body-metric and body-composition domain entities | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | — | feat(metabolic): add metabolic-api and metabolic-store | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | — | feat(metabolic): add body progress view with bmi bmr tdee metric cards | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | — | feat(metabolic): add weight evolution chart with goal reference line | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | — | feat(metabolic): add target weight dialog with projected achievement date | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | — | feat(metabolic): add body composition section with strategy-adjustment-suggested on fat excess | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | — | feat(metabolic): add activity log view with met-based calorie estimation | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | — | feat(metabolic): emit caloric-target-adjusted and wire to daily log balance | — | 2026-05-07 |
-| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | — | feat(metabolic): add stagnation-detected and strategy-mismatch-detected banners | — | 2026-05-07 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/set-up | `a3f8c12` | feat: scaffold angular project with ddd folder structure | — | 2026-05-07 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/set-up | `b7d1e45` | chore: configure json-server with db.json fixtures | — | 2026-05-07 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/set-up | `c2a9f78` | chore: add shared auth mock with fully populated user | — | 2026-05-07 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/iam | `d5e3b21` | feat(iam): add user-credentials and user-profile domain entities | — | 2026-05-07 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/iam | `e8c6d54` | feat(iam): add iam-api and iam-store with signals | — | 2026-05-07 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/iam | `f1a4e87` | feat(iam): add registration view with account-created emission | — | 2026-05-07 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/iam | `g9b2c30` | feat(iam): add login view with session-started emission | — | 2026-05-07 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/iam | `h4d7f63` | feat(iam): add forgot and reset password views | — | 2026-05-08 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/iam | `i6e1a96` | feat(iam): add 5-step onboarding with onboarding-completed and metabolic-target-set | — | 2026-05-08 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/iam | `j3f8b29` | feat(iam): add auth guard and session-terminated on logout | — | 2026-05-08 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/iam | `k7c5d62` | feat(iam): add profile settings view with 5 sub-panels | — | 2026-05-08 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/behavioral-consistency | `l2a9e95` | feat(behavioral): add behavioral-progress and adherence-state domain entities | — | 2026-05-08 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/behavioral-consistency | `m8b3f28` | feat(behavioral): add behavioral-api and behavioral-store | — | 2026-05-08 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/behavioral-consistency | `n5c7a61` | feat(behavioral): add dashboard on-track state | — | 2026-05-08 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/behavioral-consistency | `o1d4e94` | feat(behavioral): add dashboard at-risk state with behavioral-drop-detected banner | — | 2026-05-08 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/behavioral-consistency | `p9e2b27` | feat(behavioral): add dashboard dropped state with nutritional-abandonment-risk banner | — | 2026-05-09 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/behavioral-consistency | `q4f6c60` | feat(behavioral): add dashboard recovered state with consistency-recovered banner | — | 2026-05-09 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/behavioral-consistency | `r6a1d93` | feat(behavioral): add streak milestone widget with streak-milestone-reached notification | — | 2026-05-09 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/analytics | `s2b8e26` | feat(analytics): add analytics-api and analytics-store | — | 2026-05-09 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/analytics | `t7c5f59` | feat(analytics): add analytics view with period selector and charts | — | 2026-05-09 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/analytics | `u3d9a92` | feat(analytics): add adherence history timeline for 30-day period | — | 2026-05-09 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/analytics | `v8e4b25` | feat(analytics): add pdf export with premium entitlement check | — | 2026-05-09 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | `w1f2c58` | feat(nutrition-tracking): add food-item meal-record and daily-intake domain entities | — | 2026-05-09 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | `x5a7d91` | feat(nutrition-tracking): add nutrition-api and nutrition-store | — | 2026-05-09 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | `y9b3e24` | feat(nutrition-tracking): add food search with nutritional-risk-level flags | — | 2026-05-10 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | `z4c8f57` | feat(nutrition-tracking): add daily log view with meal expansion panels | — | 2026-05-10 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | `a7d5a90` | feat(nutrition-tracking): add add-food modal and restricted-item-blocked modal | — | 2026-05-10 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | `b2e1b23` | feat(nutrition-tracking): add meal-skipped daily-goal-exceeded and daily-goal-met states | — | 2026-05-10 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | `c6f9c56` | feat(nutrition-tracking): add caloric deficit widget for weight-loss users | — | 2026-05-10 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | `d1a4d89` | feat(nutrition-tracking): add protein and surplus tracker for muscle-gain users | — | 2026-05-10 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | `e8b2e22` | feat(nutrition-tracking): add weekly history and macro analysis views | — | 2026-05-10 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/nutrition-tracking | `f3c7f55` | feat(nutrition-tracking): add meal detail panel with per-item macro contribution | — | 2026-05-10 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/subscriptions | `g9d5a88` | feat(subscriptions): add subscription and billing-record domain entities | — | 2026-05-10 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/subscriptions | `h4e3b21` | feat(subscriptions): add subscriptions-api and subscriptions-store | — | 2026-05-10 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/subscriptions | `i7f1c54` | feat(subscriptions): add subscription view with plan comparison cards | — | 2026-05-10 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/subscriptions | `j2a8d87` | feat(subscriptions): add upgrade dialog with benefits-enabled emission | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/subscriptions | `k6b6e20` | feat(subscriptions): add downgrade dialog with benefits-disabled scheduling | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/restaurant-intelligence | `l1c4f53` | feat(restaurant): add menu-analysis and ranked-dish domain entities | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/restaurant-intelligence | `m5d2a86` | feat(restaurant): add restaurant-api and restaurant-store | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/restaurant-intelligence | `n9e9b19` | feat(restaurant): add menu scan view with restaurant-meal-analyzed result | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/restaurant-intelligence | `o3f7c52` | feat(restaurant): add restricted-dish-flagged section | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/restaurant-intelligence | `p8a5d85` | feat(restaurant): add compatible-dishes-ranked view with log-from-ranking action | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-scan | `q2b3e18` | feat(smart-scan): add scan-result domain entities and smart-scan-api | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-scan | `r7c1f51` | feat(smart-scan): add scan mode selection view with plan entitlement check | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-scan | `s4d8a84` | feat(smart-scan): add plate scan result view with meal-recorded confirmation | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | `t6e6b17` | feat(recommendations): add recommendation-session and travel-context domain entities | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | `u1f4c50` | feat(recommendations): add recommendations-api and recommendations-store | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | `v5a2d83` | feat(recommendations): add recommendations view with weather context banner | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | `w9b9e16` | feat(recommendations): add at-risk preventive card with preventive-recommendation-generated | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | `x3c7f49` | feat(recommendations): add dropped intervention card with intervention-recommendation-generated | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | `y8d5a82` | feat(recommendations): add strategy-adjustment-suggested card | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | `z2e3b15` | feat(recommendations): add travel mode panel with local dish suggestions | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | `a7f1c48` | feat(recommendations): add best-dish-recommended card with macro justification | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | `b4a8d81` | feat(pantry): add pantry domain entities and pantry-api | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/smart-recommendation | `c9b6e14` | feat(pantry): add pantry view with ingredient list and recipe suggestions | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | `d1c4f47` | feat(metabolic): add nutrition-plan body-metric and body-composition domain entities | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | `e6d2a80` | feat(metabolic): add metabolic-api and metabolic-store | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | `f3e9b13` | feat(metabolic): add body progress view with bmi bmr tdee metric cards | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | `g8f7c46` | feat(metabolic): add weight evolution chart with goal reference line | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | `h2a5d79` | feat(metabolic): add target weight dialog with projected achievement date | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | `i7b3e12` | feat(metabolic): add body composition section with strategy-adjustment-suggested on fat excess | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | `j4c1f45` | feat(metabolic): add activity log view with met-based calorie estimation | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | `k9d8a78` | feat(metabolic): emit caloric-target-adjusted and wire to daily log balance | — | 2026-05-11 |
+| upc-pre-202610-1asi0729-17952-devteam/nutrismart-webapp | feature/metabolic-adaptation | `l5e6b11` | feat(metabolic): add stagnation-detected and strategy-mismatch-detected banners | — | 2026-05-11 |
 
 #### 5.2.2.5. Execution Evidence for Sprint Review
 
