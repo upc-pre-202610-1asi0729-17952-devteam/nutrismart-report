@@ -785,7 +785,6 @@ A continuación se presentan screenshots de las principales vistas implementadas
 
 ![Daily log view with meal expansion panels and 5-column summary bar](../assets/img/sprint2/daily-log.png)
 ![RestrictedItemBlocked modal with NutritionalRiskLevel indicator](../assets/img/sprint2/restricted-item-blocked.png)
-![DailyGoalExceeded alert banner](../assets/img/sprint2/daily-goal-exceeded.png)
 ![DailyGoalMet alert banner](../assets/img/sprint2/daily-goal-met.png)
 ![Meal detail panel with per-item macro contribution](../assets/img/sprint2/meal-detail-panel.png)
 
