@@ -8,4 +8,4 @@
 | **Landing Page** | [Enlace a la landing page](https://upc-pre-202610-1asi0729-17952-devteam.github.io/nutrismart-website/)|
 | **Frontend Web Application** | [Enlace al frontend web application](https://https://app-smart.nutriproject.xyz/)|
 | **Video de exposición de AV1** | [Enlace del video AV1](https://upcedupe-my.sharepoint.com/:f:/g/personal/u202417857_upc_edu_pe/IgAJ6FVQZOfRRLu7vC-I_TPbAb1YcolvNAqsyeOhGzerDNc?e=NZCv7A)|
-| **Video de exposición de TB1** | [Enlace del video TB1]()|
+| **Video de exposición de TB1** | [Enlace del video TB1](https://upcedupe-my.sharepoint.com/:v:/g/personal/u202411669_upc_edu_pe/IQDxjcrqQ1jnQJrtpiMTO9rrAYKpgW6ZLzha9p-l03jLwwg)|
