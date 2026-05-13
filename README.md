@@ -10,7 +10,7 @@
 **Ciclo:** 5  
 **Docente:** Ivan Robles Fernández
 
-## **"Informe de trabajo: AV1"**
+## **"Informe de trabajo: TB1"**
 
 ### ***Startup:*** DevTeam
 
@@ -52,10 +52,10 @@ El repositorio del Project Report se encuentra disponible en la organización de
 Durante el desarrollo del presente Sprint, la elaboración del informe fue llevada a cabo de forma colaborativa por todos los integrantes del equipo. El trabajo se organizó distribuyendo las secciones y capítulos del informe entre los miembros, quienes realizaron sus aportes mediante commits en subramas hacia la rama develop del repositorio. Esto permitió mantener un historial claro de los cambios y garantizar la trazabilidad de cada contribución.
 
 AV1:<br>
-![Report](/assets/img/report_col.png)
+![Report](./assets/img/report_col.png)
 
 TB1:<br>
-![Report](/assets/img/report_col_tb1.png)
+![Report](./assets/img/report_col_tb1.png)
 
 
 <div style="page-break-after: always"></div>
