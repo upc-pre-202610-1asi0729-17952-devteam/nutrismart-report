@@ -1136,7 +1136,7 @@ Los errores serán puntuados tomando en cuenta la siguiente escala de severidad
 - Recomendación: Aunque representa un problema de menor importancia, se recomienda implementar el cambio al sidebar izquierdo para mantener un diseño de navegación y jerarquía de UI, y asimismo conservar coherencia con "Registro Nutricional", en cuyo caso se hallan efectuado cambios.
 
 #### Problema #3: Falta de actualización de clima
-- Severidad: 3
+- Severidad: 2
 - Heurística violada: Usability: Visibility of System Status
 - Problema: Se observa que en "Recomendaciones" la información presentada por la función demo de clima es estática y general, puede llegar a generar ciertas dudas y problemas de personalización para los usuarios.
 
