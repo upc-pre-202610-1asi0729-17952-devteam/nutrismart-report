@@ -871,8 +871,287 @@ Durante el Sprint 2, todos los miembros del equipo participaron activamente en l
 
 ### 5.3.1. Diseño de Entrevistas
 
+**Objetivo de la entrevista:**
+
+Los objetivos son de validar la usabilidad, efectividad y claridad de NutriSmart, asimismo de asegurar que los flujos de usuario(User flows) sean intuitivos, prácticos y funcionales para los usuarios y su correcta interaccion con la plataforma.
+
+#### Segmento 1: Pérdida de peso
+
+##### Estructura:
+
+**Preguntas de introducción:**
+
+1. ¿Cuál es su nombre?
+2. ¿Cuántos años tiene?
+3. ¿A qué se dedica?
+
+**Preguntas de validación de la plataforma web:**
+
+
+
+#### Segmento 2: Ganancia de masa muscular
+
+##### Estructura:
+
+**Preguntas de introducción:**
+
+1. ¿Cuál es su nombre?
+2. ¿Cuántos años tiene?
+3. ¿A qué se dedica?
+
+**Preguntas de validación de la plataforma web:**
+
+1. ¿Te resultó fácil e intuitivo registrarte, rellenar tus datos y crear tu perfil en la plataforma?
+
+2. ¿Hubo algo confuso o que te tomó tiempo entender?
+
+3. ¿Qué actividades planeabas realizar al ingresar a la plataforma?
+
+4. ¿Cuál es tu opinión sobre la funcionalidad de registro nutricional?
+
+5. ¿Te resultaron adecuadas las recomendaciones personalizadas ofrecidas por la plataforma?
+
+6. ¿Cómo te sentiste al visualizar tu progreso corporal?
+
+7. ¿Consideras útil y de sencilla visualización la información brindada en analítica?
+
+8. ¿Tienes alguna sugerencia o recomendación para mejorar la plataforma y mejorar la experiencia a futuros usuarios?
+
+9. ¿Recomendarías NutriSmart a tus familiares o amigos? ¿Por qué?
+
 ### 5.3.2. Registro de Entrevistas
 
+#### Segmento 1: Pérdida de peso
+
+##### Entrevista 1:
+
+- Nombres y Apellidos:
+- Edad: 
+- Ocupación:
+- Tiempo:
+- Link: [Link de las entrevistas](...)
+- Resumen: 
+
+![E1S1 - Capture](../assets/img/chapter5-interviews/...)
+
+##### Entrevista 2:
+
+- Nombres y Apellidos:
+- Edad: 
+- Ocupación:
+- Tiempo:
+- Link: [Link de las entrevistas](...)
+- Resumen: 
+
+![E2S1 - Capture](../assets/img/chapter5-interviews/...)
+
+##### Entrevista 3:
+
+- Nombres y Apellidos:
+- Edad: 
+- Ocupación:
+- Tiempo:
+- Link: [Link de las entrevistas](...)
+- Resumen: 
+
+![E3S1 - Capture](../assets/img/chapter5-interviews/...)
+
+#### Segmento 2: Ganancia de masa muscular
+
+##### Entrevista 1:
+
+- Nombres y Apellidos: David Miguel Ramos Parihuamán
+- Edad: 19
+- Ocupación: Estudiante universitario
+- Tiempo: 
+- Link: [Link de las entrevistas](...)
+- Resumen: David señalo la facilidad y semejanza que posee el registro e inicio de sesión con plataformas de su uso diario. Mostro interés por la funcionalidad de registro nutricional, las recomendaciones personalizadas y como lo ayudan en su progreso diario. Dio recomendaciones sobre la interfaz a fin de mejorar la experiencia para futuros usuarios.
+
+![E1S2 - Capture](../assets/img/chapter5-interviews/Entrevista1-S2.png)
+
+##### Entrevista 2:
+
+- Nombres y Apellidos: Rando Lopez Mayta
+- Edad: 22
+- Ocupación: Estudiante universitario
+- Tiempo: 
+- Link: [Link de las entrevistas](...)
+- Resumen: Rando menciona que le resulto fácil e intuitivo el registro e inicio de sesión a la plataforma. A pesar de un corto periodo de uso, señala que está encantado con las funcionalidades de registro nutricional y la visualización del progreso. Sugiere mayores opciones de personalización para las interfaces, y finaliza considerando que recomendaria la plataforma a todos sus conocidos.
+
+![E2S2 - Capture](../assets/img/chapter5-interviews/Entrevista2-S2.png)
+
+##### Entrevista 3:
+
+- Nombres y Apellidos:
+- Edad: 
+- Ocupación:
+- Tiempo:
+- Link: [Link de las entrevistas](...)
+- Resumen: 
+
+![E3S2 - Capture](../assets/img/chapter5-interviews/Entrevista3-S2.png)
+
 ### 5.3.3. Evaluaciones según heurísticas
+
+<div align='center'>
+    <h2>UX Heuristics & Principles Evaluation</h2>
+    <h3>Usability – Inclusive Design – Information Architecture</h3>
+</div>
+
+<p><strong>CARRERA:</strong> Ingeniería de Software</p>
+<p><strong>CURSO:</strong> Desarrollo de Aplicaciones Open Source</p>
+<p><strong>SECCIÓN:</strong> 17952</p>
+<p><strong>PROFESORES:</strong> Ivan Robles Fernández</p>
+<p><strong>CLIENTE(S):</strong> Angel Martin Villarreal Bazan, Angela Milagros Espinoza Cruz, Brandon Wilder Soto Palacios, Joel Fernando Mora Rivera, Olenka Priscilla Del Aguila Del Aguila</p>
+
+<hr>
+
+<br>
+
+**SITE O APP A EVALUAR:**
+
+NutriSmart
+
+<br>
+
+**TAREAS A EVALUAR:**
+
+El alcance de esta evaluación incluye la revisión de las siguientes tareas:
+
+<ol>
+    <li>Registro de nuevo usuario</li>
+    <li>Inicio de sesión</li>
+    <li>Visualización de información en el dashboard</li>
+    <li>Ingreso y guardado de alimentos en registro diario nutricional</li>
+    <li>Visualización de recomendaciones personalizadas</li>
+    <li>Visualización de seguimiento nutricional</li>
+    <li>Registro y visualización del progreso corporal</li>
+    <li>Registro y visualización de la actividad física</li>
+    <li>Visualización de la información de analítica y progreso</li>
+    <li>Modificación de datos personales del usuario</li> 
+    <li>Internacionalización</li>
+    <li>Cambio y/o recuperación de contraseña</li>
+
+</ol>
+
+<br>
+
+No están incluidas en esta versión de la evaluación las siguientes tareas:
+<ol>
+    <li>Registro de alimentos mediante Smart Scan </li>
+    <li>Sincronización con wearables</li>
+    <li>Exportación a PDF de la analítica y progreso</li>
+    <li>Proceso de pago de suscripción</li>
+    <li>Eliminación de cuenta</li>
+</ol>
+
+<br>
+
+**ESCALA DE SEVERIDAD:**
+
+Los errores serán puntuados tomando en cuenta la siguiente escala de severidad
+
+<table>
+    <tr>
+        <th style="border: 1px solid #dddddd; padding: 8px; text-align: center;">Nivel</th>
+        <th style="border: 1px solid #dddddd; padding: 8px; text-align: center;">Descripción</th>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">1</td>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Problema superficial: puede ser fácilmente superador por el usuario ó ocurre con muy poco frecuencia. No necesita ser arreglado a no ser que exista disponibilidad de tiempo.</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">2</td>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Problema menor: puede ocurrir un poco más frecuentemente o es un poco más difícil de superar para el usuario. Se le debería asignar una prioridad baja resolverlo de cara al siguiente reléase</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">3</td>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Problema mayor: ocurre frecuentemente o los usuarios no son capaces de resolverlos. Es importante que sean corregidos y se les debe asignar una prioridad alta.</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">4</td>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Problema muy grave: un error de gran impacto que impide al usuario continuar con el uso dela herramienta. Es imperativo que sea corregido antes del lanzamiento.</td>
+    </tr>
+</table>
+
+<br>
+
+**TABLA RESUMEN:**
+
+<br>
+
+<table>
+    <tr>
+        <th style="border: 1px solid #dddddd; padding: 8px; text-align: center;">#</th>
+        <th style="border: 1px solid #dddddd; padding: 8px; text-align: center;">Problema</th>
+        <th style="border: 1px solid #dddddd; padding: 8px; text-align: center;">Escala de severidad</th>
+        <th style="border: 1px solid #dddddd; padding: 8px; text-align: center;">Heurística/Principio violada(o)</th>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">1</td>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Visualización de Registro diario y Smart scan</td>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">1</td>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Usability: Consistency and Standards</td> 
+    </tr>
+    <tr>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">2</td>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Visualización de Feed y Despensa</td>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">1</td>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Usability: Consistency and Standards</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">3</td>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Falta de actualización dinámica de clima</td>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">2</td>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Usability: Visibility of System Status</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">4</td>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Olvido y recuperación de contraseña no completamente funcional</td>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">3</td>
+        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Usability: Error Diagnosis & Recovery</td>
+    </tr>
+</table>
+
+<br>
+
+**DESCRIPCIÓN DE PROBLEMAS:**
+
+#### Problema #1: Visualización de Registro diario y Smart scan
+- Severidad: 1
+- Heurística violada: Usability: Consistency and Standards
+- Problema: La navegación entre las secciones de "Registro Diario" y "Smart Scan" puede llegar a generar una inconsistencia visual o fricción menor, esto debido a su ubicación en la parte superior, que puede rompar la coherencia del patrón de navegación definido.
+
+![Problem1](../assets/img/chapter5-interviews/Problema1.png)
+
+- Recomendación: Debido a la severidad que representa este problema, no es necesario cambios relevantes, ya que es parte de percepciones de los usuarios y sus gustos en interfaces. Aunque se recomienda, para seguir con una coherencia de navegación, mover los botones de las secciones a la sidebar izquierda para una mejor fluidez en la navegación.
+
+#### Problema #2: Visualización de Feed y Despensa
+- Severidad: 1
+- Heurística violada: Usability: Consistency and Standards
+- Problema: La navegación interna de "Recomendaciones" posee una incosistencia menor, al momento de necesitar cambiar entre secciones de "Feed" y "Despensa". 
+
+![Problem2](../assets/img/chapter5-interviews/Problema2.png)
+
+- Recomendación: Aunque representa un problema de menor importancia, se recomienda implementar el cambio al sidebar izquierdo para mantener un diseño de navegación y jerarquía de UI, y asimismo conservar coherencia con "Registro Nutricional", en cuyo caso se hallan efectuado cambios.
+
+#### Problema #3: Falta de actualización de clima
+- Severidad: 3
+- Heurística violada: Usability: Visibility of System Status
+- Problema: Se observa que en "Recomendaciones" la información presentada por la función demo de clima es estática y general, puede llegar a generar ciertas dudas y problemas de personalización para los usuarios.
+
+![Problem3](../assets/img/chapter5-interviews/Problema3.png)
+
+- Recomendación: Como este problema representa una severidad menor, esto sumado a su estatus de función en desarrollo y prueba, se recomienda su mejora progresiva mediante implementaciones de lectura de datos en tiempo real de clima para evitar afectar a los usuarios en versiones posteriores.
+
+#### Problema #4: Olvido y recuperación de contraseña no completamente funcional
+- Severidad: 3
+- Heurística violada: Usability: Error Diagnosis & Recovery
+- Problema: La opción de recuperación de contraseña en caso de olvido aún no se implementó de manera total, lo que puede generar problemas de acceso a para los usuarios.
+
+![Problem4](../assets/img/chapter5-interviews/Problema4.png)
+
+- Recomendación: Debido a la importancia de esta funcionalidad, se recomienda enfocar en continuar con la culminación exitosa del proceso de restauración de contraseñas para los usuarios. A fin de garantizar el acceso sin problemas hacia la plataforma.
+
 
 ## 5.4. Video About-the-Product
