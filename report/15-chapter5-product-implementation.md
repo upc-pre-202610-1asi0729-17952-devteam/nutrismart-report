@@ -871,7 +871,125 @@ Durante el Sprint 2, todos los miembros del equipo participaron activamente en l
 
 ### 5.3.1. Diseño de Entrevistas
 
+**Objetivo de la entrevista:**
+
+Los objetivos son de validar la usabilidad, efectividad y claridad de NutriSmart, asimismo de asegurar que los flujos de usuario(User flows) sean intuitivos, prácticos y funcionales para los usuarios y su correcta interaccion con la plataforma.
+
+#### Segmento 1: Pérdida de peso
+
+##### Estructura:
+
+**Preguntas de introducción:**
+
+1. ¿Cuál es su nombre?
+2. ¿Cuántos años tiene?
+3. ¿A qué se dedica?
+
+**Preguntas de validación de la plataforma web:**
+
+
+
+#### Segmento 2: Ganancia de masa muscular
+
+##### Estructura:
+
+**Preguntas de introducción:**
+
+1. ¿Cuál es su nombre?
+2. ¿Cuántos años tiene?
+3. ¿A qué se dedica?
+
+**Preguntas de validación de la plataforma web:**
+
+1. ¿Te resultó fácil e intuitivo registrarte, rellenar tus datos y crear tu perfil en la plataforma?
+
+2. ¿Hubo algo confuso o que te tomó tiempo entender?
+
+3. ¿Qué actividades planeabas realizar al ingresar a la plataforma?
+
+4. ¿Cuál es tu opinión sobre la funcionalidad de registro nutricional?
+
+5. ¿Te resultaron adecuadas las recomendaciones personalizadas ofrecidas por la plataforma?
+
+6. ¿Cómo te sentiste al visualizar tu progreso corporal?
+
+7. ¿Consideras útil y de sencilla visualización la información brindada en analítica?
+
+8. ¿Tienes alguna sugerencia o recomendación para mejorar la plataforma y mejorar la experiencia a futuros usuarios?
+
+9. ¿Recomendarías NutriSmart a tus familiares o amigos? ¿Por qué?
+
 ### 5.3.2. Registro de Entrevistas
+
+#### Segmento 1: Pérdida de peso
+
+##### Entrevista 1:
+
+- Nombres y Apellidos: Jorge Del Aguila Vacalla
+- Edad: 49 
+- Ocupación: Administrador de empresas y jefe de garantías y taller
+- Tiempo: 0:01 - 4:56
+- Link: [Link de las entrevistas](https://upcedupe-my.sharepoint.com/:v:/g/personal/u202411669_upc_edu_pe/IQBWpfwIabIbTastqBaS_0gfAZZ2EhRrlW8BOVJAI1rZcuo?e=ZRy0a2&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifSwicGxheWJhY2tPcHRpb25zIjp7InN0YXJ0VGltZUluU2Vjb25kcyI6MS42M319)
+- Resumen: Jorge destacó el impacto visual de las imágenes y la variedad de verduras presentadas en la plataforma. Valoró significativamente la facilidad y practicidad del registro nutricional, así como la funcionalidad que le permite visualizar en detalle las calorías, proteínas, carbohidratos, grasas y fibras consumidas. Consideró que la analítica es útil y de fácil acceso para cualquier tipo de usuario. Sugirió mejoras específicas como la inclusión de videos de ejercicios básicos de bajo impacto y testimonios de usuarios que hayan logrado resultados. Finalmente, recomendaría la plataforma a sus conocidos debido a su practicidad y utilidad en el seguimiento del progreso de pérdida de peso.
+
+![E1S1 - Capture](../assets/img/chapter5-interviews/Entrevista1-S1.png)
+
+##### Entrevista 2:
+
+- Nombres y Apellidos: Tatiana Mozombite Miranda
+- Edad: 25 
+- Ocupación: Estudiante de idiomas
+- Tiempo: 4:57 - 9:13
+- Link: [Link de las entrevistas](https://upcedupe-my.sharepoint.com/:v:/g/personal/u202411669_upc_edu_pe/IQBWpfwIabIbTastqBaS_0gfAZZ2EhRrlW8BOVJAI1rZcuo?e=vcmCTI&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifSwicGxheWJhY2tPcHRpb25zIjp7InN0YXJ0VGltZUluU2Vjb25kcyI6Mjk3LjU3fX0%3D)
+- Resumen: Tatiana encontró el procedimiento general intuitivo y fácil de entender. Aprecio las funcionalidades presentadas como Smart Scan y Nutricion Gobal, considerándolas útiles para su objetivo. Valoró los precios accesibles de los planes. Durante la configuración inicial, no presentó dificultades en la comprensión de datos personales ni restricciones alimentarias. Resaltó especialmente la sección de porcentajes de macronutrientes que le ayuda a identificar qué debería consumir. La visualización del progreso corporal le pareció motivadora y de utilidad para reforzar su meta. Recomendaría la plataforma a familiares y amigos por su innovación y facilidad para mantener una vida saludable en el día a día.
+
+![E2S1 - Capture](../assets/img/chapter5-interviews/Entrevista2-S1.png)
+
+##### Entrevista 3:
+
+- Nombres y Apellidos: Larisa Ramírez Del Aguila
+- Edad: 19 
+- Ocupación: Estudiante de Administración y Marketing
+- Tiempo: 9:14 - 13:28
+- Link: [Link de las entrevistas](https://upcedupe-my.sharepoint.com/:v:/g/personal/u202411669_upc_edu_pe/IQBWpfwIabIbTastqBaS_0gfAZZ2EhRrlW8BOVJAI1rZcuo?e=CmhPWz&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifSwicGxheWJhY2tPcHRpb25zIjp7InN0YXJ0VGltZUluU2Vjb25kcyI6NTUyLjU1fX0%3D)
+- Resumen: Larisa encontró la plataforma especialmente intuitiva y moderna, destacando la claridad en el flujo de registro e inicio de sesión. Se mostró entusiasmada con las recomendaciones personalizadas basadas en el clima y ubicación, considerándolas prácticas para su estilo de vida actual. Valoró la funcionalidad de agregar ingredientes disponibles en casa para recetas personalizadas, viéndola como una ventaja económica. El dashboard principal le pareció visualmente atractivo y fácil de interpretar para monitorear su progreso diario. Sugirió mejoras en la gamificación de objetivos y mayor variedad de contenido educativo sobre nutrición básica. Expresó su disposición a recomendar la plataforma a sus compañeras de universidad por su diseño amigable y funcionalidades adaptadas a jóvenes adultos con objetivos de bienestar.
+
+![E3S1 - Capture](../assets/img/chapter5-interviews/Entrevista3-S1.png)
+
+#### Segmento 2: Ganancia de masa muscular
+
+##### Entrevista 1:
+
+- Nombres y Apellidos: David Miguel Ramos Parihuamán
+- Edad: 19
+- Ocupación: Estudiante universitario
+- Tiempo: 13:29 - 17:11
+- Link: [Link de las entrevistas](https://upcedupe-my.sharepoint.com/:v:/g/personal/u202411669_upc_edu_pe/IQBWpfwIabIbTastqBaS_0gfAZZ2EhRrlW8BOVJAI1rZcuo?e=tQffZK&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifSwicGxheWJhY2tPcHRpb25zIjp7InN0YXJ0VGltZUluU2Vjb25kcyI6ODA5LjA1fX0%3D)
+- Resumen: David señalo la facilidad y semejanza que posee el registro e inicio de sesión con plataformas de su uso diario. Mostro interés por la funcionalidad de registro nutricional, las recomendaciones personalizadas y como lo ayudan en su progreso diario. Dio recomendaciones sobre la interfaz a fin de mejorar la experiencia para futuros usuarios.
+
+![E1S2 - Capture](../assets/img/chapter5-interviews/Entrevista1-S2.png)
+
+##### Entrevista 2:
+
+- Nombres y Apellidos: Rando Lopez Mayta
+- Edad: 22
+- Ocupación: Estudiante universitario
+- Tiempo: 17:12 - 21:50
+- Link: [Link de las entrevistas](https://upcedupe-my.sharepoint.com/:v:/g/personal/u202411669_upc_edu_pe/IQBWpfwIabIbTastqBaS_0gfAZZ2EhRrlW8BOVJAI1rZcuo?e=T3aD5D&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifSwicGxheWJhY2tPcHRpb25zIjp7InN0YXJ0VGltZUluU2Vjb25kcyI6MTAzMi40M319)
+- Resumen: Rando menciona que le resulto fácil e intuitivo el registro e inicio de sesión a la plataforma. A pesar de un corto periodo de uso, señala que está encantado con las funcionalidades de registro nutricional y la visualización del progreso. Sugiere mayores opciones de personalización para las interfaces, y finaliza considerando que recomendaria la plataforma a todos sus conocidos.
+
+![E2S2 - Capture](../assets/img/chapter5-interviews/Entrevista2-S2.png)
+
+##### Entrevista 3:
+
+- Nombres y Apellidos: Daphne Faustor
+- Edad: 25
+- Ocupación: Community Manager en el área de marketing (rubro gastronómico aeroportuario)
+- Tiempo: 21:51 - 29:13
+- Link: [Link de las entrevistas](https://upcedupe-my.sharepoint.com/:v:/g/personal/u202411669_upc_edu_pe/IQBWpfwIabIbTastqBaS_0gfAZZ2EhRrlW8BOVJAI1rZcuo?e=Cbgv8X&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifSwicGxheWJhY2tPcHRpb25zIjp7InN0YXJ0VGltZUluU2Vjb25kcyI6MTMxMS41Nn19)
+- Resumen: Daphne Faustor evaluó la plataforma con un objetivo enfocado en ganar masa muscular. Consideró que el registro es sumamente intuitivo y personalizado, y destacó como un gran acierto que el sistema calcule automáticamente las calorías y porciones diarias para evitar procesos tediosos. Asimismo, valoró positivamente las recomendaciones adaptadas al clima y la función de despensa por la practicidad que aportan al día a día, así como los paneles de analítica para monitorear su evolución. Finalmente, recomendó incorporar testimonios de usuarios para aumentar la motivación y afirmó que recomendaría la aplicación a amigos y familiares para concientizarlos sobre la importancia de comer en las proporciones correctas sin restricciones innecesarias.
+
+![E3S2 - Capture](../assets/img/chapter5-interviews/Entrevista3-S2.png)
 
 ### 5.3.3. Evaluaciones según heurísticas
 
@@ -1055,4 +1173,54 @@ Los errores serán puntuados tomando en cuenta la siguiente escala de severidad:
 - **Problema:** El cambio de idioma de la plataforma está excesivamente oculto para el usuario, obligándolo a realizar un flujo largo e intuitivamente complejo ("Ver perfil" => "Language" => "Elegir idioma"). Al ser el Dashboard el panel principal de control, no contar con un acceso directo o un selector rápido en el header o barra lateral penaliza la eficiencia de uso, especialmente para usuarios internacionales que necesitan adaptar la interfaz desde el primer contacto.
 - **Recomendación:** Desacoplar el selector de idioma de las configuraciones profundas del perfil e integrarlo directamente como un botón de acceso rápido o menú desplegable (dropdown) en el Header principal o en la parte inferior del Sidebar lateral.
 
+
 ## 5.4. Video About-the-Product
+
+### Descripción General
+
+Esta sección presenta el Video About-the-Product, una herramienta de comunicación estratégica diseñada para dos públicos objetivo principales. En primer lugar, se dirige a los visitantes del Landing Page que desean conocer sobre el modelo de negocio y las características principales de la solución de software NutriSmart. En segundo lugar, se enfoca en los usuarios de la aplicación web que buscan comprender cómo realizar tareas específicas relacionadas con los procesos soportados por la plataforma.
+
+El tono de comunicación utilizado es consistente con la identidad del producto: motivacional, directo y cercano, buscando transmitir confianza y facilidad de uso.
+
+---
+
+### Video
+
+**Captura del Video:**
+
+![Video About-the-Product - NutriSmart](../assets/img/chapter5-video/about-the-product.png)
+
+---
+
+### Información del Video
+
+| Atributo | Contenido |
+|----------|-----------|
+| **Duración** | 2:20 minutos |
+| **Microsoft Stream** | https://upcedupe-my.sharepoint.com/:v:/g/personal/u202417857_upc_edu_pe/IQBZsJjpaxFpSIn7Vna2BKZDAWDoPUpVPvQbJ1kLrhkd3f0 |
+
+---
+
+### Resumen del Video
+
+El video inicia con un problema relatable para la audiencia: la dificultad de mantener una alimentación saludable sin saber qué comer ni cómo medir el progreso. Inmediatamente presenta a NutriSmart como la solución que transforma objetivos nutricionales en planes concretos y personalizados desde el primer día.
+
+La propuesta de valor se desarrolla de manera progresiva, mostrando cómo el usuario puede configurar su perfil en minutos y acceder a funcionalidades clave. El proceso de registro de alimentos es presentado como simple e inmediato, destacando que NutriSmart calcula automáticamente calorías y macronutrientes en tiempo real, permitiendo correcciones sobre la marcha.
+
+Se enfatizan las recomendaciones inteligentes basadas en la ubicación y disponibilidad de ingredientes, eliminando la incertidumbre sobre si un alimento encaja en el plan nutritivo. El video también muestra la integración con actividad física, el seguimiento del progreso corporal y un panel de analítica que visualiza la evolución a lo largo del tiempo.
+
+Un elemento clave es la gamificación de la consistencia, presentando al usuario como alguien que puede fallar sin culpa, simplemente retomando el camino con datos reales. El cierre refuerza el llamado a la acción con un mensaje inspirador: "Empieza gratis, define tu objetivo y deja que los datos te guíen. Porque comer bien no debería ser un misterio." La marca termina con su tagline: "NutriSmart: Tu nutrición, con inteligencia."
+
+---
+
+### Testimonios de Usuarios
+
+El video incluye dos testimonios de usuarios reales que participaron en las entrevistas de validación, proporcionando credibilidad y validación del impacto real del producto:
+
+> "Empecé a usar NutriSmart hace dos meses con el objetivo de bajar 8 kilos. Lo que más me sorprendió fue que no me decía solo 'come menos', sino exactamente qué comer cada día. Perdí 5 kilos y por primera vez entiendo mi alimentación."
+>
+> **David R., usuario NutriSmart, segmento pérdida de peso**
+
+> "Entreno hace años pero siempre fallaba en la nutrición. Con NutriSmart empecé a darle seguimiento real a mis proteínas y en 6 semanas noté una diferencia visible en músculo. Es la herramienta que me faltaba."
+>
+> **Jorge D. A., usuario NutriSmart, segmento ganancia muscular**
