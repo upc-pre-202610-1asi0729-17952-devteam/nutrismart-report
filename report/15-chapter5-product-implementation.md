@@ -1168,7 +1168,7 @@ El tono de comunicación utilizado es consistente con la identidad del producto:
 
 **Captura del Video:**
 
-![Video About-the-Product - NutriSmart](../assets/img/chapter5-video)
+![Video About-the-Product - NutriSmart](../assets/img/chapter5-video/about-the-product.png)
 
 ---
 
