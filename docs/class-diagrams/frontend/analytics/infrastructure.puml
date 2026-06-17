@@ -4,128 +4,43 @@ skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-' ─── Boundary stubs: shared/infrastructure ───────────────────────────────────
-package "shared/infrastructure [boundary]" {
-  abstract class BaseApi <<boundary>> {
-  }
-  interface BaseAssembler <<boundary>> {
-  }
-  abstract class BaseApiEndpoint <<boundary>> {
-  }
-}
+title Analytics — Infrastructure layer (nutrismart-webapp)
 
-' ─── Boundary stubs: analytics/domain ────────────────────────────────────────
+' ─── Boundary stubs: domain layer ────────────────────────────────────────────
 package "analytics/domain [boundary]" {
-  class AnalyticsData <<boundary>> {
-    + period: AnalyticsPeriod
-    + userId: number
-  }
+  class AnalyticsData <<interface>>
 }
 
-' ─── Resources ───────────────────────────────────────────────────────────────
-package "analytics/infrastructure/resources" {
-
-  class DailyCaloriesHistoryResource <<resource>> {
-    + date: string
-    + consumed: number
-    + goal: number
-    + active: number
-    + net: number
+package "analytics/infrastructure" {
+  abstract class AnalyticsApi <<abstract>> {
+    + {abstract} getHistory(userId, fromDate): Observable<AnalyticsRawInput>
+    + {abstract} exportPdfReport(userId, fromDate, toDate): Observable<Blob>
   }
-
-  class MacroAnalysisResource <<resource>> {
-    + protein: number
-    + carbs: number
-    + fat: number
-    + fiber: number
+  class AnalyticsApiHttpService <<@Injectable>> {
+    + getHistory(userId, fromDate): Observable<AnalyticsRawInput>
   }
-
-  class AdherenceHistoryEntryResource <<resource>> {
-    + date: string
-    + status: string
-    + streak: number
+  class AnalyticsAssembler <<@Injectable>> {
+    + toAnalyticsData(raw: AnalyticsRawInput): AnalyticsData
   }
-
-  class BehavioralEventResource <<resource>> {
-    + date: string
-    + eventTypeKey: string
-    + descriptionKey: string
-    + severity: string
+  class PdfGeneratorService <<@Injectable>> {
+    + generate(data: AnalyticsData, options: PdfReportOptions, userName?): Blob
   }
-
-  class WeightPointResource <<resource>> {
-    + date: string
-    + weightKg: number
-  }
-
-  class AnalyticsResource <<resource>> {
-    + period: string
-    + userId: number
-    + averageCalorieIntake: number
-    + averageProteinIntake: number
-    + currentStreak: number
-    + weightChange: number
-    + weightChangeDirection: string
-    + weightChangeStatus: string
-    + dailyCaloriesHistory: DailyCaloriesHistoryResource[]
-    + macroAnalysis: MacroAnalysisResource
-    + daysWithCompleteLog: number
-    + weightEvolution: WeightPointResource[]
-    + goalWeight: number
-    + adherenceHistory: AdherenceHistoryEntryResource[]
-    + behavioralEvents: BehavioralEventResource[]
-    + proteinCompliance: number
-  }
-
-  class AnalyticsResponse <<resource>> {
-    + analytics: AnalyticsResource[]
-  }
+  interface AnalyticsRawInput <<resource>>
+  interface NutritionLogResource <<resource>>
+  interface BodyMetricResource <<resource>>
+  interface UserTargets <<resource>>
+  interface PdfReportOptions <<options>>
 }
 
-' ─── Assemblers ──────────────────────────────────────────────────────────────
-package "analytics/infrastructure/assemblers" {
-
-  class AnalyticsAssembler <<assembler>> {
-    + toEntityFromResource(resource: AnalyticsResource): AnalyticsData
-    + toResourceFromEntity(entity: AnalyticsData): AnalyticsResource
-    + toEntitiesFromResponse(response: AnalyticsResponse): AnalyticsData[]
-  }
-}
-
-' ─── HTTP ────────────────────────────────────────────────────────────────────
-package "analytics/infrastructure/http" {
-
-  class AnalyticsApiEndpoint <<endpoint>> {
-    - assembler: AnalyticsAssembler
-    --
-    + getAll(): Observable<AnalyticsData[]>
-    + getById(id: number): Observable<AnalyticsData>
-  }
-
-  class AnalyticsApi <<api>> {
-    - endpoint: AnalyticsApiEndpoint
-    --
-    + getAnalyticsData(userId: number, period: string): Observable<AnalyticsData>
-    + exportReport(userId: number, period: string): Observable<Blob>
-  }
-}
-
-AnalyticsApi --|> BaseApi : extends >
-AnalyticsApiEndpoint --|> BaseApiEndpoint : extends >
-AnalyticsAssembler ..|> BaseAssembler : implements >
-
-AnalyticsResponse "1" *--> "0..*" AnalyticsResource : contains >
-AnalyticsResource "1" *--> "0..*" DailyCaloriesHistoryResource : contains >
-AnalyticsResource "1" *--> "0..*" AdherenceHistoryEntryResource : contains >
-AnalyticsResource "1" *--> "0..*" BehavioralEventResource : contains >
-AnalyticsResource "1" *--> "0..*" WeightPointResource : contains >
-AnalyticsResource "1" *--> "1" MacroAnalysisResource : contains >
-
-AnalyticsAssembler --> AnalyticsResource : reads >
-AnalyticsAssembler --> AnalyticsResponse : reads >
-AnalyticsAssembler ..> AnalyticsData : produces >
-
-AnalyticsApiEndpoint --> AnalyticsAssembler : uses >
-AnalyticsApi o--> AnalyticsApiEndpoint : delegates to >
+' ─── Relationships ────────────────────────────────────────────────────────────
+AnalyticsApiHttpService --|> AnalyticsApi
+AnalyticsApiHttpService ..> AnalyticsRawInput : returns >
+AnalyticsRawInput "1" *--> "0..*" NutritionLogResource : aggregates >
+AnalyticsRawInput "1" *--> "0..*" BodyMetricResource : aggregates >
+AnalyticsRawInput "1" *--> "1" UserTargets : includes >
+AnalyticsAssembler ..> AnalyticsRawInput : reads >
+AnalyticsAssembler ..> AnalyticsData : builds >
+PdfGeneratorService ..> AnalyticsData : renders >
+PdfGeneratorService ..> PdfReportOptions : uses >
 
 @enduml

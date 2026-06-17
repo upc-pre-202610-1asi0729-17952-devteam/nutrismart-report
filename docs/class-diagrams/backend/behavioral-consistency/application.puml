@@ -1,0 +1,123 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Behavioral Consistency — Application layer (nutrismart-platform)
+
+' ─── Boundary stubs: domain layer ────────────────────────────────────────────
+package "behavioralconsistency.domain [boundary]" {
+  class BehavioralProgress <<aggregate>>
+  class EatingBehaviorPattern <<aggregate>>
+  class RecoveryPlan <<aggregate>>
+  interface BehavioralProgressRepository <<port>>
+  interface EatingBehaviorPatternRepository <<port>>
+  interface RecoveryPlanRepository <<port>>
+}
+
+package "behavioralconsistency.application.commandservices" {
+  interface BehavioralProgressCommandService <<port>>
+  interface EatingBehaviorPatternCommandService <<port>>
+  interface RecoveryPlanCommandService <<port>>
+  interface BehavioralProgressCommandFailure <<sealed>>
+  interface EatingBehaviorPatternCommandFailure <<sealed>>
+  interface RecoveryPlanCommandFailure <<sealed>>
+}
+
+package "behavioralconsistency.application.queryservices" {
+  interface BehavioralProgressQueryService <<port>>
+  interface EatingBehaviorPatternQueryService <<port>>
+  interface RecoveryPlanQueryService <<port>>
+}
+
+package "behavioralconsistency.application.commands" {
+  class CreateBehavioralProgressCommand <<command>>
+  class UpdateBehavioralProgressCommand <<command>>
+  class CreateEatingBehaviorPatternCommand <<command>>
+  class UpdateEatingBehaviorPatternCommand <<command>>
+  class CreateRecoveryPlanCommand <<command>>
+  class UpdateRecoveryPlanCommand <<command>>
+  class DeleteRecoveryPlanCommand <<command>>
+}
+
+package "behavioralconsistency.application.queries" {
+  class GetBehavioralProgressByIdQuery <<query>>
+  class GetAllBehavioralProgressQuery <<query>>
+  class GetEatingBehaviorPatternByIdQuery <<query>>
+  class GetAllEatingBehaviorPatternsQuery <<query>>
+  class GetRecoveryPlanByIdQuery <<query>>
+  class GetAllRecoveryPlansQuery <<query>>
+}
+
+package "behavioralconsistency.application.internal.commandservices" {
+  class BehavioralProgressCommandServiceImpl {
+    - repository: BehavioralProgressRepository
+  }
+  class EatingBehaviorPatternCommandServiceImpl {
+    - repository: EatingBehaviorPatternRepository
+  }
+  class RecoveryPlanCommandServiceImpl {
+    - repository: RecoveryPlanRepository
+  }
+}
+
+package "behavioralconsistency.application.internal.queryservices" {
+  class BehavioralProgressQueryServiceImpl {
+    - repository: BehavioralProgressRepository
+  }
+  class EatingBehaviorPatternQueryServiceImpl {
+    - repository: EatingBehaviorPatternRepository
+  }
+  class RecoveryPlanQueryServiceImpl {
+    - repository: RecoveryPlanRepository
+  }
+}
+
+package "behavioralconsistency.application.acl" {
+  class BehavioralConsistencyContextFacadeImpl {
+    - behavioralProgressQueryService: BehavioralProgressQueryService
+    + getBehavioralProgress(userId: Long): List<BehavioralProgressSummaryData>
+  }
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+BehavioralProgressCommandServiceImpl ..|> BehavioralProgressCommandService
+EatingBehaviorPatternCommandServiceImpl ..|> EatingBehaviorPatternCommandService
+RecoveryPlanCommandServiceImpl ..|> RecoveryPlanCommandService
+BehavioralProgressQueryServiceImpl ..|> BehavioralProgressQueryService
+EatingBehaviorPatternQueryServiceImpl ..|> EatingBehaviorPatternQueryService
+RecoveryPlanQueryServiceImpl ..|> RecoveryPlanQueryService
+
+BehavioralProgressCommandServiceImpl --> BehavioralProgressRepository : uses >
+EatingBehaviorPatternCommandServiceImpl --> EatingBehaviorPatternRepository : uses >
+RecoveryPlanCommandServiceImpl --> RecoveryPlanRepository : uses >
+BehavioralProgressQueryServiceImpl --> BehavioralProgressRepository : uses >
+EatingBehaviorPatternQueryServiceImpl --> EatingBehaviorPatternRepository : uses >
+RecoveryPlanQueryServiceImpl --> RecoveryPlanRepository : uses >
+
+BehavioralProgressCommandServiceImpl ..> CreateBehavioralProgressCommand : handles >
+BehavioralProgressCommandServiceImpl ..> UpdateBehavioralProgressCommand : handles >
+BehavioralProgressCommandServiceImpl ..> BehavioralProgress : produces >
+EatingBehaviorPatternCommandServiceImpl ..> CreateEatingBehaviorPatternCommand : handles >
+EatingBehaviorPatternCommandServiceImpl ..> UpdateEatingBehaviorPatternCommand : handles >
+EatingBehaviorPatternCommandServiceImpl ..> EatingBehaviorPattern : produces >
+RecoveryPlanCommandServiceImpl ..> CreateRecoveryPlanCommand : handles >
+RecoveryPlanCommandServiceImpl ..> UpdateRecoveryPlanCommand : handles >
+RecoveryPlanCommandServiceImpl ..> DeleteRecoveryPlanCommand : handles >
+RecoveryPlanCommandServiceImpl ..> RecoveryPlan : produces >
+
+BehavioralProgressQueryServiceImpl ..> GetBehavioralProgressByIdQuery : handles >
+BehavioralProgressQueryServiceImpl ..> GetAllBehavioralProgressQuery : handles >
+EatingBehaviorPatternQueryServiceImpl ..> GetEatingBehaviorPatternByIdQuery : handles >
+EatingBehaviorPatternQueryServiceImpl ..> GetAllEatingBehaviorPatternsQuery : handles >
+RecoveryPlanQueryServiceImpl ..> GetRecoveryPlanByIdQuery : handles >
+RecoveryPlanQueryServiceImpl ..> GetAllRecoveryPlansQuery : handles >
+
+BehavioralProgressCommandService ..> BehavioralProgressCommandFailure : may fail with >
+EatingBehaviorPatternCommandService ..> EatingBehaviorPatternCommandFailure : may fail with >
+RecoveryPlanCommandService ..> RecoveryPlanCommandFailure : may fail with >
+
+BehavioralConsistencyContextFacadeImpl --> BehavioralProgressQueryService : uses >
+
+@enduml

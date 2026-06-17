@@ -1,0 +1,74 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Restaurant Intelligence — Domain layer (nutrismart-platform)
+
+package "restaurantintelligence.domain.aggregates" {
+  class RestaurantMenu <<aggregate root>> {
+    - userId: Long
+    - imageBase64: String
+    - dishes: List<MenuDishResult>
+    - restricted: List<RestrictedDishResult>
+    - ranked: List<RankedDishResult>
+    - status: MenuScanStatus
+    --
+    + RestaurantMenu(userId: Long, imageBase64: String)
+    + applyAnalysis(analyzedDishes: List<MenuDishResult>): void
+    + applyFilter(restrictedDishes: List<RestrictedDishResult>): void
+    + applyRanking(rankedDishes: List<RankedDishResult>): void
+  }
+}
+
+package "restaurantintelligence.domain.model" {
+  enum MenuScanStatus {
+    PENDING
+    ANALYZED
+    FILTERED
+    RANKED
+  }
+  class MenuDishResult <<value object>> {
+    + name: String
+    + price: String
+  }
+  class RestrictedDishResult <<value object>> {
+    + dishName: String
+    + restrictionTriggered: String
+    + reason: String
+  }
+  class RankedDishResult <<value object>> {
+    + rank: int
+    + dishName: String
+    + dishNameEs: String
+    + nameKey: String
+    + price: String
+    + matchedFoodItemId: Long
+    + compatibilityScore: double
+    + reason: String
+    + reasonEn: String
+    + estimatedCalories: double
+    + estimatedProtein: double
+    + estimatedCarbs: double
+    + estimatedFat: double
+    + conflictingRestrictions: List<String>
+  }
+}
+
+note bottom of RestaurantMenu
+  Aggregate models the scan → analyze → filter → rank
+  lifecycle, but is not yet wired into the application
+  flow (the command service builds RankedDishResult
+  directly). Domain events (MenuPhotoProcessed,
+  RestrictedDishFlagged, CompatibleDishesRanked,
+  RestaurantMealAnalyzed) are TODOs, not implemented.
+end note
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+RestaurantMenu "1" *--> "0..*" MenuDishResult : analyzed dishes >
+RestaurantMenu "1" *--> "0..*" RestrictedDishResult : filtered dishes >
+RestaurantMenu "1" *--> "0..*" RankedDishResult : ranked dishes >
+RestaurantMenu "1" o--> "1" MenuScanStatus : status >
+
+@enduml

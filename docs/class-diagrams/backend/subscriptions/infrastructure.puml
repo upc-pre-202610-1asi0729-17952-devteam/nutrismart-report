@@ -1,0 +1,55 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Subscriptions — Infrastructure layer (nutrismart-platform)
+
+' ─── Boundary stubs: domain layer ────────────────────────────────────────────
+package "subscriptions.domain [boundary]" {
+  class Subscription <<aggregate>>
+  class BillingRecord <<aggregate>>
+  interface SubscriptionRepository <<port>>
+  interface BillingRecordRepository <<port>>
+  enum SubscriptionStatus
+}
+
+package "subscriptions.infrastructure.persistence.jpa.entities" {
+  class SubscriptionJpaEntity <<@Entity subscriptions>>
+  class BillingRecordJpaEntity <<@Entity billing_history>>
+}
+package "subscriptions.infrastructure.persistence.jpa" {
+  class SubscriptionPersistenceAdapter {
+    - springDataRepo: SpringDataSubscriptionJpaRepository
+  }
+  class BillingRecordPersistenceAdapter {
+    - springDataRepo: SpringDataBillingRecordJpaRepository
+  }
+  interface SpringDataSubscriptionJpaRepository <<JpaRepository>>
+  interface SpringDataBillingRecordJpaRepository <<JpaRepository>>
+  class SubscriptionPersistenceMapper <<mapper>>
+  class BillingRecordPersistenceMapper <<mapper>>
+}
+package "subscriptions.infrastructure.persistence.jpa.converters" {
+  class SubscriptionStatusAttributeConverter <<@Converter>>
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+SubscriptionPersistenceAdapter ..|> SubscriptionRepository
+BillingRecordPersistenceAdapter ..|> BillingRecordRepository
+
+SubscriptionPersistenceAdapter --> SpringDataSubscriptionJpaRepository : delegates >
+BillingRecordPersistenceAdapter --> SpringDataBillingRecordJpaRepository : delegates >
+
+SpringDataSubscriptionJpaRepository ..> SubscriptionJpaEntity : manages >
+SpringDataBillingRecordJpaRepository ..> BillingRecordJpaEntity : manages >
+
+SubscriptionPersistenceMapper ..> Subscription : maps >
+SubscriptionPersistenceMapper ..> SubscriptionJpaEntity : maps >
+BillingRecordPersistenceMapper ..> BillingRecord : maps >
+BillingRecordPersistenceMapper ..> BillingRecordJpaEntity : maps >
+
+SubscriptionStatusAttributeConverter ..> SubscriptionStatus : converts >
+
+@enduml

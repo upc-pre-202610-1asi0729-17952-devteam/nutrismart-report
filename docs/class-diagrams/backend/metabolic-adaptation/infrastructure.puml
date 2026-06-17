@@ -1,0 +1,89 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Metabolic Adaptation — Infrastructure layer (nutrismart-platform)
+
+' ─── Boundary stubs: domain layer ────────────────────────────────────────────
+package "metabolicadaptation.domain [boundary]" {
+  class BodyMetric <<aggregate>>
+  class BodyComposition <<aggregate>>
+  class ActivityLog <<aggregate>>
+  class WearableConnection <<aggregate>>
+  class MetabolicAdaptationLog <<aggregate>>
+  interface BodyMetricRepository <<port>>
+  interface BodyCompositionRepository <<port>>
+  interface ActivityLogRepository <<port>>
+  interface WearableConnectionRepository <<port>>
+  interface MetabolicAdaptationLogRepository <<port>>
+  enum WearableStatus
+  enum MetabolicChangeTrigger
+}
+
+package "metabolicadaptation.infrastructure.persistence.jpa.entities" {
+  class BodyMetricJpaEntity <<@Entity>>
+  class BodyCompositionJpaEntity <<@Entity>>
+  class ActivityLogJpaEntity <<@Entity>>
+  class WearableConnectionJpaEntity <<@Entity>>
+  class MetabolicAdaptationLogJpaEntity <<@Entity>>
+}
+
+package "metabolicadaptation.infrastructure.persistence.jpa" {
+  class BodyMetricPersistenceAdapter
+  class BodyCompositionPersistenceAdapter
+  class ActivityLogPersistenceAdapter
+  class WearableConnectionPersistenceAdapter
+  class MetabolicAdaptationLogPersistenceAdapter
+  interface SpringDataBodyMetricJpaRepository <<JpaRepository>>
+  interface SpringDataBodyCompositionJpaRepository <<JpaRepository>>
+  interface SpringDataActivityLogJpaRepository <<JpaRepository>>
+  interface SpringDataWearableConnectionJpaRepository <<JpaRepository>>
+  interface SpringDataMetabolicAdaptationLogJpaRepository <<JpaRepository>>
+  class BodyMetricPersistenceMapper <<mapper>>
+  class BodyCompositionPersistenceMapper <<mapper>>
+  class ActivityLogPersistenceMapper <<mapper>>
+  class WearableConnectionPersistenceMapper <<mapper>>
+  class MetabolicAdaptationLogPersistenceMapper <<mapper>>
+}
+
+package "metabolicadaptation.infrastructure.persistence.jpa.converters" {
+  class WearableStatusAttributeConverter <<@Converter>>
+  class MetabolicChangeTriggerAttributeConverter <<@Converter>>
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+BodyMetricPersistenceAdapter ..|> BodyMetricRepository
+BodyCompositionPersistenceAdapter ..|> BodyCompositionRepository
+ActivityLogPersistenceAdapter ..|> ActivityLogRepository
+WearableConnectionPersistenceAdapter ..|> WearableConnectionRepository
+MetabolicAdaptationLogPersistenceAdapter ..|> MetabolicAdaptationLogRepository
+
+BodyMetricPersistenceAdapter --> SpringDataBodyMetricJpaRepository : delegates >
+BodyCompositionPersistenceAdapter --> SpringDataBodyCompositionJpaRepository : delegates >
+ActivityLogPersistenceAdapter --> SpringDataActivityLogJpaRepository : delegates >
+WearableConnectionPersistenceAdapter --> SpringDataWearableConnectionJpaRepository : delegates >
+MetabolicAdaptationLogPersistenceAdapter --> SpringDataMetabolicAdaptationLogJpaRepository : delegates >
+
+SpringDataBodyMetricJpaRepository ..> BodyMetricJpaEntity : manages >
+SpringDataBodyCompositionJpaRepository ..> BodyCompositionJpaEntity : manages >
+SpringDataActivityLogJpaRepository ..> ActivityLogJpaEntity : manages >
+SpringDataWearableConnectionJpaRepository ..> WearableConnectionJpaEntity : manages >
+SpringDataMetabolicAdaptationLogJpaRepository ..> MetabolicAdaptationLogJpaEntity : manages >
+
+BodyMetricPersistenceMapper ..> BodyMetric : maps >
+BodyMetricPersistenceMapper ..> BodyMetricJpaEntity : maps >
+BodyCompositionPersistenceMapper ..> BodyComposition : maps >
+BodyCompositionPersistenceMapper ..> BodyCompositionJpaEntity : maps >
+ActivityLogPersistenceMapper ..> ActivityLog : maps >
+ActivityLogPersistenceMapper ..> ActivityLogJpaEntity : maps >
+WearableConnectionPersistenceMapper ..> WearableConnection : maps >
+WearableConnectionPersistenceMapper ..> WearableConnectionJpaEntity : maps >
+MetabolicAdaptationLogPersistenceMapper ..> MetabolicAdaptationLog : maps >
+MetabolicAdaptationLogPersistenceMapper ..> MetabolicAdaptationLogJpaEntity : maps >
+
+WearableStatusAttributeConverter ..> WearableStatus : converts >
+MetabolicChangeTriggerAttributeConverter ..> MetabolicChangeTrigger : converts >
+
+@enduml

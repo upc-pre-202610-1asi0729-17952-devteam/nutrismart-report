@@ -1,0 +1,83 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Subscriptions — Application layer (nutrismart-platform)
+
+' ─── Boundary stubs: domain layer ────────────────────────────────────────────
+package "subscriptions.domain [boundary]" {
+  class Subscription <<aggregate>>
+  class BillingRecord <<aggregate>>
+  interface SubscriptionRepository <<port>>
+  interface BillingRecordRepository <<port>>
+}
+package "<<iam>> [external]" {
+  interface UserCommandService <<port>>
+}
+
+package "subscriptions.application.commandservices" {
+  interface SubscriptionCommandService <<port>>
+  interface BillingRecordCommandService <<port>>
+  interface SubscriptionCommandFailure <<sealed>>
+  interface BillingRecordCommandFailure <<sealed>>
+}
+package "subscriptions.application.queryservices" {
+  interface SubscriptionQueryService <<port>>
+  interface BillingRecordQueryService <<port>>
+}
+package "subscriptions.application.commands" {
+  class CreateSubscriptionCommand <<command>>
+  class UpdateSubscriptionCommand <<command>>
+  class CreateBillingRecordCommand <<command>>
+}
+package "subscriptions.application.queries" {
+  class GetSubscriptionByIdQuery <<query>>
+  class GetAllSubscriptionsQuery <<query>>
+  class GetBillingRecordByIdQuery <<query>>
+  class GetAllBillingRecordsQuery <<query>>
+}
+package "subscriptions.application.internal.commandservices" {
+  class SubscriptionCommandServiceImpl {
+    - subscriptionRepository: SubscriptionRepository
+    - userCommandService: UserCommandService
+  }
+  class BillingRecordCommandServiceImpl {
+    - billingRecordRepository: BillingRecordRepository
+  }
+}
+package "subscriptions.application.internal.queryservices" {
+  class SubscriptionQueryServiceImpl {
+    - subscriptionRepository: SubscriptionRepository
+  }
+  class BillingRecordQueryServiceImpl {
+    - billingRecordRepository: BillingRecordRepository
+  }
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+SubscriptionCommandServiceImpl ..|> SubscriptionCommandService
+BillingRecordCommandServiceImpl ..|> BillingRecordCommandService
+SubscriptionQueryServiceImpl ..|> SubscriptionQueryService
+BillingRecordQueryServiceImpl ..|> BillingRecordQueryService
+
+SubscriptionCommandServiceImpl --> SubscriptionRepository : uses >
+SubscriptionCommandServiceImpl --> UserCommandService : updates plan via >
+BillingRecordCommandServiceImpl --> BillingRecordRepository : uses >
+SubscriptionQueryServiceImpl --> SubscriptionRepository : uses >
+BillingRecordQueryServiceImpl --> BillingRecordRepository : uses >
+
+SubscriptionCommandServiceImpl ..> CreateSubscriptionCommand : handles >
+SubscriptionCommandServiceImpl ..> UpdateSubscriptionCommand : handles >
+SubscriptionCommandServiceImpl ..> Subscription : produces >
+BillingRecordCommandServiceImpl ..> CreateBillingRecordCommand : handles >
+BillingRecordCommandServiceImpl ..> BillingRecord : produces >
+SubscriptionQueryServiceImpl ..> GetSubscriptionByIdQuery : handles >
+SubscriptionQueryServiceImpl ..> GetAllSubscriptionsQuery : handles >
+BillingRecordQueryServiceImpl ..> GetBillingRecordByIdQuery : handles >
+BillingRecordQueryServiceImpl ..> GetAllBillingRecordsQuery : handles >
+SubscriptionCommandService ..> SubscriptionCommandFailure : may fail with >
+BillingRecordCommandService ..> BillingRecordCommandFailure : may fail with >
+
+@enduml

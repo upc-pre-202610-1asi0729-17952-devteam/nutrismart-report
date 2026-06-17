@@ -396,7 +396,7 @@ El Sprint 1 tiene como objetivo principal entregar el sitio web estático (Landi
 A continuación se presenta el board del sprint en Trello y la tabla de work-items correspondiente.
 
 ![Board Sprint 1](../assets/img/sprint1/sprintbacklog.png)
-URL del Board (Trello): https://trello.com/invite/b/69e7e914df07d176838add9d/ATTIdd4dfe357744be4dc97cce9e1ff43aeeC1917E49/sprint-1
+URL del Board (Trello): [Enlace Trello](https://trello.com/invite/b/69e7e914df07d176838add9d/ATTIdd4dfe357744be4dc97cce9e1ff43aeeC1917E49/sprint-1)
 
 | US ID | US Title | Task ID | Task Title | Description | Est. (h) | Assigned To | Status |
 |-------|----------|---------|------------|-------------|----------|-------------|--------|
@@ -636,7 +636,7 @@ El Sprint 2 tiene como objetivo entregar el frontend completo de la aplicación 
  
 ![Board Sprint 2](../assets/img/sprint2/sprintbacklog.png)
  
-URL del Board (Trello):
+URL del Board (Trello): [Enlace Trello](https://trello.com/invite/b/6a03a5352711a147e1dcddde/ATTId2ac96f1c9b394e8f4c8f3ad82fcdacb692DB4EB/sprint-backlog-2)
  
 | US ID | US Title | Task ID | Task Title | Description | Est. (h) | Assigned To | Status |
 |-------|----------|---------|------------|-------------|----------|-------------|--------|
@@ -993,165 +993,185 @@ Los objetivos son de validar la usabilidad, efectividad y claridad de NutriSmart
 
 ### 5.3.3. Evaluaciones según heurísticas
 
-<div align='center'>
-    <h2>UX Heuristics & Principles Evaluation</h2>
-    <h3>Usability – Inclusive Design – Information Architecture</h3>
-</div>
+#### UX Heuristics & Principles Evaluation
+**Usability – Inclusive Design – Information Architecture**
 
-<p><strong>CARRERA:</strong> Ingeniería de Software</p>
-<p><strong>CURSO:</strong> Desarrollo de Aplicaciones Open Source</p>
-<p><strong>SECCIÓN:</strong> 17952</p>
-<p><strong>PROFESORES:</strong> Ivan Robles Fernández</p>
-<p><strong>CLIENTE(S):</strong> Angel Martin Villarreal Bazan, Angela Milagros Espinoza Cruz, Brandon Wilder Soto Palacios, Joel Fernando Mora Rivera, Olenka Priscilla Del Aguila Del Aguila</p>
+| Campo | Detalle |
+|---|---|
+| **CARRERA** | Ingeniería de Software |
+| **CURSO** | Desarrollo de Aplicaciones Open Source |
+| **SECCIÓN** | 17952 |
+| **PROFESORES** | Todos |
+| **AUDITOR** | PircaIndustries |
+| **CLIENTE** | Francia Torres, Jhony Manuel; Montoya Nina, Paula Fernanda; Pareja Calloapaza, Marcelo Fausto; Ramos Hinostroza, Diego Antonio y Ramos Mera, Neo Daniel. |
 
-<hr>
+---
 
-<br>
+##### Site o App a evaluar
+**NutriSmart**
 
-**SITE O APP A EVALUAR:**
+---
 
-NutriSmart
+##### Tareas a evaluar
+El alcance de esta evaluación incluye la revisión de la usabilidad de las siguientes tareas:
 
-<br>
+1. Landing Page
+2. Registro e Inicio de Sesión
+3. Proceso de Onboarding
+4. Suscripción
+5. Dashboard
+6. Registro Nutricional
+7. Recomendaciones
+8. Progreso Corporal
+9. Actividad Física
+10. Analítica y Progreso
+11. Configuración
 
-**TAREAS A EVALUAR:**
+**No incluidas en esta versión de la evaluación:**
 
-El alcance de esta evaluación incluye la revisión de las siguientes tareas:
+- Ninguna, se revisaron todas.
 
-<ol>
-    <li>Registro de nuevo usuario</li>
-    <li>Inicio de sesión</li>
-    <li>Visualización de información en el dashboard</li>
-    <li>Ingreso y guardado de alimentos en registro diario nutricional</li>
-    <li>Visualización de recomendaciones personalizadas</li>
-    <li>Visualización de seguimiento nutricional</li>
-    <li>Registro y visualización del progreso corporal</li>
-    <li>Registro y visualización de la actividad física</li>
-    <li>Visualización de la información de analítica y progreso</li>
-    <li>Modificación de datos personales del usuario</li> 
-    <li>Internacionalización</li>
-    <li>Cambio y/o recuperación de contraseña</li>
+---
 
-</ol>
+##### Escala de severidad
+Los errores serán puntuados tomando en cuenta la siguiente escala de severidad:
 
-<br>
+| Nivel | Descripción |
+|:---:|---|
+| **1** | Problema superficial: puede ser fácilmente superado por el usuario o ocurre con muy poca frecuencia. No necesita ser arreglado a no ser que exista disponibilidad de tiempo. |
+| **2** | Problema menor: puede ocurrir un poco más frecuentemente o es un poco más difícil de superar para el usuario. Se le debería asignar una prioridad baja para resolverlo de cara al siguiente release. |
+| **3** | Problema mayor: ocurre frecuentemente o los usuarios no son capaces de resolverlo. Es importante que sea corregido y se le debe asignar una prioridad alta. |
+| **4** | Problema muy grave: un error de gran impacto que impide al usuario continuar con el uso de la herramienta. Es imperativo que sea corregido antes del lanzamiento. |
 
-No están incluidas en esta versión de la evaluación las siguientes tareas:
-<ol>
-    <li>Registro de alimentos mediante Smart Scan </li>
-    <li>Sincronización con wearables</li>
-    <li>Exportación a PDF de la analítica y progreso</li>
-    <li>Proceso de pago de suscripción</li>
-    <li>Eliminación de cuenta</li>
-</ol>
+---
 
-<br>
+##### Tabla resumen
 
-**ESCALA DE SEVERIDAD:**
+| # | Problema | Severidad | Heurística / Principio violada(o) |
+|:---:|---|:---:|---|
+| 1 | Etiqueta de contraseña sin traducir al español. | 2 | Consistencia y estándares. |
+| 2 | Logotipo ilegible por falta de resolución y contraste. | 1 | Diseño estético y minimalista. |
+| 3 | Ícono de selección sin margen y pegado al borde. | 1 | Diseño estético y minimalista. |
+| 4 | Ausencia de opción para omitir suscripción. | 4 | Control y libertad del usuario. |
+| 5 | Falta de botón de retroceso en el flujo de pago. | 3 | Control y libertad del usuario. |
+| 6 | Desaparición del selector de idioma durante el pago. | 2 | Consistencia y estándares. |
+| 7 | Proximidad riesgosa entre botón de acción y campos sensibles. | 2 | Prevención de errores. |
+| 8 | Área de interacción limitada en el menú de usuario. | 3 | Flexibilidad y eficiencia de uso. |
+| 9 | Falta de retroalimentación inmediata en eliminación. | 4 | Visibilidad del estado del sistema. |
+| 10 | Legibilidad deficiente por tamaño de fuente. | 1 | Diseño estético y minimalista. |
+| 11 | Desbordamiento visual y falta de contención en el menú desplegable de selección de actividad. | 2 | Usabilidad – Control del usuario / Diseño minimalista y estético; Diseño Inclusivo – Jerarquía visual. |
+| 12 | Elemento interactivo ambiguo y no autoexplicativo ("No wearable"). | 2 | Usabilidad – Visibilidad del estado del sistema, relación entre el sistema y el mundo real; Arquitectura de la Información – Rotulado. |
+| 13 | Bloqueo de la interfaz y error persistente al exportar reporte PDF. | 3 | Usabilidad – Libertad y control del usuario, Prevención de errores y Visibilidad del estado del sistema. |
+| 14 | Estado vacío no interactivo ni accionable en el gráfico de evolución de peso. | 2 | Usabilidad – Ayuda a reconocer, diagnosticar y recuperarse de errores; Diseño Inclusivo – Orientación y guía al usuario. |
+| 15 | Errores críticos de reproducción y carga en los videos del producto y del equipo. | 3 | Usabilidad – Visibilidad del estado del sistema / Prevención de errores. |
+| 16 | Plagio de marca y contradicción de identidad en recursos gráficos. | 3 | Usabilidad – Relación entre el sistema y el mundo real / Consistencia y estándares. |
+| 17 | Alta complejidad y falta de predictibilidad en el acceso a la internacionalización (i18n). | 2 | Usabilidad – Flexibilidad y eficiencia de uso; Arquitectura de la Información – Sistemas de navegación. |
 
-Los errores serán puntuados tomando en cuenta la siguiente escala de severidad
+---
 
-<table>
-    <tr>
-        <th style="border: 1px solid #dddddd; padding: 8px; text-align: center;">Nivel</th>
-        <th style="border: 1px solid #dddddd; padding: 8px; text-align: center;">Descripción</th>
-    </tr>
-    <tr>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">1</td>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Problema superficial: puede ser fácilmente superador por el usuario ó ocurre con muy poco frecuencia. No necesita ser arreglado a no ser que exista disponibilidad de tiempo.</td>
-    </tr>
-    <tr>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">2</td>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Problema menor: puede ocurrir un poco más frecuentemente o es un poco más difícil de superar para el usuario. Se le debería asignar una prioridad baja resolverlo de cara al siguiente reléase</td>
-    </tr>
-    <tr>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">3</td>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Problema mayor: ocurre frecuentemente o los usuarios no son capaces de resolverlos. Es importante que sean corregidos y se les debe asignar una prioridad alta.</td>
-    </tr>
-    <tr>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">4</td>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Problema muy grave: un error de gran impacto que impide al usuario continuar con el uso dela herramienta. Es imperativo que sea corregido antes del lanzamiento.</td>
-    </tr>
-</table>
+##### Descripción de problemas
 
-<br>
+##### PROBLEMA #1: Etiqueta de contraseña sin traducir al español
+- **Severidad:** 2
+- **Heurística violada:** Consistencia y estándares.
+- **Problema:** El texto "show" dentro del campo de la contraseña (para revelar los caracteres) se mantiene en inglés a pesar de que la interfaz está configurada en español, rompiendo la uniformidad del sistema.
+- **Recomendación:** Traducir la etiqueta de acción a "Mostrar" y "Ocultar" cuando la internacionalización de la aplicación esté configurada en español.
 
-**TABLA RESUMEN:**
+##### PROBLEMA #2: Logotipo ilegible por falta de resolución y contraste
+- **Severidad:** 1
+- **Heurística violada:** Diseño estético y minimalista.
+- **Problema:** El logotipo de NutriSmart carece de la nitidez, tamaño o contraste adecuado, lo que impide que el usuario lo visualice y reconozca correctamente.
+- **Recomendación:** Reemplazar el recurso gráfico por una imagen de mayor resolución o ajustar sus dimensiones (ancho y alto) para que el elemento principal de marca sea legible.
 
-<br>
+##### PROBLEMA #3: Ícono de selección sin margen y pegado al borde
+- **Severidad:** 1
+- **Heurística violada:** Diseño estético y minimalista.
+- **Problema:** El ícono (signo) para desplegar las opciones en el campo de "sexo biológico" carece de margen interno y está excesivamente pegado al borde del contenedor de texto.
+- **Recomendación:** Añadir espaciado (padding/margin) entre el ícono de despliegue y los bordes del campo de selección para mejorar el diseño visual y evitar dar la impresión de saturación.
 
-<table>
-    <tr>
-        <th style="border: 1px solid #dddddd; padding: 8px; text-align: center;">#</th>
-        <th style="border: 1px solid #dddddd; padding: 8px; text-align: center;">Problema</th>
-        <th style="border: 1px solid #dddddd; padding: 8px; text-align: center;">Escala de severidad</th>
-        <th style="border: 1px solid #dddddd; padding: 8px; text-align: center;">Heurística/Principio violada(o)</th>
-    </tr>
-    <tr>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">1</td>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Visualización de Registro diario y Smart scan</td>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">1</td>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Usability: Consistency and Standards</td> 
-    </tr>
-    <tr>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">2</td>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Visualización de Feed y Despensa</td>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">1</td>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Usability: Consistency and Standards</td>
-    </tr>
-    <tr>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">3</td>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Falta de actualización dinámica de clima</td>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">2</td>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Usability: Visibility of System Status</td>
-    </tr>
-    <tr>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">4</td>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Olvido y recuperación de contraseña no completamente funcional</td>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: center;">3</td>
-        <td style="border: 1px solid #dddddd; padding: 8px; text-align: justify;">Usability: Error Diagnosis & Recovery</td>
-    </tr>
-</table>
+##### PROBLEMA #4: Ausencia de opción para omitir suscripción
+- **Severidad:** 4
+- **Heurística violada:** Control y libertad del usuario.
+- **Problema:** El sistema obliga al usuario a elegir un plan de suscripción para avanzar, sin proporcionar un botón para rechazar la oferta o seleccionar una opción gratuita. Adicionalmente, si el pago es un requisito obligatorio del modelo de negocio, esta condición no se informa desde el inicio, haciendo que el usuario pierda tiempo ingresando datos previamente.
+- **Recomendación:** Añadir un botón o enlace visible que indique "Omitir" o "Continuar con plan gratuito". En caso de que la aplicación sea estrictamente de pago, se debe mostrar un aviso claro de los costos en la pantalla de bienvenida o antes del registro.
 
-<br>
+##### PROBLEMA #5: Falta de botón de retroceso en el flujo de pago
+- **Severidad:** 3
+- **Heurística violada:** Control y libertad del usuario.
+- **Problema:** Tras seleccionar un plan o avanzar a la sección de pago, la interfaz carece de un botón de retroceso. Esto impide que el usuario pueda enmendar su acción si desea cancelar la compra o cambiar a otro plan de suscripción.
+- **Recomendación:** Implementar un botón de "Atrás" o "Cancelar" en una zona visible de la cabecera (header) que permita regresar a la pantalla anterior sin perder la información ya ingresada.
 
-**DESCRIPCIÓN DE PROBLEMAS:**
+##### PROBLEMA #6: Desaparición del selector de idioma durante el pago
+- **Severidad:** 2
+- **Heurística violada:** Consistencia y estándares.
+- **Problema:** El botón o menú para cambiar el idioma desaparece durante el flujo de pago, impidiendo mantener una experiencia uniforme con las pantallas previas donde sí estaba disponible.
+- **Recomendación:** Mantener el selector de idiomas anclado en la misma posición a lo largo de todas las pantallas de la aplicación, incluyendo el flujo de finalización de compra.
 
-#### Problema #1: Visualización de Registro diario y Smart scan
-- Severidad: 1
-- Heurística violada: Usability: Consistency and Standards
-- Problema: La navegación entre las secciones de "Registro Diario" y "Smart Scan" puede llegar a generar una inconsistencia visual o fricción menor, esto debido a su ubicación en la parte superior, que puede rompar la coherencia del patrón de navegación definido.
+##### PROBLEMA #7: Proximidad riesgosa entre botón de acción y campos sensibles
+- **Severidad:** 2
+- **Heurística violada:** Prevención de errores.
+- **Problema:** El botón de "Continuar revisión" se encuentra visualmente muy cerca de los campos de entrada sensibles ("fecha de vencimiento" y "CVV"), lo que aumenta el riesgo de que el usuario lo presione accidentalmente antes de terminar de escribir.
+- **Recomendación:** Aumentar la separación vertical (margin-top) del botón de "Continuar revisión" respecto a los campos del formulario para reducir el riesgo de envíos incompletos o errores de interacción física.
 
-![Problem1](../assets/img/chapter5-interviews/Problema1.png)
+##### PROBLEMA #8: Área de interacción limitada en el menú de usuario
+- **Severidad:** 3
+- **Heurística violada:** Flexibilidad y eficiencia de uso.
+- **Problema:** La zona interactiva para acceder a "Profile" y "Log out" es excesivamente reducida, limitándose exclusivamente al texto. En dispositivos con pantallas pequeñas, esta restricción dificulta la precisión táctil del usuario, impidiendo que el recuadro contenedor funcione como un área de interacción efectiva.
+- **Recomendación:** Implementar un menú desplegable (dropdown) para centralizar estas acciones. Asimismo, ampliar el área de clic o toque para que abarque la totalidad del recuadro del usuario, facilitando la navegación en entornos con resoluciones pequeñas.
 
-- Recomendación: Debido a la severidad que representa este problema, no es necesario cambios relevantes, ya que es parte de percepciones de los usuarios y sus gustos en interfaces. Aunque se recomienda, para seguir con una coherencia de navegación, mover los botones de las secciones a la sidebar izquierda para una mejor fluidez en la navegación.
+##### PROBLEMA #9: Falta de retroalimentación inmediata en eliminación
+- **Severidad:** 4
+- **Heurística violada:** Visibilidad del estado del sistema.
+- **Problema:** Al interactuar con el botón de eliminación ("X") en la sección de ingredientes, el sistema no refleja ningún cambio inmediato en la interfaz. El usuario se ve forzado a recargar la página manualmente o navegar a otra sección para validar la eliminación, lo que genera incertidumbre sobre la ejecución de la acción.
+- **Recomendación:** Gestionar correctamente la asincronía del proceso. Es fundamental incluir una retroalimentación visual inmediata tras la confirmación.
 
-#### Problema #2: Visualización de Feed y Despensa
-- Severidad: 1
-- Heurística violada: Usability: Consistency and Standards
-- Problema: La navegación interna de "Recomendaciones" posee una incosistencia menor, al momento de necesitar cambiar entre secciones de "Feed" y "Despensa". 
+##### PROBLEMA #10: Legibilidad deficiente por tamaño de fuente
+- **Severidad:** 1
+- **Heurística violada:** Diseño estético y minimalista.
+- **Problema:** El tamaño de la fuente de varias secciones presenta un tamaño reducido que no se ajusta adecuadamente a la resolución de pantalla. Esta falta de jerarquía tipográfica dificulta la lectura fluida.
+- **Recomendación:** Ajustar la escala tipográfica mediante el uso de unidades relativas como `rem`, permitiendo que el tamaño de fuente sea adaptable según la resolución.
 
-![Problem2](../assets/img/chapter5-interviews/Problema2.png)
+##### PROBLEMA #11: Desbordamiento visual y falta de contención en el menú desplegable de selección de actividad
+- **Severidad:** 2
+- **Heurística violada:** Usabilidad – Control del usuario / Diseño minimalista y estético; Diseño Inclusivo – Jerarquía visual.
+- **Problema:** Al desplegar la lista de actividades para registrar un ejercicio, el contenedor se expande verticalmente de manera desmedida, sobrepasando los límites inferiores del modal e intersecando con el fondo translúcido. Esto genera una superposición visual deficiente y dificulta la navegación para usuarios con pantallas de menor resolución o en dispositivos móviles, donde el listado podría quedar cortado o ser difícil de desplazar.
+- **Recomendación:** Limitar la altura máxima del menú desplegable mediante estilos en el frontend e incorporar una barra de desplazamiento interna (scrollbar). Adicionalmente, dado que la lista es muy extensa, se aconseja agregar un campo de búsqueda rápida de texto dentro del desplegable para permitir al usuario escribir y filtrar la actividad en lugar de realizar un desplazamiento largo.
 
-- Recomendación: Aunque representa un problema de menor importancia, se recomienda implementar el cambio al sidebar izquierdo para mantener un diseño de navegación y jerarquía de UI, y asimismo conservar coherencia con "Registro Nutricional", en cuyo caso se hallan efectuado cambios.
+##### PROBLEMA #12: Elemento interactivo ambiguo y no autoexplicativo ("No wearable")
+- **Severidad:** 2
+- **Heurística violada:** Usabilidad – Visibilidad del estado del sistema, relación entre el sistema y el mundo real; Arquitectura de la Información – Rotulado.
+- **Problema:** El elemento "No wearable" (que incluye el ícono de un reloj inteligente) se muestra junto al botón principal de registro. Su diseño visual es idéntico al de un botón, pero al interactuar con él, no queda claro si permite vincular un dispositivo, si es un simple indicador de estado inactivo, o si es un botón deshabilitado. La falta de claridad y de respuesta interactiva confunde al usuario sobre cómo automatizar la carga de sus entrenamientos.
+- **Recomendación:** Rediseñar el componente. Si su objetivo es permitir la vinculación de un reloj inteligente, el rotulado debe ser una llamada a la acción clara (ej. "Conectar dispositivo" o "Sincronizar Reloj"). Si solo actúa como un indicador pasivo de estado, debe tener un estilo visual diferenciado de los botones activos (por ejemplo, una etiqueta de estado o "badge") y acompañarse de un tooltip explicativo al pasar el cursor (ej. "No hay ningún dispositivo inteligente vinculado para importar entrenamientos automáticamente").
 
-#### Problema #3: Falta de actualización de clima
-- Severidad: 2
-- Heurística violada: Usability: Visibility of System Status
-- Problema: Se observa que en "Recomendaciones" la información presentada por la función demo de clima es estática y general, puede llegar a generar ciertas dudas y problemas de personalización para los usuarios.
+##### PROBLEMA #13: Bloqueo de la interfaz y error persistente al exportar reporte PDF
+- **Severidad:** 3
+- **Heurística violada:** Usabilidad – Libertad y control del usuario, Prevención de errores y Visibilidad del estado del sistema.
+- **Problema:** Al interactuar con la opción de exportación y presionar "Generar PDF" en cualquier rango de fechas, el sistema del frontend entra en un estado de falla crítica que despliega un mensaje generalizado de error ("Failed to load analytics. Please try again."). Este error se propaga tanto en el fondo de la pantalla de analíticas como dentro de la ventana emergente. El usuario queda atrapado en este estado de bloqueo y la única forma de restablecer la vista es cambiar forzadamente de sección mediante el menú de navegación lateral (sidebar) y retornar a la sección de analíticas. Esto frustra el flujo del usuario y rompe la libertad de control del estado de navegación.
+- **Recomendación:** Implementar un manejo de excepciones localizado para la exportación de reportes. Si la generación del PDF falla, el mensaje de error debe mostrarse exclusivamente dentro del contexto de la ventana emergente, sin alterar el estado del panel principal de analíticas en segundo plano.
 
-![Problem3](../assets/img/chapter5-interviews/Problema3.png)
+##### PROBLEMA #14: Estado vacío no interactivo ni accionable en el gráfico de evolución de peso
+- **Severidad:** 2
+- **Heurística violada:** Usabilidad – Ayuda a los usuarios a reconocer, diagnosticar y recuperarse de errores; Diseño Inclusivo – Orientación y guía al usuario.
+- **Problema:** Cuando no se disponen de registros de peso en el rango de fechas seleccionado, el frontend despliega el mensaje estático "Not enough weight data to display the chart." Este es un estado vacío (empty state) pasivo que no proporciona ningún enlace o botón de llamada a la acción (CTA) para que el usuario pueda registrar o actualizar su peso directamente, obligándolo a buscar en otras secciones del sistema para resolver el problema.
+- **Recomendación:** Convertir el estado vacío en una zona interactiva y accionable. Se sugiere agregar un botón directo dentro de la tarjeta (por ejemplo: "Registrar peso actual") que redirija al usuario directamente a la sección de registro o despliegue un formulario de actualización de peso.
 
-- Recomendación: Como este problema representa una severidad menor, esto sumado a su estatus de función en desarrollo y prueba, se recomienda su mejora progresiva mediante implementaciones de lectura de datos en tiempo real de clima para evitar afectar a los usuarios en versiones posteriores.
+##### PROBLEMA #15: Errores críticos de reproducción y carga en los videos del producto y del equipo
+- **Severidad:** 3
+- **Heurística violada:** Usabilidad – Visibilidad del estado del sistema / Prevención de errores.
+- **Problema:** En las secciones "About the Product" y "Meet Our Team", los contenedores multimedia incrustados muestran un mensaje de error crítico de la plataforma de origen ("Se produjo un error. Vuelve a intentarlo más tarde..."). Esto impide por completo que el usuario acceda a los videos demostrativos y testimoniales del producto, quebrantando la confianza en el sitio y limitando la información clave sobre la aplicación.
+- **Recomendación:** Verificar y corregir los identificadores (IDs) de los videos en el código fuente de la Landing Page, asegurando que los enlaces apunten a recursos públicos válidos en YouTube o Microsoft Stream.
 
-#### Problema #4: Olvido y recuperación de contraseña no completamente funcional
-- Severidad: 3
-- Heurística violada: Usability: Error Diagnosis & Recovery
-- Problema: La opción de recuperación de contraseña en caso de olvido aún no se implementó de manera total, lo que puede generar problemas de acceso a para los usuarios.
+##### PROBLEMA #16: Plagio de marca y contradicción de identidad en recursos gráficos
+- **Severidad:** 3
+- **Heurística violada:** Usabilidad – Relación entre el sistema y el mundo real / Consistencia y estándares.
+- **Problema:** En la sección "About Us", el grupo afirma que la plataforma se llama NutriSmart. Sin embargo, la imagen circular decorativa de la derecha contiene explícitamente el logotipo y el nombre de "NutriSense" (una empresa e identidad de software real y completamente ajena al proyecto). Esto rompe la correspondencia con el mundo real, confunde al usuario sobre la legitimidad del sitio y evidencia una falta de cuidado crítica (o plagio de recursos) en la maquetación.
+- **Recomendación:** Reemplazar este recurso gráfico por uno propio que corresponda al rotulado e identidad de marca oficial del proyecto (NutriSmart).
 
-![Problem4](../assets/img/chapter5-interviews/Problema4.png)
-
-- Recomendación: Debido a la importancia de esta funcionalidad, se recomienda enfocar en continuar con la culminación exitosa del proceso de restauración de contraseñas para los usuarios. A fin de garantizar el acceso sin problemas hacia la plataforma.
+##### PROBLEMA #17: Alta complejidad y falta de predictibilidad en el acceso a la internacionalización (i18n)
+- **Severidad:** 2
+- **Heurística violada:** Usabilidad – Flexibilidad y eficiencia de uso; Arquitectura de la Información – Sistemas de navegación.
+- **Problema:** El cambio de idioma de la plataforma está excesivamente oculto para el usuario, obligándolo a realizar un flujo largo e intuitivamente complejo ("Ver perfil" => "Language" => "Elegir idioma"). Al ser el Dashboard el panel principal de control, no contar con un acceso directo o un selector rápido en el header o barra lateral penaliza la eficiencia de uso, especialmente para usuarios internacionales que necesitan adaptar la interfaz desde el primer contacto.
+- **Recomendación:** Desacoplar el selector de idioma de las configuraciones profundas del perfil e integrarlo directamente como un botón de acceso rápido o menú desplegable (dropdown) en el Header principal o en la parte inferior del Sidebar lateral.
 
 
 ## 5.4. Video About-the-Product

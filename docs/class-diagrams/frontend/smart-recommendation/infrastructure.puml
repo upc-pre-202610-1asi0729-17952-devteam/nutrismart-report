@@ -4,145 +4,68 @@ skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-' ─── Boundary stubs: shared/infrastructure ───────────────────────────────────
-package "shared/infrastructure [boundary]" {
-  abstract class BaseApi <<boundary>> {
-  }
-  interface BaseAssembler <<boundary>> {
-  }
-  abstract class BaseApiEndpoint <<boundary>> {
-  }
-}
+title Smart Recommendation — Infrastructure layer (nutrismart-webapp)
 
-' ─── Boundary stubs: smart-recommendation/domain ─────────────────────────────
+' ─── Boundary stubs: domain layer ────────────────────────────────────────────
 package "smart-recommendation/domain [boundary]" {
-  class PantryItem <<boundary>> {
-    + id: number
-  }
-  class RecipeSuggestion <<boundary>> {
-    + id: number
-  }
-  class RecommendationSession <<boundary>> {
-    + id: number
-  }
-  class IngredientCatalogItem <<boundary>> {
-    + id: number
-  }
+  class PantryItem <<entity>>
+  class RecipeSuggestion <<entity>>
+  class WeatherContext <<entity>>
+  class TravelContext <<entity>>
+  class LocationSnapshot <<entity>>
+}
+package "shared/infrastructure [external]" {
+  class BaseApi
+  interface BaseAssembler
+  interface BaseResource
 }
 
-' ─── Resources ───────────────────────────────────────────────────────────────
-package "smart-recommendation/infrastructure/resources" {
+package "smart-recommendation/infrastructure" {
+  class PantryApi <<@Injectable>>
+  class RecommendationsApi <<@Injectable>>
 
-  class PantryItemResource <<resource>> {
-    + id: number
-    + name: string
-    + nameKey: string
-    + category: string
-    + quantityGrams: number
-    + caloriesPer100g: number
-    + userId: number
-    + addedAt: string
-  }
+  class PantryItemAssembler <<assembler>>
+  class RecipeSuggestionAssembler <<assembler>>
+  class LocationSnapshotAssembler <<assembler>>
+  class WeatherContextAssembler <<assembler>>
+  class TravelContextAssembler <<assembler>>
 
-  class PantryItemsResponse <<resource>> {
-    + pantryItems: PantryItemResource[]
-  }
-
-  class IngredientCatalogResource <<resource>> {
-    + id: number
-    + name: string
-    + nameKey: string
-    + category: string
-    + caloriesPer100g: number
-    + proteinPer100g: number
-    + carbsPer100g: number
-    + fatPer100g: number
-  }
-
-  class RecipeSuggestionResource <<resource>> {
-    + id: number
-    + name: string
-    + nameKey: string
-    + calories: number
-    + protein: number
-    + carbs: number
-    + fat: number
-    + ingredients: string[]
-    + goalType: string
-    + prepTimeMinutes: number
-    + coversMacroPct: number
-    + restrictionsConflict: boolean
-  }
-
-  class RecommendationSessionResource <<resource>> {
-    + id: number
-    + userId: number
-    + adherenceStatus: string
-    + consecutiveMisses: number
-    + simplifiedKcalTarget: number
-    + createdAt: string
-    + isActive: boolean
-  }
-
-  class RecommendationsResponse <<resource>> {
-    + sessions: RecommendationSessionResource[]
-    + suggestions: RecipeSuggestionResource[]
-  }
+  interface PantryItemResource <<resource>>
+  interface RecipeSuggestionResource <<resource>>
+  interface LocationSnapshotResource <<resource>>
+  interface WeatherContextResource <<resource>>
+  interface TravelContextResource <<resource>>
+  interface RecommendationSessionResource <<resource>>
+  interface RecommendationCard <<dto>>
 }
 
-' ─── Assemblers ──────────────────────────────────────────────────────────────
-package "smart-recommendation/infrastructure/assemblers" {
+' ─── Relationships ────────────────────────────────────────────────────────────
+PantryApi --|> BaseApi
+RecommendationsApi --|> BaseApi
+PantryItemAssembler ..|> BaseAssembler
+RecipeSuggestionAssembler ..|> BaseAssembler
+WeatherContextAssembler ..|> BaseAssembler
+TravelContextAssembler ..|> BaseAssembler
+PantryItemResource --|> BaseResource
+RecipeSuggestionResource --|> BaseResource
 
-  class PantryAssembler <<assembler>> {
-    + toEntityFromResource(resource: PantryItemResource): PantryItem
-    + toResourceFromEntity(entity: PantryItem): PantryItemResource
-    + toEntitiesFromResponse(response: PantryItemsResponse): PantryItem[]
-  }
+PantryApi --> PantryItemAssembler : maps via >
+PantryApi --> RecipeSuggestionAssembler : maps via >
+RecommendationsApi --> LocationSnapshotAssembler : maps via >
+RecommendationsApi --> WeatherContextAssembler : maps via >
+RecommendationsApi --> TravelContextAssembler : maps via >
+RecommendationsApi ..> RecommendationCard : returns >
 
-  class RecommendationsAssembler <<assembler>> {
-    + toEntityFromResource(resource: RecommendationSessionResource): RecommendationSession
-    + toResourceFromEntity(entity: RecommendationSession): RecommendationSessionResource
-    + toEntitiesFromResponse(response: RecommendationsResponse): RecommendationSession[]
-  }
-}
-
-' ─── HTTP ────────────────────────────────────────────────────────────────────
-package "smart-recommendation/infrastructure/http" {
-
-  class PantryApi <<api>> {
-    - assembler: PantryAssembler
-    --
-    + getPantryItems(userId: number): Observable<PantryItem[]>
-    + getIngredientCatalog(): Observable<IngredientCatalogItem[]>
-    + addPantryItem(item: PantryItem): Observable<PantryItem>
-    + deletePantryItem(id: number): Observable<void>
-    + getSuggestions(userId: number): Observable<RecipeSuggestion[]>
-  }
-
-  class RecommendationsApi <<api>> {
-    - assembler: RecommendationsAssembler
-    --
-    + getSession(userId: number): Observable<RecommendationSession>
-    + createSession(session: RecommendationSession): Observable<RecommendationSession>
-    + updateSession(session: RecommendationSession): Observable<RecommendationSession>
-    + getSuggestions(userId: number, context: object): Observable<RecipeSuggestion[]>
-  }
-}
-
-PantryApi --|> BaseApi : extends >
-RecommendationsApi --|> BaseApi : extends >
-
-PantryAssembler ..|> BaseAssembler : implements >
-RecommendationsAssembler ..|> BaseAssembler : implements >
-
-PantryItemsResponse "1" *--> "0..*" PantryItemResource : contains >
-RecommendationsResponse "1" *--> "0..*" RecipeSuggestionResource : contains >
-RecommendationsResponse "1" *--> "0..*" RecommendationSessionResource : contains >
-
-PantryAssembler ..> PantryItem : produces >
-RecommendationsAssembler ..> RecommendationSession : produces >
-
-PantryApi o--> PantryAssembler : uses >
-RecommendationsApi o--> RecommendationsAssembler : uses >
+PantryItemAssembler ..> PantryItem : builds >
+PantryItemAssembler ..> PantryItemResource : reads/writes >
+RecipeSuggestionAssembler ..> RecipeSuggestion : builds >
+RecipeSuggestionAssembler ..> RecipeSuggestionResource : reads/writes >
+LocationSnapshotAssembler ..> LocationSnapshot : builds >
+LocationSnapshotAssembler ..> LocationSnapshotResource : reads/writes >
+RecommendationsApi ..> RecommendationSessionResource : transports >
+WeatherContextAssembler ..> WeatherContext : builds >
+WeatherContextAssembler ..> WeatherContextResource : reads/writes >
+TravelContextAssembler ..> TravelContext : builds >
+TravelContextAssembler ..> TravelContextResource : reads/writes >
 
 @enduml

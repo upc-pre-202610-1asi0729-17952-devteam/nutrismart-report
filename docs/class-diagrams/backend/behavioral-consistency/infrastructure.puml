@@ -1,0 +1,79 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Behavioral Consistency — Infrastructure layer (nutrismart-platform)
+
+' ─── Boundary stubs: domain layer ────────────────────────────────────────────
+package "behavioralconsistency.domain [boundary]" {
+  class BehavioralProgress <<aggregate>>
+  class EatingBehaviorPattern <<aggregate>>
+  class RecoveryPlan <<aggregate>>
+  interface BehavioralProgressRepository <<port>>
+  interface EatingBehaviorPatternRepository <<port>>
+  interface RecoveryPlanRepository <<port>>
+  enum AdherenceStatus
+  enum BehaviorPatternType
+  enum RecoveryPlanStatus
+  enum AdherenceDropTrigger
+}
+
+package "behavioralconsistency.infrastructure.persistence.jpa.entities" {
+  class BehavioralProgressJpaEntity <<@Entity>>
+  class EatingBehaviorPatternJpaEntity <<@Entity>>
+  class RecoveryPlanJpaEntity <<@Entity>>
+}
+
+package "behavioralconsistency.infrastructure.persistence.jpa" {
+  class BehavioralProgressPersistenceAdapter {
+    - springDataRepo: SpringDataBehavioralProgressJpaRepository
+  }
+  class EatingBehaviorPatternPersistenceAdapter {
+    - springDataRepo: SpringDataEatingBehaviorPatternJpaRepository
+  }
+  class RecoveryPlanPersistenceAdapter {
+    - springDataRepo: SpringDataRecoveryPlanJpaRepository
+  }
+  interface SpringDataBehavioralProgressJpaRepository <<JpaRepository>>
+  interface SpringDataEatingBehaviorPatternJpaRepository <<JpaRepository>>
+  interface SpringDataRecoveryPlanJpaRepository <<JpaRepository>>
+  class BehavioralProgressPersistenceMapper <<mapper>>
+  class EatingBehaviorPatternPersistenceMapper <<mapper>>
+  class RecoveryPlanPersistenceMapper <<mapper>>
+}
+
+package "behavioralconsistency.infrastructure.persistence.jpa.converters" {
+  class AdherenceStatusAttributeConverter <<@Converter>>
+  class BehaviorPatternTypeAttributeConverter <<@Converter>>
+  class RecoveryPlanStatusAttributeConverter <<@Converter>>
+  class AdherenceDropTriggerAttributeConverter <<@Converter>>
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+BehavioralProgressPersistenceAdapter ..|> BehavioralProgressRepository
+EatingBehaviorPatternPersistenceAdapter ..|> EatingBehaviorPatternRepository
+RecoveryPlanPersistenceAdapter ..|> RecoveryPlanRepository
+
+BehavioralProgressPersistenceAdapter --> SpringDataBehavioralProgressJpaRepository : delegates >
+EatingBehaviorPatternPersistenceAdapter --> SpringDataEatingBehaviorPatternJpaRepository : delegates >
+RecoveryPlanPersistenceAdapter --> SpringDataRecoveryPlanJpaRepository : delegates >
+
+SpringDataBehavioralProgressJpaRepository ..> BehavioralProgressJpaEntity : manages >
+SpringDataEatingBehaviorPatternJpaRepository ..> EatingBehaviorPatternJpaEntity : manages >
+SpringDataRecoveryPlanJpaRepository ..> RecoveryPlanJpaEntity : manages >
+
+BehavioralProgressPersistenceMapper ..> BehavioralProgress : maps >
+BehavioralProgressPersistenceMapper ..> BehavioralProgressJpaEntity : maps >
+EatingBehaviorPatternPersistenceMapper ..> EatingBehaviorPattern : maps >
+EatingBehaviorPatternPersistenceMapper ..> EatingBehaviorPatternJpaEntity : maps >
+RecoveryPlanPersistenceMapper ..> RecoveryPlan : maps >
+RecoveryPlanPersistenceMapper ..> RecoveryPlanJpaEntity : maps >
+
+AdherenceStatusAttributeConverter ..> AdherenceStatus : converts >
+BehaviorPatternTypeAttributeConverter ..> BehaviorPatternType : converts >
+RecoveryPlanStatusAttributeConverter ..> RecoveryPlanStatus : converts >
+AdherenceDropTriggerAttributeConverter ..> AdherenceDropTrigger : converts >
+
+@enduml

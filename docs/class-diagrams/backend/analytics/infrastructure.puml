@@ -1,0 +1,52 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Analytics — Infrastructure layer (ACL adapters, nutrismart-platform)
+
+' ─── Boundary stubs: application ports ───────────────────────────────────────
+package "analytics.application.ports [boundary]" {
+  interface UserDataPort <<port>>
+  interface NutritionSummaryPort <<port>>
+  interface BodyMetricsSummaryPort <<port>>
+  interface BehavioralSummaryPort <<port>>
+}
+
+' ─── Anti-Corruption Layer adapters ──────────────────────────────────────────
+package "analytics.infrastructure.acl" {
+  class UserDataAdapter {
+    - iamContextFacade: IamContextFacade
+  }
+  class NutritionSummaryAdapter {
+    - nutritionTrackingContextFacade: NutritionTrackingContextFacade
+  }
+  class BodyMetricsSummaryAdapter {
+    - metabolicAdaptationContextFacade: MetabolicAdaptationContextFacade
+  }
+  class BehavioralSummaryAdapter {
+    - behavioralConsistencyContextFacade: BehavioralConsistencyContextFacade
+  }
+}
+
+' ─── External bounded-context facades (published contracts) ──────────────────
+package "<<other contexts>> interfaces.acl [external]" {
+  interface IamContextFacade <<ACL>>
+  interface NutritionTrackingContextFacade <<ACL>>
+  interface MetabolicAdaptationContextFacade <<ACL>>
+  interface BehavioralConsistencyContextFacade <<ACL>>
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+UserDataAdapter ..|> UserDataPort
+NutritionSummaryAdapter ..|> NutritionSummaryPort
+BodyMetricsSummaryAdapter ..|> BodyMetricsSummaryPort
+BehavioralSummaryAdapter ..|> BehavioralSummaryPort
+
+UserDataAdapter --> IamContextFacade : translates >
+NutritionSummaryAdapter --> NutritionTrackingContextFacade : translates >
+BodyMetricsSummaryAdapter --> MetabolicAdaptationContextFacade : translates >
+BehavioralSummaryAdapter --> BehavioralConsistencyContextFacade : translates >
+
+@enduml

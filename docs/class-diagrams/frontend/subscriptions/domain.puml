@@ -1,0 +1,70 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Subscriptions — Domain layer (nutrismart-webapp)
+
+package "subscriptions/domain/model" {
+  class Subscription <<entity>> {
+    + {static} MONTHLY_PRICES: Record<SubscriptionPlan, number>
+    + {static} featuresFor(plan: SubscriptionPlan): string[]
+    + activate(plan: SubscriptionPlan): void
+    + cancel(): void
+    + renew(): void
+    + isActive(): boolean
+    - computeEndDate(days: number): string
+  }
+  class BillingRecord <<entity>> {
+    + readonly id: string
+    + readonly userId: string
+    + readonly date: string
+    + readonly plan: SubscriptionPlan
+    + readonly amount: number
+    + readonly currency: string
+    + readonly status: BillingStatus
+    + isPaid(): boolean
+    + isTrial(): boolean
+  }
+  class PaymentIntent <<entity>> {
+    + succeed(): void
+    + fail(): void
+    + isSucceeded(): boolean
+  }
+  class PaymentMethod <<value object>> {
+    + readonly holderName: string
+    + readonly last4: string
+    + readonly brand: string
+    + readonly expiryMonth: string
+    + readonly expiryYear: string
+    + get maskedNumber(): string
+    + get expiryLabel(): string
+  }
+
+  note top of Subscription
+    Type aliases: SubscriptionStatus, BillingStatus ('PAID'|'TRIAL'|'FAILED'),
+    PaymentIntentStatus ('pending'|'succeeded'|'failed').
+  end note
+}
+
+package "subscriptions/domain/ports" {
+  abstract class PaymentGatewayPort <<port>> {
+    + {abstract} processPayment(intent: PaymentIntent, method: PaymentMethod): Observable<PaymentResult>
+  }
+  interface PaymentResult <<dto>>
+}
+
+package "iam/domain [external]" {
+  enum SubscriptionPlan
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+Subscription "1" o--> "1" SubscriptionPlan : plan >
+BillingRecord "1" o--> "1" SubscriptionPlan : billed for >
+PaymentGatewayPort ..> PaymentIntent : processes >
+PaymentGatewayPort ..> PaymentMethod : charges >
+PaymentGatewayPort ..> PaymentResult : returns >
+PaymentIntent ..> PaymentMethod : paid with >
+
+@enduml

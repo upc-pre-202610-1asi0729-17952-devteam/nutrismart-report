@@ -1,0 +1,124 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Behavioral Consistency — Domain layer (nutrismart-platform)
+
+package "behavioralconsistency.domain.model.aggregates" {
+
+  class BehavioralProgress <<aggregate root>> {
+    - id: Long
+    - userId: Long
+    - adherenceStatus: AdherenceStatus
+    - streak: Integer
+    - consecutiveMisses: Integer
+    - weeklyCompletionRate: Double
+    - lastEvaluatedAt: Instant
+    - goalMetDates: TreeSet<LocalDate>
+    --
+    + {static} create(userId: Long): BehavioralProgress
+    + {static} rehydrate(...): BehavioralProgress
+    + update(status, streak, misses, rate, at): void
+    + markGoalMet(date: LocalDate): void
+    - calculateAdherenceStatus(misses: int): AdherenceStatus
+  }
+
+  class EatingBehaviorPattern <<aggregate root>> {
+    - id: Long
+    - userId: Long
+    - patternType: BehaviorPatternType
+    - detectedAt: Instant
+    --
+    + {static} create(userId, weeklyRate, streak): EatingBehaviorPattern
+    + {static} rehydrate(...): EatingBehaviorPattern
+    + update(patternType: BehaviorPatternType): void
+  }
+
+  class RecoveryPlan <<aggregate root>> {
+    - id: Long
+    - userId: Long
+    - status: RecoveryPlanStatus
+    - trigger: AdherenceDropTrigger
+    - actions: List<RecoveryActionType>
+    - createdAt: Instant
+    - expiresAt: Instant
+    --
+    + {static} create(userId, trigger, actions, expiresAt): RecoveryPlan
+    + {static} rehydrate(...): RecoveryPlan
+    + update(status: RecoveryPlanStatus): void
+  }
+}
+
+package "behavioralconsistency.domain.model.valueobjects" {
+  enum AdherenceStatus {
+    ON_TRACK
+    AT_RISK
+    DROPPED
+  }
+  enum BehaviorPatternType {
+    CONSISTENT
+    RECOVERING
+    IRREGULAR
+  }
+  enum RecoveryPlanStatus {
+    ACTIVE
+    COMPLETED
+    EXPIRED
+  }
+  enum AdherenceDropTrigger {
+    BEHAVIORAL_DROP
+    NUTRITIONAL_ABANDONMENT
+    STRATEGY_MISMATCH
+  }
+  enum RecoveryActionType {
+    LOG_ANY_MEAL
+    FOCUS_SINGLE_MEAL
+    SIMPLIFY_TRACKING
+    REDUCE_CALORIE_TARGET
+  }
+}
+
+package "behavioralconsistency.domain.model.repositories" {
+  interface BehavioralProgressRepository <<port>> {
+    + findById(id: Long): Optional<BehavioralProgress>
+    + findByUserId(userId: Long): Optional<BehavioralProgress>
+    + findAll(): List<BehavioralProgress>
+    + save(bp: BehavioralProgress): BehavioralProgress
+  }
+  interface EatingBehaviorPatternRepository <<port>> {
+    + findById(id: Long): Optional<EatingBehaviorPattern>
+    + findByUserId(userId: Long): Optional<EatingBehaviorPattern>
+    + findAll(): List<EatingBehaviorPattern>
+    + save(p: EatingBehaviorPattern): EatingBehaviorPattern
+  }
+  interface RecoveryPlanRepository <<port>> {
+    + findById(id: Long): Optional<RecoveryPlan>
+    + findByUserId(userId: Long): List<RecoveryPlan>
+    + findAll(): List<RecoveryPlan>
+    + save(plan: RecoveryPlan): RecoveryPlan
+    + deleteById(id: Long): void
+  }
+}
+
+package "behavioralconsistency.domain.model.exceptions" {
+  class DomainInvalidExceptions {
+    + EmptyRecoveryActionsException
+    + InvalidAdherenceDataException
+  }
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+BehavioralProgress "1" o--> "1" AdherenceStatus : status >
+EatingBehaviorPattern "1" o--> "1" BehaviorPatternType : classified as >
+RecoveryPlan "1" o--> "1" RecoveryPlanStatus : status >
+RecoveryPlan "1" o--> "1" AdherenceDropTrigger : triggered by >
+RecoveryPlan "1" *--> "1..*" RecoveryActionType : prescribes >
+
+BehavioralProgressRepository ..> BehavioralProgress : persists >
+EatingBehaviorPatternRepository ..> EatingBehaviorPattern : persists >
+RecoveryPlanRepository ..> RecoveryPlan : persists >
+DomainInvalidExceptions ..> RecoveryPlan : guards invariants of >
+
+@enduml

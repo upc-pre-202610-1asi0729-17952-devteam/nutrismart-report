@@ -1,0 +1,117 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Nutrition Tracking — Domain layer (nutrismart-webapp)
+
+package "nutrition-tracking/domain/model" {
+  class FoodItem <<entity>> {
+    - _name: string
+    - _nameEs: string
+    - _source: string
+    - _servingSize: number
+    - _servingUnit: string
+    - _caloriesPer100g: number
+    - _proteinPer100g: number
+  }
+  class MealRecord <<entity>> {
+    - _foodId: string | null
+    - _foodItemName: string
+    - _mealType: MealType
+    - _quantity: number
+    - _unit: string
+    - _calories: number
+  }
+  class DailyIntake <<entity>> {
+    - _userId: number
+    - _date: string
+    - _dailyGoal: number
+    - _consumed: number
+    - _active: number
+  }
+  class ScanResult <<entity>> {
+    - _status: ScanStatus
+    - _imageBase64: string
+    - _detectedItems: ScannedFoodItem[]
+    - _mealType: MealType
+    - _scannedAt: string
+  }
+  class ScannedFoodItem <<entity>> {
+    - _foodItemId: number | null
+    - _name: string
+    - _quantityGrams: number
+    - _macros: MacronutrientDistribution
+    - _restrictions: DietaryRestriction[]
+  }
+  class MacronutrientDistribution <<value object>> {
+    + readonly calories: number
+    + readonly protein: number
+    + readonly carbs: number
+    + readonly fat: number
+    + readonly fiber: number
+    + readonly sugar: number
+  }
+  class MacroWarning <<value object>> {
+    + readonly macro: MacroName
+    + readonly level: WarningLevel
+    + readonly percent: number
+    + get isApproaching(): boolean
+    + get isExceeded(): boolean
+  }
+  class PreLogGuardrail <<value object>> {
+    + readonly type: GuardrailType
+    + readonly severity: GuardrailSeverity
+    + readonly messageKey: string
+    + readonly recommendationKey: string
+  }
+  enum MealType
+  enum GuardrailType
+  enum GuardrailSeverity
+  enum NutritionalRiskLevel
+}
+
+note bottom of NutritionalRiskLevel
+  Declared in the model but unused by entities in
+  the current code — kept for completeness, reported
+  separately rather than linked artificially.
+end note
+
+package "nutrition-tracking/domain/events" {
+  class DailyTargetsSet <<domain event>>
+  class NetTargetUpdated <<domain event>>
+  class DietaryRestrictionsRegistered <<domain event>>
+  class FoodSearchExecuted <<domain event>>
+  class MealPhotoAnalyzed <<domain event>>
+}
+
+package "<<external>>" {
+  abstract class DomainEvent <<shared>>
+  interface BaseEntity <<shared>>
+  enum DietaryRestriction <<iam>>
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+FoodItem ..|> BaseEntity
+MealRecord ..|> BaseEntity
+DailyIntake ..|> BaseEntity
+ScanResult ..|> BaseEntity
+ScannedFoodItem ..|> BaseEntity
+DailyTargetsSet --|> DomainEvent
+NetTargetUpdated --|> DomainEvent
+DietaryRestrictionsRegistered --|> DomainEvent
+FoodSearchExecuted --|> DomainEvent
+MealPhotoAnalyzed --|> DomainEvent
+
+MealRecord "1" o--> "1" MealType : meal type >
+ScanResult "1" o--> "1" MealType : meal type >
+ScanResult "1" *--> "0..*" ScannedFoodItem : detects >
+ScannedFoodItem "1" *--> "1" MacronutrientDistribution : macros >
+ScannedFoodItem "1" o--> "0..*" DietaryRestriction : flagged for >
+PreLogGuardrail "1" o--> "1" GuardrailType : kind >
+PreLogGuardrail "1" o--> "1" GuardrailSeverity : severity >
+MacroWarning ..> MacronutrientDistribution : derived from >
+DietaryRestrictionsRegistered ..> DietaryRestriction : carries >
+
+@enduml

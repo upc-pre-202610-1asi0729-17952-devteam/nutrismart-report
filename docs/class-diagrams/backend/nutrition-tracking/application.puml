@@ -1,0 +1,168 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Nutrition Tracking — Application layer (nutrismart-platform)
+
+' ─── Boundary stubs: domain layer ────────────────────────────────────────────
+package "nutritiontracking.domain [boundary]" {
+  class FoodItem <<aggregate>>
+  class MealRecord <<aggregate>>
+  class DailyIntake <<aggregate>>
+  interface FoodItemRepository <<port>>
+  interface MealRecordRepository <<port>>
+  interface DailyIntakeRepository <<port>>
+}
+
+package "nutritiontracking.application.commandservices" {
+  interface DailyIntakeCommandService <<port>>
+  interface FoodItemCommandService <<port>>
+  interface MealRecordCommandService <<port>>
+  interface FoodImportCommandService <<port>>
+  interface SmartScanCommandService <<port>> {
+    + handlePlateScan(c: ScanPlateCommand): Result<List<PlateItemResult>, SmartScanCommandFailure>
+    + handlePlateScanConfirm(c: ConfirmPlateScanCommand): Result<Integer, SmartScanCommandFailure>
+  }
+}
+
+package "nutritiontracking.application.queryservices" {
+  interface DailyIntakeQueryService <<port>>
+  interface FoodItemQueryService <<port>>
+  interface MealRecordQueryService <<port>>
+}
+
+' ─── Driven ports (active) ───────────────────────────────────────────────────
+package "nutritiontracking.application.ports" {
+  interface ExternalFoodDataPort <<port>>
+  interface FoodEnrichmentPort <<port>>
+  interface PlateImageRecognitionPort <<port>>
+  interface PlateItemMatchPort <<port>>
+}
+
+package "nutritiontracking.application.commands" {
+  class CreateDailyIntakeCommand <<command>>
+  class UpdateDailyIntakeCommand <<command>>
+  class RegisterFoodItemCommand <<command>>
+  class UpdateFoodItemCommand <<command>>
+  class DeleteFoodItemCommand <<command>>
+  class ImportFoodItemsCommand <<command>>
+  class LogMealCommand <<command>>
+  class UpdateMealEntryCommand <<command>>
+  class DeleteMealLogCommand <<command>>
+  class ScanPlateCommand <<command>>
+  class ConfirmPlateScanCommand <<command>>
+}
+
+package "nutritiontracking.application.internal.commandservices" {
+  class DailyIntakeCommandServiceImpl {
+    - dailyIntakeRepository: DailyIntakeRepository
+  }
+  class FoodItemCommandServiceImpl {
+    - foodItemRepository: FoodItemRepository
+  }
+  class MealRecordCommandServiceImpl {
+    - mealRecordRepository: MealRecordRepository
+  }
+  class FoodImportCommandServiceImpl {
+    - externalFoodDataPort: ExternalFoodDataPort
+    - foodEnrichmentPort: FoodEnrichmentPort
+    - foodItemRepository: FoodItemRepository
+    - foodItemImportWriter: FoodItemImportWriter
+  }
+  class FoodItemImportWriter {
+    - foodItemRepository: FoodItemRepository
+  }
+  class SmartScanCommandServiceImpl {
+    - plateImageRecognitionPort: PlateImageRecognitionPort
+    - plateItemMatchPort: PlateItemMatchPort
+    - foodItemRepository: FoodItemRepository
+    - mealRecordCommandService: MealRecordCommandService
+  }
+}
+
+package "nutritiontracking.application.internal.queryservices" {
+  class DailyIntakeQueryServiceImpl {
+    - dailyIntakeRepository: DailyIntakeRepository
+  }
+  class FoodItemQueryServiceImpl {
+    - foodItemRepository: FoodItemRepository
+  }
+  class MealRecordQueryServiceImpl {
+    - mealRecordRepository: MealRecordRepository
+  }
+}
+
+package "nutritiontracking.application.acl" {
+  class NutritionTrackingContextFacadeImpl {
+    - dailyIntakeQueryService: DailyIntakeQueryService
+    - mealRecordQueryService: MealRecordQueryService
+  }
+}
+
+' ─── Legacy / unused: menu scanning migrated to restaurantintelligence BC ─────
+package "nutritiontracking.application [legacy / unused]" #EEEEEE {
+  interface ImageRecognitionPort <<port>>
+  interface MenuRankingPort <<port>>
+  interface UserProfileLookupPort <<port>>
+  class ScanMenuCommand <<command>>
+}
+note bottom of "nutritiontracking.application [legacy / unused]"
+  Menu-scan responsibility moved to the new
+  restaurantintelligence BC. These types still exist in
+  the codebase but are not injected/handled by any active
+  service (SmartScan now only does plate scan + confirm).
+end note
+
+' ─── Relationships (active) ──────────────────────────────────────────────────
+DailyIntakeCommandServiceImpl ..|> DailyIntakeCommandService
+FoodItemCommandServiceImpl ..|> FoodItemCommandService
+MealRecordCommandServiceImpl ..|> MealRecordCommandService
+FoodImportCommandServiceImpl ..|> FoodImportCommandService
+SmartScanCommandServiceImpl ..|> SmartScanCommandService
+DailyIntakeQueryServiceImpl ..|> DailyIntakeQueryService
+FoodItemQueryServiceImpl ..|> FoodItemQueryService
+MealRecordQueryServiceImpl ..|> MealRecordQueryService
+
+DailyIntakeCommandServiceImpl --> DailyIntakeRepository : uses >
+FoodItemCommandServiceImpl --> FoodItemRepository : uses >
+MealRecordCommandServiceImpl --> MealRecordRepository : uses >
+DailyIntakeQueryServiceImpl --> DailyIntakeRepository : uses >
+FoodItemQueryServiceImpl --> FoodItemRepository : uses >
+MealRecordQueryServiceImpl --> MealRecordRepository : uses >
+
+FoodImportCommandServiceImpl --> ExternalFoodDataPort : uses >
+FoodImportCommandServiceImpl --> FoodEnrichmentPort : uses >
+FoodImportCommandServiceImpl --> FoodItemRepository : uses >
+FoodImportCommandServiceImpl --> FoodItemImportWriter : uses >
+FoodItemImportWriter --> FoodItemRepository : uses >
+
+SmartScanCommandServiceImpl --> PlateImageRecognitionPort : uses >
+SmartScanCommandServiceImpl --> PlateItemMatchPort : uses >
+SmartScanCommandServiceImpl --> FoodItemRepository : uses >
+SmartScanCommandServiceImpl --> MealRecordCommandService : uses >
+
+DailyIntakeCommandServiceImpl ..> CreateDailyIntakeCommand : handles >
+DailyIntakeCommandServiceImpl ..> UpdateDailyIntakeCommand : handles >
+DailyIntakeCommandServiceImpl ..> DailyIntake : produces >
+FoodItemCommandServiceImpl ..> RegisterFoodItemCommand : handles >
+FoodItemCommandServiceImpl ..> UpdateFoodItemCommand : handles >
+FoodItemCommandServiceImpl ..> DeleteFoodItemCommand : handles >
+FoodItemCommandServiceImpl ..> FoodItem : produces >
+FoodImportCommandServiceImpl ..> ImportFoodItemsCommand : handles >
+MealRecordCommandServiceImpl ..> LogMealCommand : handles >
+MealRecordCommandServiceImpl ..> UpdateMealEntryCommand : handles >
+MealRecordCommandServiceImpl ..> DeleteMealLogCommand : handles >
+MealRecordCommandServiceImpl ..> MealRecord : produces >
+SmartScanCommandServiceImpl ..> ScanPlateCommand : handles >
+SmartScanCommandServiceImpl ..> ConfirmPlateScanCommand : handles >
+
+NutritionTrackingContextFacadeImpl --> DailyIntakeQueryService : uses >
+NutritionTrackingContextFacadeImpl --> MealRecordQueryService : uses >
+
+' Note: the legacy menu-scan ports/commands have no active wiring in the
+' current code; they are intentionally left unconnected (see note above)
+' rather than linked artificially.
+
+@enduml

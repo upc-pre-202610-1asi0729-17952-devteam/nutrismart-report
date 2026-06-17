@@ -1,0 +1,103 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Metabolic Adaptation — Domain layer (nutrismart-webapp)
+
+package "metabolic-adaptation/domain/model" {
+  class BodyMetric <<entity>> {
+    - #weightKg: number
+    - #heightCm: number
+    - #loggedAt: string
+    - #targetWeightKg: number
+    - #projectedAchievementDate: string
+    + get bmiCategory(): BmiCategory
+  }
+  class BodyComposition <<entity>> {
+    - #waistCm: number
+    - #neckCm: number
+    - #heightCm: number
+    - #weightKg: number
+    - #overrideBodyFatPercent: number
+    - #previousBodyFatPercent: number
+  }
+  class ActivityLog <<entity>> {
+    - #activityType: string
+    - #durationMinutes: number
+    - #caloriesBurned: number
+    - #timestamp: string
+  }
+  class WearableConnection <<entity>> {
+    - #provider: string
+    - #status: WearableStatus
+    - #lastSyncedAt: string
+    - #authorizedAt: string
+  }
+  class MetabolicAdaptationLog <<entity>> {
+    - _triggeredBy: MetabolicChangeTrigger
+    - _previousCalories/Protein/Carbs: number
+    - _newCalories/Protein/Carbs: number
+  }
+  class NutritionPlan <<entity>> {
+    - #dailyCalorieTarget: number
+    - #proteinTarget: number
+    - #carbsTarget: number
+    - #fatTarget: number
+    - #fiberTarget: number
+  }
+  class ActivityType <<value object>> {
+    - _key: string
+    - _metValue: number
+    + {static} allKeys(): string[]
+  }
+  enum BmiCategory
+  enum WearableStatus
+  enum MetabolicChangeTrigger
+}
+
+package "metabolic-adaptation/domain/events" {
+  class BMICalculated <<domain event>>
+  class BMRCalculated <<domain event>>
+  class TDEECalculated <<domain event>>
+  class ActiveCaloriesCalculated <<domain event>>
+  class CaloricTargetAdjusted <<domain event>>
+  class ActivitySynced <<domain event>>
+  class ActivityTrendDetected <<domain event>>
+  class ManualActivityImported <<domain event>>
+  class WearableConnected <<domain event>>
+}
+
+package "shared/domain [external]" {
+  abstract class DomainEvent
+  interface BaseEntity
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+BodyMetric ..|> BaseEntity
+BodyComposition ..|> BaseEntity
+ActivityLog ..|> BaseEntity
+WearableConnection ..|> BaseEntity
+MetabolicAdaptationLog ..|> BaseEntity
+NutritionPlan ..|> BaseEntity
+
+BMICalculated --|> DomainEvent
+BMRCalculated --|> DomainEvent
+TDEECalculated --|> DomainEvent
+ActiveCaloriesCalculated --|> DomainEvent
+CaloricTargetAdjusted --|> DomainEvent
+ActivitySynced --|> DomainEvent
+ActivityTrendDetected --|> DomainEvent
+ManualActivityImported --|> DomainEvent
+WearableConnected --|> DomainEvent
+
+BodyMetric "1" ..> "1" BmiCategory : classifies via >
+WearableConnection "1" o--> "1" WearableStatus : status >
+MetabolicAdaptationLog "1" o--> "1" MetabolicChangeTrigger : triggered by >
+ActivityLog "1" ..> "1" ActivityType : typed by >
+BMICalculated ..> BodyMetric : emitted from >
+WearableConnected ..> WearableConnection : emitted from >
+CaloricTargetAdjusted ..> NutritionPlan : adjusts >
+
+@enduml

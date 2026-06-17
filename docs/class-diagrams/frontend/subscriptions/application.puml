@@ -4,86 +4,67 @@ skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-' ─── Boundary stubs: infrastructure ─────────────────────────────────────────
-package "subscriptions/infrastructure [boundary]" {
-  class SubscriptionApi <<boundary>> {
-  }
-}
+title Subscriptions — Application layer (nutrismart-webapp)
 
-' ─── Boundary stubs: domain ──────────────────────────────────────────────────
+' ─── Boundary stubs: domain & infrastructure ─────────────────────────────────
 package "subscriptions/domain [boundary]" {
-  class Subscription <<boundary>> {
-  }
+  class Subscription <<entity>>
+  class BillingRecord <<entity>>
+  class PaymentMethod <<value object>>
+  abstract class PaymentGatewayPort <<port>>
+}
+package "subscriptions/infrastructure [boundary]" {
+  class SubscriptionApi <<api>>
+  class BillingHistoryApi <<api>>
+}
+package "<<other contexts>> [external]" {
+  class IamStore <<iam>>
+  class DomainEventBus <<shared>>
 }
 
-' ─── Boundary stubs: shared ──────────────────────────────────────────────────
-package "shared/application [boundary]" {
-  class DomainEventBus <<boundary>> {
-    + publish(event: DomainEvent): void
-    + events$: Observable<DomainEvent>
-  }
-}
-
-package "iam/application [boundary]" {
-  class IamStore <<boundary>> {
-    + currentUser: Signal<User | null>
-    + upgradePlan(plan: SubscriptionPlan): Promise<void>
-  }
-}
-
-package "shared/domain [boundary]" {
-  class SubscriptionActivated <<boundary>> {
-  }
-  class SubscriptionCancelled <<boundary>> {
-  }
-  class PlanUpgraded <<boundary>> {
-  }
-  class BenefitsEnabled <<boundary>> {
-  }
-  class BenefitsDisabled <<boundary>> {
-  }
-}
-
-' ─── Application ─────────────────────────────────────────────────────────────
 package "subscriptions/application" {
-
-  class SubscriptionsStore <<store>> {
-    ' Writable signals
-    - _currentSubscription: WritableSignal<Subscription | null>
-    - _loading: WritableSignal<boolean>
-    - _error: WritableSignal<string | null>
-    - _selectedPlan: WritableSignal<SubscriptionPlan | null>
-    ' Read-only signals
-    + currentSubscription: Signal<Subscription | null>
-    + loading: Signal<boolean>
-    + error: Signal<string | null>
-    + selectedPlan: Signal<SubscriptionPlan | null>
-    ' Computed signals
-    + isActive: Signal<boolean>
-    + isPro: Signal<boolean>
-    + isPremium: Signal<boolean>
-    + features: Signal<PlanFeatures>
-    + daysUntilExpiry: Signal<number | null>
+  class SubscriptionsStore <<@Injectable store>> {
+    - api: SubscriptionApi
+    - billingHistoryApi: BillingHistoryApi
+    - iamStore: IamStore
+    - eventBus: DomainEventBus
     --
-    + loadSubscription(userId: number): Promise<void>
-    + upgradeToPlan(plan: SubscriptionPlan): Promise<void>
+    + subscription: Signal<Subscription | null>
+    + billingHistory: Signal<BillingRecord[]>
+    + activeFeatures: Signal<string[]>
+    + loading: Signal<boolean>
+    + initialise(userId): Promise<void>
+    + loadBillingHistory(userId): Promise<void>
+    + selectPlan(plan): Promise<void>
     + cancelSubscription(): Promise<void>
-    + canAccess(feature: string): boolean
-    + clear(): void
+    + hasActivePlan(): boolean
+  }
+  class PaymentStore <<@Injectable store>> {
+    - gateway: PaymentGatewayPort
+    - subscriptionsStore: SubscriptionsStore
+    - eventBus: DomainEventBus
+    - iamStore: IamStore
+    --
+    + selectedPlan: Signal<SubscriptionPlan | null>
+    + paymentMethod: Signal<PaymentMethod | null>
+    + processing: Signal<boolean>
+    + confirmed: Signal<boolean>
+    + error: Signal<string | null>
   }
 }
 
-' ─── Dependencies ────────────────────────────────────────────────────────────
-SubscriptionsStore o--> SubscriptionApi : uses >
-SubscriptionsStore o--> IamStore : uses >
-SubscriptionsStore o--> DomainEventBus : uses >
-SubscriptionsStore ..> Subscription : manages >
+' ─── Relationships ────────────────────────────────────────────────────────────
+SubscriptionsStore --> SubscriptionApi : uses >
+SubscriptionsStore --> BillingHistoryApi : uses >
+SubscriptionsStore --> IamStore : reads user >
+SubscriptionsStore --> DomainEventBus : publishes >
+SubscriptionsStore ..> Subscription : holds >
+SubscriptionsStore ..> BillingRecord : holds >
 
-' ─── Published events ────────────────────────────────────────────────────────
-SubscriptionsStore ..> SubscriptionActivated : publishes >
-SubscriptionsStore ..> SubscriptionCancelled : publishes >
-SubscriptionsStore ..> PlanUpgraded : publishes >
-SubscriptionsStore ..> BenefitsEnabled : publishes >
-SubscriptionsStore ..> BenefitsDisabled : publishes >
+PaymentStore --> PaymentGatewayPort : charges via >
+PaymentStore --> SubscriptionsStore : activates plan via >
+PaymentStore --> IamStore : reads user >
+PaymentStore --> DomainEventBus : subscribes/publishes >
+PaymentStore ..> PaymentMethod : holds >
 
 @enduml
