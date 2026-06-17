@@ -867,6 +867,912 @@ Durante el Sprint 2, todos los miembros del equipo participaron activamente en l
 
 ![Insight](../assets/img/sprint2/insight.png)
 
+### 5.2.3. Sprint 3
+
+#### 5.2.3.1. Sprint Planning 3
+
+<table>
+  <tr>
+    <th colspan="2">Sprint #</th>
+    <th colspan="2">Sprint 3</th>
+  </tr>
+  <tr>
+    <th colspan="4">Sprint Planning Background</th>
+  </tr>
+  <tr>
+    <td colspan="2">Date</td>
+    <td colspan="2">2026-06-09</td>
+  </tr>
+  <tr>
+    <td colspan="2">Time</td>
+    <td colspan="2">07:00 PM (GMT-5)</td>
+  </tr>
+  <tr>
+    <td colspan="2">Location</td>
+    <td colspan="2">Reunión virtual vía Microsoft Teams</td>
+  </tr>
+  <tr>
+    <td colspan="2">Prepared By</td>
+    <td colspan="2">Villarreal Bazan, Angel Martin</td>
+  </tr>
+  <tr>
+    <td colspan="2">Attendees (to planning meeting)</td>
+    <td colspan="2">Del Aguila Del Aguila, Olenka Priscilla / Espinoza Cruz, Angela Milagros / Mora Rivera, Joel Fernando / Soto Palacios, Brandon Wilder / Villarreal Bazan, Angel Martin</td>
+  </tr>
+  <tr>
+    <th colspan="4">Sprint 2 Review Summary</th>
+  </tr>
+  <tr>
+    <td colspan="4">En el Sprint 2 se entregó el frontend completo de la aplicación web autenticada de NutriSmart, cubriendo los bounded contexts de IAM, Behavioral Consistency, Nutrition Tracking, Subscriptions, Restaurant Intelligence, Smart Scan, Pantry, Smart Recommendation y Metabolic Adaptation. Todas las vistas fueron implementadas con Angular Material, ngx-translate, Angular Signals y datos mock servidos mediante json-server. La aplicación fue desplegada exitosamente en Coolify bajo el dominio app-smart.nutriproject.xyz. Las 52 tasks comprometidas fueron completadas al 100%, con un total de 116 Story Points entregados.</td>
+  </tr>
+  <tr>
+    <th colspan="4">Sprint 2 Retrospective Summary</th>
+  </tr>
+  <tr>
+    <td colspan="4">El equipo identificó como fortaleza la organización por bounded context con liderazgo claro mediante la matriz LACX, así como el uso disciplinado de GitFlow y Conventional Commits. Como área de mejora se identificó la necesidad de establecer los contratos de API (endpoints, request/response shapes) antes de iniciar la implementación, de modo que frontend y backend puedan avanzar en paralelo sin bloqueos. Para el Sprint 3 se acordó: (1) definir los endpoints RESTful de cada bounded context en la primera semana usando springdoc-openapi como contrato vivo, (2) mantener reuniones de sincronización tres veces por semana dado el mayor nivel de integración entre capas, (3) establecer datos de seeder deterministas para que todos los miembros trabajen sobre el mismo estado de base de datos desde el primer día, y (4) no implementar integración con Stripe ni con wearables/Health API en este sprint, postergando dichas integraciones para el Sprint 4.</td>
+  </tr>
+  <tr>
+    <th colspan="4">Sprint Goal &amp; User Stories</th>
+  </tr>
+  <tr>
+    <td colspan="2">Sprint 3 Goal</td>
+    <td colspan="2">Our focus is on delivering the complete backend platform of NutriSmart, covering the IAM, Behavioral Consistency, Nutrition Tracking, Metabolic Adaptation, Restaurant Intelligence, Smart Recommendation, Subscriptions, and Analytics bounded contexts, documented with OpenAPI and deployed to production. We believe it delivers a fully functional RESTful API that allows the frontend and future mobile clients to authenticate users, persist nutritional logs, manage subscription plans, analyze behavioral adherence, generate restaurant menu rankings, and provide contextual recommendations, all without requiring Stripe payment processing or wearable device integration. This will be confirmed when all documented endpoints return the correct HTTP status codes and response bodies when exercised through Swagger UI deployed at smart-api.nutriproject.xyz, and the frontend running at app-smart.nutriproject.xyz successfully consumes real backend data instead of json-server mocks.</td>
+  </tr>
+  <tr>
+    <td colspan="2">Sprint 3 Velocity</td>
+    <td colspan="2">130 Story Points</td>
+  </tr>
+  <tr>
+    <td colspan="2">Sum of Story Points</td>
+    <td colspan="2">130 Story Points</td>
+  </tr>
+</table>
+
+#### 5.2.3.2. Aspect Leaders and Collaborators
+
+El Sprint 3 abarca la construcción del backend completo de la plataforma NutriSmart, siguiendo la arquitectura DDD por bounded context (`domain / application / infrastructure / interfaces`). Los aspectos identificados para organizar el liderazgo y la colaboración son los siguientes:
+
+**IAM & Subscriptions:** Comprende el bounded context de Identity and Access Management con los agregados `User` y `PasswordResetToken`, los servicios `AuthCommandService`, `UserCommandService` y `UserQueryService`, la capa de persistencia JPA, el adaptador Gmail para envío de correos de recuperación de contraseña, los controladores `AuthController` y `UsersController` documentados con `@Tag` y `@Operation`, y el seeder de usuarios. También comprende el bounded context de Subscriptions con los agregados `Subscription` y `BillingRecord`, sus servicios de comando y consulta, la capa de persistencia JPA y los controladores `SubscriptionsController` y `BillingHistoryController`. No incluye integración con Stripe ni procesamiento real de pagos.
+
+**Behavioral Consistency:** Comprende el bounded context con los agregados `BehavioralProgress`, `EatingBehaviorPattern` y `RecoveryPlan`, sus respectivos servicios de comando y consulta, la capa de persistencia JPA con mappers y adapters, y los controladores `BehavioralProgressController`, `EatingBehaviorPatternsController` y `RecoveryPlansController` documentados con OpenAPI. Incluye el seeder de datos conductuales para los cuatro estados de adherencia.
+
+**Nutrition Tracking:** Comprende el bounded context con los agregados de registro nutricional diario, sus servicios de comando y consulta, la capa de persistencia JPA y los controladores RESTful documentados con OpenAPI para búsqueda de alimentos, registro de comidas y consulta de balance diario.
+
+**Restaurant Intelligence & Smart Recommendation:** Comprende el bounded context de Restaurant Intelligence con el análisis de menús mediante IA (DeepSeek), el ranking de platos compatibles, la detección de platos restringidos y los controladores correspondientes. También comprende el bounded context de Smart Recommendation con el servicio de recomendaciones contextuales (clima via OpenWeatherMap, estados AT_RISK/DROPPED) y su capa de persistencia y controladores REST.
+
+**Metabolic Adaptation & Analytics:** Comprende el bounded context de Metabolic Adaptation con las métricas corporales (BMI, BMR, TDEE), el historial de peso, el registro manual de actividad física con estimación MET y los controladores RESTful. También comprende el bounded context de Analytics con el resumen diario, historial semanal y mensual, la línea de tiempo de adherencia y la exportación de reportes PDF para usuarios Premium.
+
+| Team Member (Last Name, First Name) | GitHub Username | IAM & Subscriptions & SmartRecommendation | Behavioral Consistency | Nutrition Tracking | Restaurant Intelligence & Analytics | Metabolic Adaptation |
+|-------------------------------------|-----------------|:-------------------:|:----------------------:|:------------------:|:----------------------------------------------:|:--------------------------------:|
+| Del Aguila Del Aguila, Olenka Priscilla | olenkisha_14 | C | C | C | C | L |
+| Espinoza Cruz, Angela Milagros | Emy127 | C | C | C | L | C |
+| Mora Rivera, Joel Fernando | xJoelFMRx | C | L | C | C | C |
+| Soto Palacios, Brandon Wilder | Brandon1677 | C | C | L | C | C |
+| Villarreal Bazan, Angel Martin | nevatrix | L | C | C | C | C |
+
+#### 5.2.3.3. Sprint Backlog 3
+
+El Sprint 3 tiene como objetivo entregar el backend completo de la plataforma NutriSmart. El desarrollo cubre los bounded contexts de IAM (TS01), Nutrition Tracking — Food Catalog (TS02), Nutrition Tracking — Meal Log y Balance Diario (TS03), Nutrition Tracking — Smart Scan (TS04), Restaurant Intelligence (TS05), Metabolic Adaptation (TS06), Behavioral Consistency (TS07), Smart Recommendation (TS08), Subscriptions (TS09) y Analytics (TS10), siguiendo la arquitectura DDD por bounded context con capas `domain`, `application`, `infrastructure` e `interfaces`. La integración con Stripe, wearables y Google Health API queda fuera del alcance de este sprint. Todos los endpoints son documentados con springdoc-openapi 3.0.2 y Swagger UI.
+
+URL del Board (Trello): [Enlace Trello Sprint 3](https://trello.com/invite/b/sprint-backlog-3-nutrismart)
+
+| US ID | US Title | Task ID | Task Title | Description | Est. (h) | Assigned To | Status |
+|-------|----------|---------|------------|-------------|----------|-------------|--------|
+| TS01 | API: IAM — Authentication and User Management Endpoints | T01 | Scaffold Spring Boot project con DDD folder structure, OpenAPI config y JWT Security | Inicializar el proyecto Spring Boot 3 con Java 21, configurar la estructura de paquetes por bounded context, integrar springdoc-openapi 3.0.2 con SecurityScheme JWT, configurar `OpenApiConfiguration` con servidores local y producción, configurar CORS para el dominio del frontend, y configurar el filtro JWT para validación de tokens en cada request. | 4 | Villarreal Bazan, Angel Martin | Done |
+| TS01 | API: IAM — Authentication and User Management Endpoints | T02 | Implementar dominio IAM: agregados, value objects, repositorios y excepciones | Crear los value objects `EmailAddress`, `ActivityLevel`, `UserGoal`, `UserPlan` y `DietaryRestriction`. Crear los agregados `User` y `PasswordResetToken` con sus invariantes de negocio. Crear las excepciones de dominio y los puertos de repositorio `UserRepository` y `PasswordResetTokenRepository`. | 5 | Villarreal Bazan, Angel Martin | Done |
+| TS01 | API: IAM — Authentication and User Management Endpoints | T03 | Implementar servicios de aplicación y capa de persistencia IAM | Implementar `AuthCommandService` (registro, login, logout), `UserCommandService` (actualizar perfil, eliminar cuenta, submit onboarding), `UserQueryService` (buscar por ID, por email, listar todos) y `PasswordResetCommandService`. Crear las entidades JPA `UserJpaEntity` y `PasswordResetTokenJpaEntity`, los repositorios Spring Data, los adaptadores de persistencia y el adaptador de email Gmail. | 7 | Villarreal Bazan, Angel Martin | Done |
+| TS01 | API: IAM — Authentication and User Management Endpoints | T04 | Implementar REST controllers IAM, seeder y documentación OpenAPI | Implementar `AuthController` con endpoints `POST /api/v1/auth/login`, `POST /api/v1/auth/register`, `POST /api/v1/auth/forgot-password`, `POST /api/v1/auth/reset-password` y `GET /api/v1/auth/check-email`. Implementar `UsersController` con endpoints CRUD de usuario. Documentar con `@Tag`, `@Operation` y `@ApiResponse`. Implementar seeder de usuarios determinista (un usuario WEIGHT_LOSS Basic, uno MUSCLE_GAIN Pro, uno Premium). | 5 | Villarreal Bazan, Angel Martin | Done |
+| TS02 | API: Nutrition Tracking — Food Catalog Endpoints | T05 | Implementar dominio Food Catalog: agregados, value objects y repositorios | Crear el agregado `FoodItem` con sus atributos nutricionales (caloriesPer100g, proteinPer100g, carbsPer100g, fatPer100g), value objects `ItemType`, `WeatherType` y `DietaryRestriction`, el puerto `FoodItemRepository` y las excepciones de dominio correspondientes. | 3 | Soto Palacios, Brandon Wilder | Done |
+| TS02 | API: Nutrition Tracking — Food Catalog Endpoints | T06 | Implementar servicios de aplicación Food Catalog: command y query services | Implementar `FoodItemCommandService` (crear, actualizar, eliminar food item) y `FoodItemQueryService` (listar todos, filtrar por itemType, buscar por ID). Garantizar que los filtros por `itemType` y `weatherType` sean aplicados en la capa de consulta. | 4 | Soto Palacios, Brandon Wilder | Done |
+| TS02 | API: Nutrition Tracking — Food Catalog Endpoints | T07 | Implementar capa de persistencia y REST controller Food Catalog con documentación OpenAPI | Crear la entidad JPA `FoodItemJpaEntity`, el mapper de persistencia, el repositorio Spring Data y el adaptador de persistencia. Implementar el controlador REST con los endpoints `GET /api/v1/foods`, `POST /api/v1/foods`, `PUT /api/v1/foods/{id}` y `DELETE /api/v1/foods/{id}`. Documentar con `@Tag`, `@Operation` y `@ApiResponse`. | 4 | Soto Palacios, Brandon Wilder | Done |
+| TS03 | API: Nutrition Tracking — Meal Log, Daily Balance, and Daily Intake Endpoints | T08 | Implementar dominio Meal Log y Daily Balance: agregados, value objects y puertos | Crear los agregados `MealRecord` y `DailyBalance` con sus invariantes de negocio, value objects `MealType` y `NutrientUnit`, los puertos de repositorio `MealRecordRepository` y `DailyBalanceRepository`, y las excepciones de dominio incluyendo la de registro duplicado para `DailyIntake`. | 4 | Soto Palacios, Brandon Wilder | Done |
+| TS03 | API: Nutrition Tracking — Meal Log, Daily Balance, and Daily Intake Endpoints | T09 | Implementar servicios de aplicación Meal Log y Daily Balance: command y query services | Implementar `MealRecordCommandService` (registrar, actualizar y eliminar comida) y `MealRecordQueryService` (listar por userId y fecha). Implementar `DailyBalanceQueryService` (consultar balance diario por usuario). Implementar `DailyIntakeCommandService` con validación de unicidad por userId y fecha (responde 409 ante duplicado). | 5 | Soto Palacios, Brandon Wilder | Done |
+| TS03 | API: Nutrition Tracking — Meal Log, Daily Balance, and Daily Intake Endpoints | T10 | Implementar capa de persistencia y REST controllers Meal Log, Daily Balance e Daily Intake con documentación OpenAPI | Crear entidades JPA, mappers y adaptadores de persistencia para `MealRecord`, `DailyBalance` y `DailyIntake`. Implementar los controladores REST con los endpoints `GET /api/v1/nutrition-log`, `POST /api/v1/nutrition-log`, `PUT /api/v1/nutrition-log/{id}`, `DELETE /api/v1/nutrition-log/{id}`, `GET /api/v1/daily-balance`, `GET /api/v1/daily-intake`, `GET /api/v1/daily-intake/{id}`, `POST /api/v1/daily-intake` y `PUT /api/v1/daily-intake/{id}`, documentados con `@Tag`, `@Operation` y `@ApiResponse`. | 5 | Soto Palacios, Brandon Wilder | Done |
+| TS04 | API: Nutrition Tracking — Smart Scan Plate Analysis Endpoints | T11 | Implementar dominio Smart Scan: agregados, value objects, puertos y restricción de plan | Crear el agregado `PlateAnalysis` con su colección de `DetectedFoodItem` (incluyendo los campos `foodItemId` nullable, `isEstimate` y macronutrientes estimados). Crear el puerto `PlateAnalysisRepository` y el port de servicio externo `PlateAnalysisAIPort`. Modelar la excepción de dominio para acceso restringido a planes Basic. | 3 | Soto Palacios, Brandon Wilder | Done |
+| TS04 | API: Nutrition Tracking — Smart Scan Plate Analysis Endpoints | T12 | Implementar servicio de aplicación Smart Scan con adaptador DeepSeek/Gemini | Implementar `PlateAnalysisCommandService` que recibe una imagen en Base64, la envía al adaptador externo (DeepSeek/Gemini) para análisis y retorna los ítems detectados con sus estimaciones de macronutrientes. Implementar `PlateAnalysisConfirmCommandService` que persiste los ítems confirmados como `MealRecord` y retorna el conteo de registros creados. | 5 | Soto Palacios, Brandon Wilder | Done |
+| TS04 | API: Nutrition Tracking — Smart Scan Plate Analysis Endpoints | T13 | Implementar capa de persistencia y REST controllers Smart Scan con validación de plan y documentación OpenAPI | Crear entidades JPA, mappers y adaptadores de persistencia para `PlateAnalysis`. Implementar el controlador REST con los endpoints `POST /api/v1/nutrition-log/smart-scan/plate` (retorna ítems detectados, requiere plan Pro o Premium) y `POST /api/v1/nutrition-log/smart-scan/plate/confirm` (persiste ítems y retorna count). Documentar con `@Tag`, `@Operation` y `@ApiResponse`. | 4 | Soto Palacios, Brandon Wilder | Done |
+| TS05 | API: Restaurant Intelligence — Menu Scan Endpoint | T14 | Implementar dominio Restaurant Intelligence: agregados, value objects y puertos | Crear los agregados `MenuAnalysis`, `DishEstimate` y `RankedDish` con sus invariantes. Modelar los value objects `CompatibilityScore`, `ConflictingRestriction` y `MatchedFoodItemId` (nullable). Crear el puerto `MenuAnalysisRepository` y el port de servicio externo `MenuAnalysisAIPort`. | 3 | Espinoza Cruz, Angela Milagros | Done |
+| TS05 | API: Restaurant Intelligence — Menu Scan Endpoint | T15 | Implementar servicios de aplicación Restaurant Intelligence con adaptador DeepSeek | Implementar `MenuAnalysisCommandService` que recibe una imagen en Base64, la reenvía al adaptador DeepSeek para identificación de platos y generación de ranking por compatibilidad nutricional con restricciones y metas del usuario autenticado. Implementar la lógica de reducción de `compatibilityScore` para platos con `conflictingRestrictions`. | 6 | Espinoza Cruz, Angela Milagros | Done |
+| TS05 | API: Restaurant Intelligence — Menu Scan Endpoint | T16 | Implementar capa de persistencia y REST controller Restaurant Intelligence con validación de plan y documentación OpenAPI | Crear entidades JPA, mappers y adaptadores de persistencia para `MenuAnalysis` y `RankedDish`. Implementar el controlador REST con el endpoint `POST /api/v1/restaurant-intelligence/menu-scan` restringido a planes Pro y Premium, retornando los platos rankeados con `rank`, `dishName`, `compatibilityScore`, `conflictingRestrictions` y `scannedAt`. Documentar con `@Tag`, `@Operation` y `@ApiResponse`. | 5 | Espinoza Cruz, Angela Milagros | Done |
+| TS06 | API: Metabolic Adaptation — Body Metrics, Body Composition, Activity Logs, and Metabolic Adaptation Log Endpoints | T17 | Implementar dominio Metabolic Adaptation: agregados, value objects y puertos | Crear los agregados `BodyMetric` (con `weightKg`, `heightCm`, `targetWeightKg` y `projectedAchievementDate`), `BodyComposition` (con fórmula Navy para `calculatedBodyFatPercent` y campo `overrideBodyFatPercent`), `ActivityLog` y `WearableConnection` con sus invariantes. Crear los puertos de repositorio y las excepciones de dominio. | 4 | Del Aguila Del Aguila, Olenka Priscilla | Done |
+| TS06 | API: Metabolic Adaptation — Body Metrics, Body Composition, Activity Logs, and Metabolic Adaptation Log Endpoints | T18 | Implementar servicios de aplicación Metabolic Adaptation: command y query services | Implementar `BodyMetricCommandService` (registrar peso, actualizar altura, configurar peso objetivo con proyección de logro) y `BodyMetricQueryService` (historial de peso por userId). Implementar `BodyCompositionCommandService` (calcular body fat con fórmula Navy). Implementar `ActivityLogCommandService` (registro manual con estimación MET y calorías quemadas) y `ActivityLogQueryService`. | 5 | Del Aguila Del Aguila, Olenka Priscilla | Done |
+| TS06 | API: Metabolic Adaptation — Body Metrics, Body Composition, Activity Logs, and Metabolic Adaptation Log Endpoints | T19 | Implementar capa de persistencia Metabolic Adaptation con JPA | Crear entidades JPA, mappers y adaptadores de persistencia para `BodyMetric`, `BodyComposition`, `ActivityLog`, `WearableConnection` y `MetabolicAdaptationLog`. Verificar que la columna `projectedAchievementDate` se calcule y persista correctamente en el adaptador. | 4 | Del Aguila Del Aguila, Olenka Priscilla | Done |
+| TS06 | API: Metabolic Adaptation — Body Metrics, Body Composition, Activity Logs, and Metabolic Adaptation Log Endpoints | T20 | Implementar REST controllers Metabolic Adaptation con documentación OpenAPI | Implementar los controladores REST con los endpoints `GET /api/v1/body-metrics`, `POST /api/v1/body-metrics`, `PUT /api/v1/body-metrics/{id}`, `GET /api/v1/body-compositions`, `POST /api/v1/body-compositions`, `PUT /api/v1/body-compositions/{id}`, `GET /api/v1/activity-logs`, `POST /api/v1/activity-logs`, `GET /api/v1/activity-logs/{id}`, `DELETE /api/v1/activity-logs/{id}`, `GET /api/v1/metabolic-adaptation-logs` y `POST /api/v1/metabolic-adaptation-logs`, todos documentados con `@Tag`, `@Operation` y `@ApiResponse`. | 5 | Del Aguila Del Aguila, Olenka Priscilla | Done |
+| TS07 | API: Behavioral Consistency — Behavioral Progress, Eating Behavior Patterns, and Recovery Plans Endpoints | T21 | Implementar dominio Behavioral Consistency: agregados, value objects y puertos | Crear los value objects y enumeraciones `AdherenceStatus` (ON_TRACK/AT_RISK/DROPPED/RECOVERED). Crear los agregados `BehavioralProgress` (con `streak`, `consecutiveMisses`, `weeklyCompletionRate` y `goalMetDates`), `EatingBehaviorPattern` y `RecoveryPlan` (con `isActive`, `targetBehavior`, `simplifiedCalorieTarget`, `checkInDays`) con sus invariantes. Crear los puertos de repositorio y las excepciones de dominio. | 4 | Mora Rivera, Joel Fernando | Done |
+| TS07 | API: Behavioral Consistency — Behavioral Progress, Eating Behavior Patterns, and Recovery Plans Endpoints | T22 | Implementar servicios de aplicación Behavioral Consistency: command y query services | Implementar los servicios de comando y consulta para `BehavioralProgress` (inicialización, actualización de streak y weeklyCompletionRate), `EatingBehaviorPattern` (crear y actualizar) y `RecoveryPlan` (crear, actualizar y eliminar). Garantizar que la transición de estados de adherencia siga las reglas de negocio del dominio. | 5 | Mora Rivera, Joel Fernando | Done |
+| TS07 | API: Behavioral Consistency — Behavioral Progress, Eating Behavior Patterns, and Recovery Plans Endpoints | T23 | Implementar capa de persistencia Behavioral Consistency con JPA | Crear entidades JPA para los tres agregados del bounded context. Implementar mappers de persistencia, repositorios Spring Data y adaptadores de persistencia. Verificar que los conversores de `AdherenceStatus` sean aplicados correctamente en las entidades JPA. | 4 | Mora Rivera, Joel Fernando | Done |
+| TS07 | API: Behavioral Consistency — Behavioral Progress, Eating Behavior Patterns, and Recovery Plans Endpoints | T24 | Implementar REST controllers Behavioral Consistency con documentación OpenAPI | Implementar `BehavioralProgressController`, `EatingBehaviorPatternsController` y `RecoveryPlansController` con sus recursos (DTOs), assemblers y documentación `@Tag`, `@Operation`, `@ApiResponse`. Cubrir los endpoints `GET /behavioral-progress`, `GET /behavioral-progress/{id}`, `POST /behavioral-progress`, `PUT /behavioral-progress/{id}`, los endpoints análogos para eating-behavior-patterns, y `GET /recovery-plans`, `GET /recovery-plans/{id}`, `POST /recovery-plans`, `PUT /recovery-plans/{id}` y `DELETE /recovery-plans/{id}`. | 5 | Mora Rivera, Joel Fernando | Done |
+| TS08 | API: Smart Recommendation — Pantry, Recipes, Weather Snapshots, Recommendation Cards, Recommendation Sessions, and Travel Contexts Endpoints | T25 | Implementar dominio Smart Recommendation: agregados, value objects y puertos | Crear los agregados `PantryItem`, `Recipe`, `WeatherSnapshot`, `UserLocationSnapshot`, `RecommendationCard`, `RecommendationSession` y `TravelContext` con sus invariantes. Crear los value objects `WeatherType`, `CardType` y `AdherenceStatus`. Crear los puertos de repositorio y los ports de servicios externos `WeatherServicePort` y `RecommendationAIPort`. | 4 | Angel Martin Villarreal Bazan | Done |
+| TS08 | API: Smart Recommendation — Pantry, Recipes, Weather Snapshots, Recommendation Cards, Recommendation Sessions, and Travel Contexts Endpoints | T26 | Implementar servicios de aplicación Smart Recommendation con adaptadores externos | Implementar los servicios de comando y consulta para pantry, recipes, weather snapshots (incluyendo la lógica de sync con OpenWeatherMap en `POST /weather-snapshots/sync`), recommendation cards (con auto-fill cuando hay menos de 5 tarjetas para un `weatherType`), recommendation sessions y travel contexts. Implementar el adaptador para OpenWeatherMap y el adaptador para DeepSeek (generación de recomendaciones preventivas AT_RISK e intervención DROPPED). | 7 | Angel Martin Villarreal Bazan | Done |
+| TS08 | API: Smart Recommendation — Pantry, Recipes, Weather Snapshots, Recommendation Cards, Recommendation Sessions, and Travel Contexts Endpoints | T27 | Implementar capa de persistencia Smart Recommendation con JPA | Crear entidades JPA, mappers y adaptadores de persistencia para todos los agregados del bounded context: `PantryItem`, `Recipe`, `WeatherSnapshot`, `UserLocationSnapshot`, `RecommendationCard`, `RecommendationSession` y `TravelContext`. | 5 | Angel Martin Villarreal Bazan | Done |
+| TS08 | API: Smart Recommendation — Pantry, Recipes, Weather Snapshots, Recommendation Cards, Recommendation Sessions, and Travel Contexts Endpoints | T28 | Implementar REST controllers Smart Recommendation con documentación OpenAPI | Implementar los controladores REST cubriendo `GET /pantry`, `GET /pantry/{id}`, `POST /pantry`, `DELETE /pantry/{id}`, `GET /recipes`, `GET /recipes/{id}`, `POST /recipes`, `GET /weather-snapshots`, `POST /weather-snapshots`, `PUT /weather-snapshots/{id}`, `POST /weather-snapshots/sync`, `GET /user-location-snapshots`, `POST /user-location-snapshots`, `GET /recommendation-cards`, `POST /recommendation-cards`, `GET /recommendation-sessions`, `POST /recommendation-sessions`, `PUT /recommendation-sessions/{id}`, `GET /travel-contexts`, `POST /travel-contexts` y `PUT /travel-contexts/{id}`. Documentar con `@Tag`, `@Operation` y `@ApiResponse`. | 5 | Angel Martin Villarreal Bazan | Done |
+| TS09 | API: Subscriptions — Subscription Lifecycle and Billing History Endpoints | T29 | Implementar dominio Subscriptions: agregados, value objects y puertos | Crear los value objects `SubscriptionPlan` y `SubscriptionStatus`. Crear los agregados `Subscription` (con `billingCycleStart`, `billingCycleEnd` y `pricePerMonth`) y `BillingRecord` con sus invariantes. Crear las excepciones de dominio y los puertos de repositorio `SubscriptionRepository` y `BillingRecordRepository`. | 3 | Villarreal Bazan, Angel Martin | Done |
+| TS09 | API: Subscriptions — Subscription Lifecycle and Billing History Endpoints | T30 | Implementar servicios de aplicación Subscriptions: command y query services | Implementar `SubscriptionCommandService` (crear, actualizar plan — upgrade/downgrade sin procesamiento Stripe) y `SubscriptionQueryService` (obtener por ID, listar por userId). Implementar `BillingRecordCommandService` (crear registro de facturación con status PAID) y `BillingRecordQueryService` (obtener por ID, listar todos). | 4 | Villarreal Bazan, Angel Martin | Done |
+| TS09 | API: Subscriptions — Subscription Lifecycle and Billing History Endpoints | T31 | Implementar capa de persistencia y REST controllers Subscriptions con documentación OpenAPI | Crear entidades JPA `SubscriptionJpaEntity` y `BillingRecordJpaEntity`, sus mappers, repositorios Spring Data y adaptadores de persistencia. Implementar `SubscriptionsController` con endpoints `GET /api/v1/subscriptions`, `POST /api/v1/subscriptions`, `GET /api/v1/subscriptions/{id}` y `PUT /api/v1/subscriptions/{id}`, e `BillingHistoryController` con `GET /api/v1/billing-history`, `GET /api/v1/billing-history/{id}` y `POST /api/v1/billing-history`. Documentar con `@Tag`, `@Operation` y `@ApiResponse`. | 4 | Villarreal Bazan, Angel Martin | Done |
+| TS10 | API: Analytics — Dashboard Query and Recalculation Endpoints | T32 | Implementar dominio Analytics: agregados, value objects y puertos de integración | Crear los agregados `Analytics`, `DailySummary` y `AdherenceHistory` con sus value objects (`BmiCategory`, `AdherenceStatus`). Crear los puertos de repositorio y los puertos de adaptadores de contextos cruzados `BehavioralSummaryPort`, `NutritionSummaryPort`, `BodyMetricsSummaryPort` y `UserDataPort`. | 4 | Angela Milagros Espinoza Cruz | Done |
+| TS10 | API: Analytics — Dashboard Query and Recalculation Endpoints | T33 | Implementar servicios de aplicación Analytics: command y query services | Implementar `AnalyticsCommandService` (recalcular dashboard diario con agregación de nutrition-log, body-metrics y behavioral-progress; validar formato yyyy-MM-dd retornando 400 ante entrada malformada) y `AnalyticsQueryService` (obtener analytics consolidado por userId; retornar 404 cuando el usuario no existe). | 5 | Angela Milagros Espinoza Cruz | Done |
+| TS10 | API: Analytics — Dashboard Query and Recalculation Endpoints | T34 | Implementar capa de persistencia Analytics con JPA y adaptadores de contextos cruzados | Crear entidades JPA y adaptadores de persistencia para `Analytics`, `DailySummary` y `AdherenceHistory`. Implementar los adaptadores de integración con otros bounded contexts: `BehavioralSummaryAdapter`, `NutritionSummaryAdapter`, `BodyMetricsSummaryAdapter` y `UserDataAdapter`. | 5 | Del Angela Milagros Espinoza Cruz | Done |
+| TS10 | API: Analytics — Dashboard Query and Recalculation Endpoints | T35 | Implementar REST controller Analytics con documentación OpenAPI y despliegue en producción | Implementar `AnalyticsController` con recursos `AnalyticsResource` y `UpdateDashboardResource` y sus assemblers. Exponer los endpoints `GET /api/v1/analytics/{userId}` y `POST /api/v1/analytics/dashboard/update`, restringiendo la exportación PDF a usuarios Premium. Documentar con `@Tag`, `@Operation` y `@ApiResponse`. Agregar Dockerfile multi-stage, configurar CORS para `app-smart.nutriproject.xyz`, actualizar `pom.xml` con la versión de release y configurar el despliegue en Coolify bajo el dominio `smart-api.nutriproject.xyz`. | 6 | Angela Milagros Espinoza Cruz | Done |
+
+#### 5.2.3.4. Development Evidence for Sprint Review
+
+Durante este sprint, el equipo completó la implementación del backend completo de la plataforma NutriSmart, cubriendo los bounded contexts de IAM, Subscriptions, Behavioral Consistency, Nutrition Tracking, Metabolic Adaptation, Restaurant Intelligence, Smart Recommendation y Analytics. El desarrollo fue gestionado mediante GitFlow, con ramas `feature/` individuales por bounded context fusionadas en `develop` y liberadas en `main` como versión `1.1.3`. Todos los endpoints fueron documentados con springdoc-openapi 3.0.2 y desplegados en producción bajo el dominio `smart-api.nutriproject.xyz`.
+
+| Repository | Branch | Commit Id | Commit Message | Commit Message Body | Committed on |
+|---|---|---|---|---|---|
+| nutrismart-platform | feature/setup | `bd94e79` | chore: add project scaffolding, Maven wrapper, and build config | — | 2026-06-15 |
+| nutrismart-platform | feature/setup | `9e8e22a` | feat(shared): add application entry point and shared bounded context | — | 2026-06-15 |
+| nutrismart-platform | feature/setup | `7a5a918` | chore: add application resources, i18n messages, and smoke test | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `2160218` | feat: add LogActivityCommand | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `5e3e325` | feat: add LogBodyMetricsCommand | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `00600f8` | feat: add LogBodyCompositionCommand | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `a62719b` | feat: add ConnectWearableCommand | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `e2bb105` | feat: add DeleteWearableConnectionCommand | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `d4cc952` | feat: add DeleteActivityLogCommand | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `1f712bf` | feat: add RecordMetabolicAdaptationCommand | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `ffd7038` | feat: add UpdateBodyCompositionCommand | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `b23f6de` | feat: add UpdateBodyMetricCommand | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `e256647` | feat: add UpdateWearableConnectionCommand | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `d6e7b5e` | feat: add ActivityLogCommandFailure | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `abd626e` | feat: add ActivityLogCommandService | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `bdaae52` | feat: add BodyCompositionCommandFailure | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `889ff6d` | feat: add BodyCompositionCommandService | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `ec8f23b` | feat: add BodyMetricCommandFailure | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `d5abbb9` | feat: add BodyMetricCommandService | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `f139d3f` | feat: add MetabolicAdaptationLogCommandFailure | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `343fcfa` | feat: add MetabolicAdaptationLogCommandService | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `ebd5bda` | feat: add WearableConnectionCommandFailure | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `2451f35` | feat: add WearableConnectionCommandService | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `4fcfa27` | feat: add ActivityLogCommandServiceImpl | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `7f54757` | feat: add BodyCompositionCommandServiceImpl | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `cc4ecbc` | feat: add BodyMetricCommandServiceImpl | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `cf57f13` | feat: add MetabolicAdaptationLogCommandServiceImpl | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `6507b39` | feat: add WearableConnectionCommandServiceImpl | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `6cb36fc` | feat: add GetAllActivityLogsQuery | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `db5cec3` | feat: add GetActivityLogByIdQuery | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `ce04217` | feat: add GetAllBodyCompositionsQuery | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `f0b7c71` | feat: add GetAllBodyMetricsQuery | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `c89fe95` | feat: add GetAllMetabolicAdaptationLogsQuery | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `26d5f89` | feat: add GetAllWearableConnectionsQuery | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `de58276` | feat: add GetWearableConnectionByIdQuery | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `ac2fd12` | feat: add ActivityLogQueryService | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `c3d3df1` | feat: add BodyCompositionQueryService | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `bcc70ce` | feat: add BodyMetricQueryService | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `be412a0` | feat: add MetabolicAdaptationLogQueryService | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `63abb4f` | feat: add WearableConnectionQueryService | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `53bbf3d` | feat: add MetabolicAdaptationContextFacade interface | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `8054a51` | feat: add ACL facade implementation MetabolicAdaptationContextFacadeImpl | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `5c72d09` | feat: add ActivityLog aggregate | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `47c04c3` | feat: add BodyComposition aggregate | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `9db652c` | feat: add BodyMetric aggregate | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `48b92db` | feat: add WearableConnection aggregate | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `aa34515` | feat: add MetabolicAdaptationLog aggregate | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `3f7bd75` | feat: add BodyMetricRepository | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `91efabd` | feat: add BodyCompositionRepository | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `3a2007f` | feat: add ActivityLogRepository | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `c2bbc0f` | feat: add WearableConnectionRepository | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `3e63bdf` | feat: add MetabolicAdaptationLogRepository | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `f4d44ae` | feat: add WearableStatus value object | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `251dcfe` | feat: add MetabolicChangeTrigger value object | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `699d735` | feat: add BmiCategory value object | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `4d7fcdf` | feat: add DomainInvalidExceptions | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `9abbed0` | feat: add BodyMetricQueryServiceImpl | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `4aa44b5` | feat: add BodyCompositionQueryServiceImpl | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `e8da2db` | feat: add ActivityLogQueryServiceImpl | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `1e90f8b` | feat: add WearableConnectionQueryServiceImpl | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `4cc1173` | feat: add MetabolicAdaptationLogQueryServiceImpl | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `19bc996` | feat: add BodyMetricJpaEntity | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `bf82a71` | feat: add BodyCompositionJpaEntity | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `b1c6b07` | feat: add ActivityLogJpaEntity | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `1ac3674` | feat: add WearableConnectionJpaEntity | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `4c69be7` | feat: add MetabolicAdaptationLogJpaEntity | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `00cb7ba` | feat: add WearableStatusAttributeConverter | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `bf68584` | feat: add MetabolicChangeTriggerAttributeConverter | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `c27ecc0` | feat: add BodyMetricPersistenceMapper | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `c815ee7` | feat: add BodyCompositionPersistenceMapper | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `0316198` | feat: add ActivityLogPersistenceMapper | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `2016c4a` | feat: add WearableConnectionPersistenceMapper | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `bb537d4` | feat: add MetabolicAdaptationLogPersistenceMapper | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `040f6f1` | feat: add BodyMetricPersistenceAdapter | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `574f95a` | feat: add BodyCompositionPersistenceAdapter | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `4ec76e0` | feat: add ActivityLogPersistenceAdapter | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `e33409e` | feat: add WearableConnectionPersistenceAdapter | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `700a838` | feat: add MetabolicAdaptationLogPersistenceAdapter | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `7717aa8` | feat: add SpringDataBodyMetricJpaRepository | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `6ab6a1d` | feat: add SpringDataBodyCompositionJpaRepository | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `b41885d` | feat: add SpringDataActivityLogJpaRepository | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `87a3a0f` | feat: add SpringDataWearableConnectionJpaRepository | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `c9be3e8` | feat: add SpringDataMetabolicAdaptationLogJpaRepository | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `cc9ce50` | feat: add CreateBodyMetricResource | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `adf12c7` | feat: add UpdateBodyMetricResource | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `6cc57b7` | feat: add BodyMetricResource | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `1021c76` | feat: add CreateBodyCompositionResource | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `91d400b` | feat: add UpdateBodyCompositionResource | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `d83fcb2` | feat: add BodyCompositionResource | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `724dd66` | feat: add CreateActivityLogResource | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `3429ac8` | feat: add ActivityLogResource | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `2b31ad6` | feat: add CreateWearableConnectionResource | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `328d933` | feat: add UpdateWearableConnectionResource | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `c44e918` | feat: add WearableConnectionResource | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `3c016bb` | feat: add CreateMetabolicAdaptationLogResource | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `088ce14` | feat: add MetabolicAdaptationLogResource | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `8804e4d` | feat: add LogBodyMetricsCommandFromResourceAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `6f5ee23` | feat: add LogBodyCompositionCommandFromResourceAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `0ba082c` | feat: add UpdateBodyCompositionCommandFromResourceAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `cd756a8` | feat: add UpdateBodyMetricCommandFromResourceAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `ebbe167` | feat: add LogActivityCommandFromResourceAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `e4cb6b1` | feat: add ConnectWearableCommandFromResourceAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `9406694` | feat: add UpdateWearableConnectionCommandFromResourceAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `f4e3c36` | feat: add RecordMetabolicAdaptationCommandFromResourceAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `7d242ea` | feat: add BodyMetricResourceFromEntityAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `c9e86df` | feat: add BodyCompositionResourceFromEntityAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `82d6f05` | feat: add ActivityLogResourceFromEntityAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `72eae46` | feat: add WearableConnectionResourceFromEntityAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `562b720` | feat: add MetabolicAdaptationLogResourceFromEntityAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `bca7972` | feat: add ResponseEntityFromBodyMetricCommandResultAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `62ca219` | feat: add ResponseEntityFromBodyCompositionCommandResultAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `1f748a6` | feat: add ResponseEntityFromActivityLogCommandResultAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `233e91e` | feat: add ResponseEntityFromWearableConnectionCommandResultAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `2122a2a` | feat: add ResponseEntityFromMetabolicAdaptationLogCommandResultAssembler | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `1a41aaa` | feat: add BodyMetricsController | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `260d7f1` | feat: add BodyCompositionsController | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `c11c29b` | feat: add ActivityLogsController | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `d878eb2` | feat: add WearableConnectionsController | — | 2026-06-15 |
+| nutrismart-platform | feature/metabolic-adaptation | `0789833` | feat: add MetabolicAdaptationLogsController | — | 2026-06-15 |
+| nutrismart-platform | feature/nutrition-tracking | `03d5c51` | feat: add CreateDailyIntakeCommand record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `0c1fd8e` | feat: add ConfirmPlateScanCommand record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `4c11bfb` | feat: add DeleteMealLogCommand record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `fbacce5` | feat: add DeleteFoodItemCommand record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `bbe28d2` | feat: add LogMealCommand record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `431f3ba` | feat: add RegisterFoodItemCommand record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `3105e32` | feat: add ScanMenuCommand record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `3ece776` | feat: add ScanPlateCommand record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `cf64d63` | feat: add UpdateDailyIntakeCommand record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `1df16e6` | feat: add UpdateFoodItemCommand record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `280333d` | feat: add UpdateMealEntryCommand record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `e121606` | feat: add DailyIntakeCommandFailure sealed interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `899d652` | feat: add DailyIntakeCommandService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `8db71de` | feat: add FoodImportCommandService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `e0be180` | feat: add FoodImportFailure sealed interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `fb9c726` | feat: add FoodItemCommandFailure sealed interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `0dc4cde` | feat: add FoodItemCommandService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `d6308b4` | feat: add MealRecordCommandFailure sealed interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `a7646be` | feat: add MealRecordCommandService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `b02edda` | feat: add SmartScanCommandFailure sealed interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `dcd1d63` | feat: add SmartScanCommandService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `3763486` | feat: add DailyIntakeCommandServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `f83c3c0` | feat: add FoodImportCommandServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `97cd906` | feat: add FoodItemCommandServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `dbee8b0` | feat: add MealRecordCommandServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `548f97f` | feat: add SmartScanCommandServiceImpl implementation | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `28f709d` | feat: add DailyIntakeQueryServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `62d225b` | feat: add FoodItemQueryServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `bd2e54e` | feat: add MealRecordQueryServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `32ae40d` | feat: add DailyIntake aggregate root | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `2092866` | feat: add FoodItem aggregate root model | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `47db3c9` | feat: add MealRecord aggregate root model | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `5f097d2` | feat: add DomainInvalidExceptions runtime exception | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `2e574a0` | feat: add DailyIntakeRepository interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `28b2211` | feat: add FoodItemRepository interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `941249e` | feat: add MealRecordRepository interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `4a90ef3` | feat: add FoodRestriction enum | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `21f9694` | feat: add MealType enum for nutrition tracking | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `b6e58e2` | feat: add NutritionalRiskLevel enum | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `5fc8404` | feat: add GetAllDailyIntakesQuery record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `d1643a7` | feat: add GetAllFoodItemsQuery record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `c585e64` | feat: add GetAllMealRecordsQuery record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `8b5b8cf` | feat: add GetDailyIntakeByIdQuery record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `27e58a1` | feat: add GetDailyIntakeByUserIdAndDateQuery record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `c699313` | feat: add GetDailyIntakeByUserIdQuery record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `0ebc5b6` | feat: add DailyIntakeQueryService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `fb9a0e2` | feat: add FoodItemQueryService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `feebabe` | feat: add MealRecordQueryService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `920cd90` | feat: add UserProfileLookupPort interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `fc536da` | feat: add UserProfileData record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `3fe7d22` | feat: add ExternalFoodDataPort interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `b60f8b0` | feat: add ExternalFoodData DTO record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `a70449c` | feat: add FoodEnrichmentPort interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `baa0aa8` | feat: add EnrichedFoodData record DTO | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `f302401` | feat: add ImageRecognitionPort interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `c1fcfd5` | feat: add PlateItemMatchPort interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `294f3ba` | feat: add MenuRankingPort interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `4db8fce` | feat: add DetectedFoodItem record DTO | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `ffcf966` | feat: add PlateItemMatchResult record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `34bc34e` | feat: add PlateItemResult record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `36cc70a` | feat: add RankedDishData record for dish ranking | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `f620843` | feat: add RankedMenuResult record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `211e669` | feat: add MenuDishCandidate DTO record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `9b74a1a` | feat: add FoodItemCandidate record DTO | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `b10696c` | feat: add GeneratedMenuFoodData DTO record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `9e4970d` | feat: add DeepSeek RestTemplate bean | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `a086cd3` | feat: add DeepSeekClient for DeepSeek API | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `35a6411` | feat: add DeepSeekEnrichmentRequest record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `82d088e` | feat: add DeepSeekEnrichmentResponse record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `c03a573` | feat: add DeepSeek food enrichment adapter | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `9bb9815` | feat: add DeepSeekMenuRankingAdapter for menu ranking | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `b4bf198` | feat: add DeepSeek adapter for plate item matching | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `b5d3f82` | feat: add GeminiRequest model for Vision API | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `6abd5b3` | feat: add GeminiResponse model for Gemini Vision API | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `3d60917` | feat: add GeminiVisionAdapter for image recognition | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `40e6538` | feat: add Gemini Vision client and config | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `07c4ab4` | feat: add USDAFoodDataClient for USDA API search | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `56c31b7` | feat: add USDAFoodDataAdapter for USDA API | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `f05b446` | feat: add USDA RestTemplate config bean | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `2f99914` | feat: add USDA food search response DTOs | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `f9847ed` | feat: add UserProfileLookupAdapter | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `73c5b66` | feat: add DailyIntakeJpaEntity JPA entity | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `b40364c` | feat: add FoodItem JPA entity for foods table | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `06ba083` | feat: add MealRecordJpaEntity JPA entity | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `ff8dd51` | feat: add JPA converter for MealType enum | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `773417f` | feat: add DailyIntake JPA adapter and converter | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `fba594c` | feat: add DailyIntake persistence mapper | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `5e9580d` | feat: add FoodItem JPA persistence mapper | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `3aa1495` | feat: add MealRecord persistence mapper | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `faf3129` | feat: add JPA persistence adapter for FoodItem | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `d7de554` | feat: add MealRecordPersistenceAdapter JPA adapter | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `20fd786` | feat: add SpringData JPA repository for DailyIntake | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `4722257` | feat: add JPA repositories for FoodItem and MealRecord | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `ce4d419` | feat: add NutritionTrackingContextFacadeImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `2401e49` | feat: add NutritionTrackingContextFacade interface | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `0894260` | feat: add ConfirmPlateScanRequest record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `207935a` | feat: add food and daily intake resources | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `9d51497` | feat: add CreateMealRecordResource record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `90ee08e` | feat: add DailyIntakeResource record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `627cc0a` | feat: add FoodItemResource record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `c911bfa` | feat: add MealRecordResource REST DTO | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `6c6b3c5` | feat: add ScanMenuRequest record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `d68e25e` | feat: add ScanMenuResultResource record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `aa89b1b` | feat: add ScanPlateRequest record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `3bbfcf5` | feat: add ScanPlateResultResource record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `b107790` | feat: add UpdateDailyIntakeResource record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `8d17d57` | feat: add UpdateFoodItemResource record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `6b94875` | feat: add UpdateMealRecordResource record | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `e66de82` | feat: add DailyIntakeCommand resource assembler | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `964db9f` | feat: add DailyIntakeResource assembler | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `1c78c8c` | feat: add FoodItem resource/command assemblers | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `d691045` | feat: add MealRecordCommandFromResourceAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `a305e99` | feat: add MealRecordResourceFromEntityAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `3028453` | feat: add assembler for DailyIntake command results | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `772518e` | feat: add ResponseEntity assembler for FoodItem results | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `a103936` | feat: add ResponseEntity assembler for MealRecord | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `c2ec4ac` | feat: add DailyBalanceController REST endpoint | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `6cb62d2` | feat: add DailyIntakeController REST API | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `c81cf4e` | feat: add FoodsController REST endpoint | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `e2d8529` | feat: add NutritionLogController REST API | — | 2026-06-16 |
+| nutrismart-platform | feature/nutrition-tracking | `cccf849` | feat: add SmartScanController REST endpoints | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `2dc9bc0` | feat: add Analytics aggregate | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `b9215bd` | feat: add DomainInvalidExceptions | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `56ee162` | feat: add AdherenceStatus value object | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `63baac2` | feat: add BmiCategory value object | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `af6c07b` | feat: add UpdateAdherenceProgressCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `880b6fa` | feat: add UpdateDailyDashboardCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `c2a04cc` | feat: add AnalyticsCommandFailure | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `277405c` | feat: add AnalyticsCommandService | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `cf693bd` | feat: add AnalyticsCommandServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `44c07f6` | feat: add AnalyticsQueryServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `40d0b5b` | feat: add BehavioralSummaryPort | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `1645361` | feat: add BodyMetricsSummaryPort | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `a5f656f` | feat: add NutritionSummaryPort | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `46466df` | feat: add UserDataPort | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `8781b55` | feat: add GetAnalyticsByUserIdQuery | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `6d1b796` | feat: add GetDashboardByUserIdQuery | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `77948bc` | feat: add AnalyticsQueryService | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `bfae50b` | feat: add BehavioralSummaryAdapter | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `0fa61f9` | feat: add BodyMetricsSummaryAdapter | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `017a817` | feat: add NutritionSummaryAdapter | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `616f4bd` | feat: add UserDataAdapter | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `4592c5d` | feat: add AnalyticsResource | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `68c304f` | feat: add UpdateDashboardResource | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `e728d44` | feat: add AnalyticsResourceFromEntityAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/analytics | `9b07189` | feat: add AnalyticsController | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `af21555` | feat(behavioral-consistency): add EatingBehaviorPattern aggregate | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `3cbc1e9` | feat(behavioral-consistency): add BehavioralProgress aggregate | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `c0b021e` | feat(behavioral-consistency): add RecoveryPlan aggregate | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `4eb2cdd` | feat(behavioral-consistency): add BehaviorPatternType value object | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `b1a471c` | feat(behavioral-consistency): add AdherenceStatus value object | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `81a8c57` | feat(behavioral-consistency): add AdherenceDropTrigger value object | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `b47ea1f` | feat(behavioral-consistency): add RecoveryActionType value object | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `1fd97b6` | feat(behavioral-consistency): add RecoveryPlanStatus value object | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `95c6c06` | feat(behavioral-consistency): add EatingBehaviorPatternRepository contract | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `6a2376d` | feat(behavioral-consistency): add BehavioralProgressRepository contract | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `400a964` | feat(behavioral-consistency): add RecoveryPlanRepository contract | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `f768e59` | feat(behavioral-consistency): add DomainInvalidExceptions | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `bcd1eb6` | feat(behavioral-consistency): add CreateEatingBehaviorPatternCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `80edf75` | feat(behavioral-consistency): add UpdateEatingBehaviorPatternCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `9afc87b` | feat(behavioral-consistency): add CreateBehavioralProgressCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `e61c993` | feat(behavioral-consistency): add UpdateBehavioralProgressCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `5d6e674` | feat(behavioral-consistency): add CreateRecoveryPlanCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `241bef8` | feat(behavioral-consistency): add UpdateRecoveryPlanCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `30977c8` | feat(behavioral-consistency): add DeleteRecoveryPlanCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `8909117` | feat(behavioral-consistency): add GetAllEatingBehaviorPatternsQuery | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `4fb155b` | feat(behavioral-consistency): add GetEatingBehaviorPatternByIdQuery | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `ff39924` | feat(behavioral-consistency): add GetAllBehavioralProgressQuery | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `e38ff89` | feat(behavioral-consistency): add GetBehavioralProgressByIdQuery | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `db4376f` | feat(behavioral-consistency): add GetAllRecoveryPlansQuery | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `2b0f231` | feat(behavioral-consistency): add GetRecoveryPlanByIdQuery | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `2df81a3` | feat(behavioral-consistency): add EatingBehaviorPatternCommandService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `8b094aa` | feat(behavioral-consistency): add EatingBehaviorPatternCommandFailure | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `f9b576b` | feat(behavioral-consistency): add BehavioralProgressCommandService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `6d8ff5b` | feat(behavioral-consistency): add BehavioralProgressCommandFailure | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `ccf04a4` | feat(behavioral-consistency): add RecoveryPlanCommandService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `fff911f` | feat(behavioral-consistency): add RecoveryPlanCommandFailure | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `2ce7498` | feat(behavioral-consistency): add EatingBehaviorPatternQueryService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `5581a00` | feat(behavioral-consistency): add BehavioralProgressQueryService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `4f0a341` | feat(behavioral-consistency): add RecoveryPlanQueryService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `87caebc` | feat(behavioral-consistency): implement EatingBehaviorPatternCommandServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `03ed76c` | feat(behavioral-consistency): implement BehavioralProgressCommandServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `4be9e07` | feat(behavioral-consistency): implement RecoveryPlanCommandServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `acd1e86` | feat(behavioral-consistency): implement EatingBehaviorPatternQueryServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `0f783f7` | feat(behavioral-consistency): implement BehavioralProgressQueryServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `d667817` | feat(behavioral-consistency): implement RecoveryPlanQueryServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `9923e8d` | feat(behavioral-consistency): implement BehavioralConsistencyContextFacadeImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `82370be` | feat(behavioral-consistency): add BehavioralConsistencyContextFacade interface | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `6793bc9` | feat(behavioral-consistency): add EatingBehaviorPatternJpaEntity | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `1d56383` | feat(behavioral-consistency): add BehavioralProgressJpaEntity | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `56c46f1` | feat(behavioral-consistency): add RecoveryPlanJpaEntity | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `46daf3d` | feat(behavioral-consistency): add BehaviorPatternTypeAttributeConverter | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `9214835` | feat(behavioral-consistency): add AdherenceStatusAttributeConverter | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `01ad5ef` | feat(behavioral-consistency): add AdherenceDropTriggerAttributeConverter | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `4141440` | feat(behavioral-consistency): add RecoveryPlanStatusAttributeConverter | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `0e621ca` | feat(behavioral-consistency): add EatingBehaviorPatternPersistenceMapper | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `36eb994` | feat(behavioral-consistency): add BehavioralProgressPersistenceMapper | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `2117adc` | feat(behavioral-consistency): add RecoveryPlanPersistenceMapper | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `20f7f19` | feat(behavioral-consistency): add SpringDataEatingBehaviorPatternJpaRepository | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `16563c8` | feat(behavioral-consistency): add SpringDataBehavioralProgressJpaRepository | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `477f046` | feat(behavioral-consistency): add SpringDataRecoveryPlanJpaRepository | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `64b3b70` | feat(behavioral-consistency): implement EatingBehaviorPatternPersistenceAdapter | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `d618fd6` | feat(behavioral-consistency): implement BehavioralProgressPersistenceAdapter | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `4e08af4` | feat(behavioral-consistency): implement RecoveryPlanPersistenceAdapter | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `104a45e` | feat(behavioral-consistency): add CreateEatingBehaviorPatternResource DTO | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `4659544` | feat(behavioral-consistency): add UpdateEatingBehaviorPatternResource DTO | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `fc6b982` | feat(behavioral-consistency): add EatingBehaviorPatternResource DTO | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `74f0177` | feat(behavioral-consistency): add CreateBehavioralProgressResource DTO | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `7692b45` | feat(behavioral-consistency): add UpdateBehavioralProgressResource DTO | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `c40e5ff` | feat(behavioral-consistency): add BehavioralProgressResource DTO | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `9b31e24` | feat(behavioral-consistency): add CreateRecoveryPlanResource DTO | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `9248ab7` | feat(behavioral-consistency): add UpdateRecoveryPlanResource DTO | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `1dc8b81` | feat(behavioral-consistency): add RecoveryPlanResource DTO | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `f15cefb` | feat(behavioral-consistency): add CreateEatingBehaviorPatternCommandFromResourceAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `5cd14df` | feat(behavioral-consistency): add UpdateEatingBehaviorPatternCommandFromResourceAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `6d77bc8` | feat(behavioral-consistency): add EatingBehaviorPatternResourceFromEntityAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `3856b3d` | feat(behavioral-consistency): add ResponseEntityFromEatingBehaviorPatternCommandResultAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `03f043b` | feat(behavioral-consistency): add CreateBehavioralProgressCommandFromResourceAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `f86bfbd` | feat(behavioral-consistency): add UpdateBehavioralProgressCommandFromResourceAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `e201914` | feat(behavioral-consistency): add BehavioralProgressResourceFromEntityAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `d611f36` | feat(behavioral-consistency): add ResponseEntityFromBehavioralProgressCommandResultAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `4190a6d` | feat(behavioral-consistency): add CreateRecoveryPlanCommandFromResourceAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `13c2927` | feat(behavioral-consistency): add UpdateRecoveryPlanCommandFromResourceAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `c1b699e` | feat(behavioral-consistency): add RecoveryPlanResourceFromEntityAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `0fc0287` | feat(behavioral-consistency): add ResponseEntityFromRecoveryPlanCommandResultAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `122087f` | feat(behavioral-consistency): add EatingBehaviorPatternsController | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `fa57582` | feat(behavioral-consistency): add BehavioralProgressController | — | 2026-06-16 |
+| nutrismart-platform | feature/behavioral-consistency | `370e306` | feat(behavioral-consistency): add RecoveryPlansController | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `787109c` | feat(iam): add EmailAddress value object | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `8a3b2ab` | feat(iam): add ActivityLevel value object | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `13d7868` | feat(iam): add DietaryRestriction value object | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `94f7775` | feat(iam): add UserGoal value object | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `f9b809f` | feat(iam): add UserPlan value object | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `6343d9c` | feat(iam): add domain invalid exceptions | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `2ca7d0c` | feat(iam): add User aggregate | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `ddc6b2b` | feat(iam): add PasswordResetToken aggregate | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `05f0bfd` | feat(iam): add UserRepository port | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `4ee7e3e` | feat(iam): add PasswordResetTokenRepository port | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `db7fe59` | feat(iam): add EmailService domain service port | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `35cc6f3` | feat(iam): add RegisterAccountCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `2bd4073` | feat(iam): add AuthenticateCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `38db0c7` | feat(iam): add UpdateUserCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `fabcbb4` | feat(iam): add DeleteUserCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `cbb1c57` | feat(iam): add SubmitOnboardingProfileCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `0199200` | feat(iam): add RequestPasswordResetCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `a2ca324` | feat(iam): add ResetPasswordCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `e113980` | feat(iam): add GetUserByIdQuery | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `8b9b402` | feat(iam): add GetUserByEmailQuery | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `07b7e79` | feat(iam): add GetAllUsersQuery | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `2ccbba9` | feat(iam): add AuthCommandService port | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `1f6c555` | feat(iam): add AuthFailure result type | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `d2df974` | feat(iam): add AuthTokenData result type | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `5e385ea` | feat(iam): add PasswordResetCommandService port | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `e7fafd5` | feat(iam): add UserCommandService port | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `5d48eb9` | feat(iam): add UserQueryService port | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `5e3153a` | feat(iam): add AuthCommandService implementation | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `e4ccad0` | feat(iam): add PasswordResetCommandService implementation | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `cbe3c6a` | feat(iam): add UserCommandService implementation | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `76690d0` | feat(iam): add UserQueryService implementation | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `7400cf7` | feat(iam): add IamContextFacade implementation | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `8636643` | feat(iam): add EmailAddress JPA attribute converter | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `2bff509` | feat(iam): add ActivityLevel JPA attribute converter | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `14c5bff` | feat(iam): add SubscriptionPlan JPA attribute converter | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `75ef453` | feat(iam): add UserGoal JPA attribute converter | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `e9d24af` | feat(iam): add User JPA entity | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `ec291ad` | feat(iam): add PasswordResetToken JPA entity | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `ba9ae1d` | feat(iam): add User persistence mapper | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `79ff188` | feat(iam): add Spring Data User JPA repository | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `e7e0386` | feat(iam): add Spring Data PasswordResetToken JPA repository | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `bf55f8e` | feat(iam): add User persistence adapter | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `ec64fb7` | feat(iam): add PasswordResetToken persistence adapter | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `ddccffd` | feat(iam): add Gmail email service adapter | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `0c7d23e` | feat(iam): add CreateUserResource REST resource | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `8699518` | feat(iam): add LoginResource REST resource | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `0edfeed` | feat(iam): add ForgotPasswordResource REST resource | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `6986ecb` | feat(iam): add ResetPasswordResource REST resource | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `f584c0d` | feat(iam): add UpdateUserResource REST resource | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `1206ef0` | feat(iam): add UserResource REST resource | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `4e9a615` | feat(iam): add AuthResponse REST resource | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `6f2ee8f` | feat(iam): add IamContextFacade ACL interface | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `2c41d6b` | feat(iam): add CreateUserCommand resource assembler | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `6c4e47b` | feat(iam): add auth command result response assembler | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `28d9b33` | feat(iam): add user command result response assembler | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `46e3e49` | feat(iam): add UpdateUserCommand resource assembler | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `cef42a9` | feat(iam): add UserResource entity assembler | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `933a3ea` | feat(iam): add AuthController REST controller | — | 2026-06-16 |
+| nutrismart-platform | feature/iam | `e711f58` | feat(iam): add UsersController REST controller | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `39deb3f` | feat(subscriptions): add SubscriptionPlan value object | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `3324ec8` | feat(subscriptions): add SubscriptionStatus value object | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `0bdd5ed` | feat(subscriptions): add domain invalid exceptions | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `d264d69` | feat(subscriptions): add Subscription aggregate | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `cbe4339` | feat(subscriptions): add BillingRecord aggregate | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `90ae9b8` | feat(subscriptions): add SubscriptionRepository port | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `e613431` | feat(subscriptions): add BillingRecordRepository port | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `d1fa99a` | feat(subscriptions): add CreateSubscriptionCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `e67a49f` | feat(subscriptions): add UpdateSubscriptionCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `f6160fb` | feat(subscriptions): add CreateBillingRecordCommand | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `c6aa26d` | feat(subscriptions): add GetAllSubscriptionsQuery | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `797cd5a` | feat(subscriptions): add GetSubscriptionByIdQuery | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `27435b5` | feat(subscriptions): add GetAllBillingRecordsQuery | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `de92972` | feat(subscriptions): add GetBillingRecordByIdQuery | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `cc2ba8b` | feat(subscriptions): add BillingRecordQueryService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `acb4ad5` | feat(subscriptions): add SubscriptionQueryService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `c404df2` | feat(subscriptions): add BillingRecordCommandService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `35c71b3` | feat(subscriptions): add BillingRecordCommandFailure | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `bd26110` | feat(subscriptions): add SubscriptionCommandService interface | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `3700aa2` | feat(subscriptions): add SubscriptionCommandFailure | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `a2c6093` | feat(subscriptions): add SubscriptionCommandServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `833a6cb` | feat(subscriptions): add BillingRecordCommandServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `8340772` | feat(subscriptions): add SubscriptionQueryServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `eedfd20` | feat(subscriptions): add BillingRecordQueryServiceImpl | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `23de867` | feat(subscriptions): add SubscriptionJpaEntity | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `accc75e` | feat(subscriptions): add BillingRecordJpaEntity | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `fb76ceb` | feat(subscriptions): add SubscriptionStatusAttributeConverter | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `2d91999` | feat(subscriptions): add SpringDataSubscriptionJpaRepository | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `d32129e` | feat(subscriptions): add SpringDataBillingRecordJpaRepository | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `bf10891` | feat(subscriptions): add SubscriptionPersistenceMapper | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `2792020` | feat(subscriptions): add BillingRecordPersistenceMapper | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `776ff0f` | feat(subscriptions): add SubscriptionPersistenceAdapter | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `b2dcc6d` | feat(subscriptions): add BillingRecordPersistenceAdapter | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `2e3dcd5` | feat(subscriptions): add SubscriptionResource | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `dd48568` | feat(subscriptions): add CreateSubscriptionResource | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `e48e988` | feat(subscriptions): add UpdateSubscriptionResource | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `8b001f4` | feat(subscriptions): add BillingRecordResource | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `1860ed9` | feat(subscriptions): add CreateBillingRecordResource | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `b1898f8` | feat(subscriptions): add SubscriptionCommandFromResourceAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `137825a` | feat(subscriptions): add SubscriptionResourceFromEntityAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `4c509b2` | feat(subscriptions): add ResponseEntityFromSubscriptionCommandResultAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `8d89cc9` | feat(subscriptions): add BillingRecordCommandFromResourceAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `425facd` | feat(subscriptions): add BillingRecordResourceFromEntityAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `01a3608` | feat(subscriptions): add ResponseEntityFromBillingRecordCommandResultAssembler | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `15c14e4` | feat(subscriptions): add SubscriptionsController | — | 2026-06-16 |
+| nutrismart-platform | feature/subscription | `0899d1a` | feat(subscriptions): add BillingHistoryController | — | 2026-06-16 |
+| nutrismart-platform | feature/smart-recommendation | `95f0cc7` | feat(smartrecommendation): add domain model aggregates, value objects, repositories, and exceptions | — | 2026-06-16 |
+| nutrismart-platform | feature/smart-recommendation | `19cf4d2` | feat(smartrecommendation): add application commands and queries | — | 2026-06-16 |
+| nutrismart-platform | feature/smart-recommendation | `918bf0f` | feat(smartrecommendation): add application service interfaces, port definitions, and failure types | — | 2026-06-16 |
+| nutrismart-platform | feature/smart-recommendation | `b5a4541` | feat(smartrecommendation): add internal command and query service implementations | — | 2026-06-16 |
+| nutrismart-platform | feature/smart-recommendation | `ee43b25` | feat(smartrecommendation): add JPA persistence layer with entities, mappers, repositories, and adapters | — | 2026-06-16 |
+| nutrismart-platform | feature/smart-recommendation | `1ed1356` | feat(smartrecommendation): add external service adapters for DeepSeek and OpenWeatherMap | — | 2026-06-16 |
+| nutrismart-platform | feature/smart-recommendation | `f477947` | feat(smartrecommendation): add REST controllers, resources, and assemblers | — | 2026-06-16 |
+| nutrismart-platform | main | `79621ed` | feat: add @Tags on restant classes | — | 2026-06-16 |
+| nutrismart-platform | main | `8ef4355` | fix: subscription error on user.plan | — | 2026-06-16 |
+| nutrismart-platform | main | `a79cc24` | fix: seeder duplicate crash on restart + DDL comment fix | — | 2026-06-16 |
+| nutrismart-platform | main | `396743e` | chore: update app version | — | 2026-06-16 |
+| nutrismart-platform | main | `a389151` | feat: add dockerfile | — | 2026-06-16 |
+| nutrismart-platform | main | `a4d6e11` | ci: add release workflow | — | 2026-06-16 |
+| nutrismart-platform | main | `a6ca2d0` | docs: update README.md | — | 2026-06-16 |
+| nutrismart-platform | feature/restaurant-intelligence | `4f7a447` | feat: update restaurant intelligence bounded context | — | 2026-06-17 |
+| nutrismart-platform | feature/restaurant-intelligence | `4e0204b` | chore: update cors | — | 2026-06-17 |
+| nutrismart-platform | main | `1f00037` | chore: update pom.xml | — | 2026-06-17 |
+| nutrismart-platform | main | `863d4ea` | Merge pull request #27 from develop — release/1.1.3 | — | 2026-06-17 |
+
+#### 5.2.3.5. Execution Evidence for Sprint Review
+
+Durante el Sprint 3, el equipo completó la implementación del backend completo de la plataforma NutriSmart. El backend fue construido con Spring Boot 3, Java 21, JPA/Hibernate y MySQL, siguiendo la arquitectura DDD con cuatro capas por bounded context: `domain`, `application`, `infrastructure` e `interfaces`. Todos los endpoints fueron documentados con springdoc-openapi 3.0.2 y Swagger UI, y el backend fue desplegado exitosamente en producción usando Docker y Coolify bajo el dominio `smart-api.nutriproject.xyz`.
+
+Los bounded contexts implementados cubren: autenticación y gestión de usuarios con JWT (IAM), gestión de suscripciones sin procesamiento de pagos real (Subscriptions), adherencia conductual con los cuatro estados ON_TRACK/AT_RISK/DROPPED/RECOVERED (Behavioral Consistency), registro y análisis nutricional diario (Nutrition Tracking), métricas corporales y actividad física manual con estimación MET (Metabolic Adaptation), análisis de menús de restaurante con IA DeepSeek y ranking de platos compatibles (Restaurant Intelligence), recomendaciones contextuales con clima vía OpenWeatherMap (Smart Recommendation) y dashboard analítico con historial de adherencia (Analytics).
+
+A continuación se presentan capturas de Swagger UI mostrando los endpoints implementados y ejercitados durante el sprint.
+
+**IAM — AuthController y UsersController:**
+
+Los endpoints de autenticación permiten el registro de nuevos usuarios con emisión de JWT, login con validación de credenciales, solicitud de recuperación de contraseña vía Gmail y restablecimiento de contraseña mediante token. El endpoint `GET /api/v1/auth/check-email` verifica disponibilidad de email antes del registro.
+
+**Subscriptions — SubscriptionsController y BillingHistoryController:**
+
+Los endpoints de suscripciones permiten consultar el plan activo del usuario, actualizar el plan (upgrade/downgrade sin procesamiento Stripe) y consultar el historial de facturación. La lógica de activación y desactivación de beneficios por cambio de plan queda registrada en los agregados de dominio.
+
+**Behavioral Consistency — BehavioralProgressController, EatingBehaviorPatternsController y RecoveryPlansController:**
+
+Los endpoints de adherencia conductual exponen el progreso conductual del usuario con su estado actual (ON_TRACK/AT_RISK/DROPPED/RECOVERED), los patrones de comportamiento alimenticio detectados y los planes de recuperación personalizados. El estado de adherencia se actualiza automáticamente según las reglas de negocio del dominio.
+
+**Nutrition Tracking:**
+
+Los endpoints de registro nutricional exponen búsqueda de alimentos con filtrado por restricciones dietéticas del usuario, registro de comidas con validación de límites calóricos y consulta de balance diario con desglose de macronutrientes.
+
+**Restaurant Intelligence:**
+
+El endpoint `POST /api/v1/restaurant-intelligence/menu-scan` recibe una imagen en base64, la envía a la API de DeepSeek para análisis, y retorna los platos identificados rankeados por compatibilidad nutricional con las restricciones y metas del usuario. Los platos que generan conflicto con restricciones dietéticas son marcados con `RestrictedDishFlagged`.
+
+**Smart Recommendation:**
+
+Los endpoints de recomendación inteligente retornan recomendaciones contextuales según el estado de adherencia conductual y las condiciones climáticas obtenidas de OpenWeatherMap. Los usuarios en estado AT_RISK reciben recomendaciones preventivas y los usuarios en estado DROPPED reciben planes de intervención graduales.
+
+**Metabolic Adaptation:**
+
+Los endpoints de adaptación metabólica exponen el registro y consulta de métricas corporales (BMI, BMR, TDEE), historial de peso, configuración de peso objetivo con proyección de logro, y registro manual de actividad física con estimación de calorías quemadas mediante tabla MET.
+
+**Analytics:**
+
+Los endpoints de analytics exponen el dashboard diario del usuario con métricas consolidadas y la línea de tiempo de adherencia conductual. El endpoint de exportación PDF está restringido a usuarios con plan Premium.
+
+**URL del video de demostración del Sprint 3:** [Video sprint 3 — pendiente de enlace final]
+
+#### 5.2.3.6. Services Documentation Evidence for Sprint Review
+
+Durante el Sprint 3 se documentaron todos los endpoints RESTful del backend de NutriSmart utilizando springdoc-openapi 3.0.2 con Swagger UI. La documentación fue generada automáticamente a partir de las anotaciones `@Tag`, `@Operation`, `@ApiResponse` y `@Parameter` presentes en cada controller, y el SecurityScheme Bearer JWT fue configurado globalmente en `OpenApiConfiguration`.
+
+**URLs de Swagger UI:**
+
+| Entorno | URL de Swagger UI |
+|---------|------------------|
+| Local | `http://localhost:8080/swagger-ui/index.html` |
+| Producción | `https://smart-api.nutriproject.xyz/swagger-ui/index.html` |
+| JSON spec (OpenAPI) | `https://smart-api.nutriproject.xyz/v3/api-docs` |
+
+**Repositorio de Web Services:** `https://github.com/upc-pre-202610-1asi0729-17952-devteam/nutrismart-platform`
+
+**Commits relacionados con documentación OpenAPI (Sprint 3):**
+
+| Commit Id | Mensaje | Bounded Context |
+|-----------|---------|-----------------|
+| `79621ed` | feat: add @Tags on restant classes | Global |
+| `933a3ea` | feat(iam): add AuthController REST controller | IAM |
+| `e711f58` | feat(iam): add UsersController REST controller | IAM |
+| `15c14e4` | feat(subscriptions): add SubscriptionsController | Subscriptions |
+| `0899d1a` | feat(subscriptions): add BillingHistoryController | Subscriptions |
+| `122087f` | feat(behavioral-consistency): add EatingBehaviorPatternsController | Behavioral Consistency |
+| `fa57582` | feat(behavioral-consistency): add BehavioralProgressController | Behavioral Consistency |
+| `370e306` | feat(behavioral-consistency): add RecoveryPlansController | Behavioral Consistency |
+| `f477947` | feat(smartrecommendation): add REST controllers, resources, and assemblers | Smart Recommendation |
+| `4f7a447` | feat: update restaurant intelligence bounded context | Restaurant Intelligence |
+| `9b07189` | feat: add AnalyticsController | Analytics |
+
+A continuación se detalla la documentación de los principales endpoints del sprint.
+
+---
+
+**Bounded Context: IAM**
+
+**Endpoint: POST /api/v1/auth/register**
+Descripción: Registra un nuevo usuario y retorna un JWT de acceso.
+Request Body:
+```json
+{
+  "firstName": "María",
+  "lastName": "García",
+  "email": "maria.garcia@email.com",
+  "password": "SecurePass123!"
+}
+```
+Responses:
+
+| Código | Descripción |
+|--------|-------------|
+| 201 | Account created — JWT returned |
+| 400 | Invalid request data |
+| 409 | Email already registered |
+
+---
+
+**Endpoint: POST /api/v1/auth/login**
+Descripción: Autentica un usuario existente y retorna un JWT.
+Request Body:
+```json
+{
+  "email": "maria.garcia@email.com",
+  "password": "SecurePass123!"
+}
+```
+Responses:
+
+| Código | Descripción |
+|--------|-------------|
+| 200 | Authentication successful — JWT returned |
+| 401 | Invalid credentials |
+| 423 | Account locked after multiple failures |
+
+---
+
+**Endpoint: POST /api/v1/auth/forgot-password**
+Descripción: Envía un correo de recuperación de contraseña. Retorna 200 independientemente de si el email existe para no revelar información.
+Request Body:
+```json
+{ "email": "maria.garcia@email.com" }
+```
+Responses:
+
+| Código | Descripción |
+|--------|-------------|
+| 200 | Password reset email sent (always) |
+| 400 | Invalid email format |
+
+---
+
+**Endpoint: GET /api/v1/auth/check-email**
+Descripción: Verifica si un email ya está registrado.
+Parámetros: `email` (query param, string, requerido). Ejemplo: `?email=maria.garcia@email.com`
+Responses:
+
+| Código | Descripción |
+|--------|-------------|
+| 200 | `{ "available": true }` o `{ "available": false }` |
+| 400 | Invalid email format |
+
+---
+
+**Bounded Context: Restaurant Intelligence**
+
+**Endpoint: POST /api/v1/restaurant-intelligence/menu-scan**
+Descripción: Escanea imagen de menú de restaurante con IA y retorna platos rankeados por compatibilidad nutricional con las restricciones y metas del usuario autenticado.
+Authorization: Bearer JWT requerido.
+Request Body:
+```json
+{
+  "imageBase64": "data:image/jpeg;base64,/9j/4AAQSkZJRgAB..."
+}
+```
+Respuesta exitosa (200):
+```json
+{
+  "dishes": [
+    {
+      "rank": 1,
+      "dishName": "Grilled Salmon",
+      "compatibilityScore": 0.92,
+      "reason": "Alta en proteína, baja en carbohidratos",
+      "estimatedCalories": 350,
+      "estimatedProtein": 42,
+      "estimatedCarbs": 2,
+      "estimatedFat": 18,
+      "conflictingRestrictions": []
+    }
+  ],
+  "scannedAt": "2026-06-17T15:30:00Z"
+}
+```
+
+Responses:
+
+| Código | Descripción |
+|--------|-------------|
+| 200 | Menu scanned — ranked dishes returned |
+| 400 | Invalid image or request data |
+| 401 | Authentication required |
+| 403 | Premium or Pro plan required |
+
+---
+
+**Bounded Context: Behavioral Consistency**
+
+**Endpoint: GET /api/v1/behavioral-consistency/progress/{userId}**
+Descripción: Obtiene el estado de adherencia conductual actual del usuario, incluyendo estado ON_TRACK/AT_RISK/DROPPED/RECOVERED, racha activa y fecha del último registro.
+Authorization: Bearer JWT requerido.
+Responses:
+
+| Código | Descripción |
+|--------|-------------|
+| 200 | Behavioral progress returned |
+| 401 | Authentication required |
+| 404 | Progress record not found |
+
+---
+
+**Endpoint: POST /api/v1/behavioral-consistency/progress**
+Descripción: Crea un nuevo registro de progreso conductual para el usuario autenticado.
+Authorization: Bearer JWT requerido.
+Responses:
+
+| Código | Descripción |
+|--------|-------------|
+| 201 | Behavioral progress created |
+| 400 | Invalid request data |
+| 401 | Authentication required |
+
+---
+
+**Bounded Context: Analytics**
+
+**Endpoint: GET /api/v1/analytics/{userId}**
+Descripción: Obtiene el dashboard analítico completo del usuario, incluyendo métricas consolidadas y línea de tiempo de adherencia conductual.
+Authorization: Bearer JWT requerido.
+Responses:
+
+| Código | Descripción |
+|--------|-------------|
+| 200 | Analytics dashboard returned |
+| 401 | Authentication required |
+| 404 | Analytics record not found |
+
+---
+
+**Bounded Context: Subscriptions**
+
+**Endpoint: GET /api/v1/subscriptions/{userId}**
+Descripción: Obtiene la suscripción activa del usuario.
+Authorization: Bearer JWT requerido.
+Responses:
+
+| Código | Descripción |
+|--------|-------------|
+| 200 | Subscription returned |
+| 401 | Authentication required |
+| 404 | Subscription not found |
+
+**Endpoint: PUT /api/v1/subscriptions/{id}**
+Descripción: Actualiza el plan de suscripción del usuario (upgrade o downgrade). No realiza procesamiento de pagos real en este sprint.
+Authorization: Bearer JWT requerido.
+Responses:
+
+| Código | Descripción |
+|--------|-------------|
+| 200 | Subscription updated |
+| 400 | Invalid plan data |
+| 401 | Authentication required |
+
+#### 5.2.3.7. Software Deployment Evidence for Sprint Review
+
+Durante este sprint se realizó el despliegue del backend de NutriSmart en Coolify, utilizando el repositorio `nutrismart-platform` como fuente de despliegue continuo y el dominio `smart-api.nutriproject.xyz` como punto de acceso público a la API. A continuación se describen los pasos realizados.
+
+**Creación y configuración del Dockerfile**
+
+Se agregó un Dockerfile multi-stage al repositorio `nutrismart-platform`. La primera etapa compila el proyecto con Maven y la segunda etapa construye la imagen final sobre una base de Java 21-slim, copiando únicamente el JAR generado. Esto reduce el tamaño de la imagen final y acelera el despliegue.
+
+**Configuración de rama bajo Gitflow**
+
+Se mantuvo la estructura de ramas existente siguiendo Gitflow:
+- `main` → rama de producción (fuente de despliegue)
+- `develop` → rama de integración
+- `feature/*` → ramas de desarrollo por bounded context
+
+Todo el trabajo fue integrado mediante Pull Requests desde las ramas `feature/*` hacia `develop`, y finalmente desde `develop` hacia `main` como parte de la release `v1.1.3`.
+
+**Actualización de CORS para integración con frontend**
+
+Se actualizó la configuración de CORS en la clase `WebMvcConfigurer` del proyecto para aceptar peticiones desde el dominio `https://app-smart.nutriproject.xyz`, permitiendo el consumo del API desde el frontend desplegado en el Sprint 2.
+
+**Configuración del despliegue en Coolify**
+
+Para habilitar el despliegue continuo desde el repositorio se siguieron los pasos:
+
+1. Ingresar al panel de administración de Coolify
+2. Crear una nueva aplicación seleccionando **GitHub** como fuente
+3. Conectar el repositorio `nutrismart-platform` de la organización `upc-pre-202610-1asi0729-17952-devteam`
+4. Configurar los parámetros de build con Dockerfile
+5. Configurar las variables de entorno de producción (credenciales de base de datos MySQL, secreto JWT, credenciales Gmail, API keys de DeepSeek y OpenWeatherMap)
+6. Asignar el dominio personalizado `smart-api.nutriproject.xyz` en la sección **Domains**
+7. Guardar la configuración y ejecutar el primer despliegue manual
+
+**URLs de despliegue**
+
+| Recurso | URL |
+|---------|-----|
+| API Backend | `https://smart-api.nutriproject.xyz` |
+| Swagger UI | `https://smart-api.nutriproject.xyz/swagger-ui/index.html` |
+| OpenAPI JSON | `https://smart-api.nutriproject.xyz/v3/api-docs` |
+| Frontend Web App | `https://app-smart.nutriproject.xyz` |
+
+#### 5.2.3.8. Team Collaboration Insights during Sprint
+
+Durante el Sprint 3, todos los miembros del equipo participaron activamente en las actividades de implementación del backend, tal como se refleja en los analíticos de colaboración de GitHub. Los integrantes Nevatrix (Angel Villarreal), xJoelFMRx (Joel Mora), Emy127 (Angela Espinoza), olenkisha_14 (Olenka Del Aguila) y Brandon1677 (Brandon Soto) realizaron commits de manera constante a lo largo del sprint, cada uno liderando su bounded context asignado y colaborando en los aspectos transversales de configuración, CORS y despliegue.
+
+![Insight](../assets/img/sprint3/insight.png)
+
 ## 5.3. Validation Interviews
 
 ### 5.3.1. Diseño de Entrevistas
