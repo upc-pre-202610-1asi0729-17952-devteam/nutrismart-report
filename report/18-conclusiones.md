@@ -76,4 +76,31 @@ Finalmente, se recomienda evaluar la incorporación de modelos de lenguaje para 
  
 ---
  
-## Video About-the-Team
+## Video About-The-Team
+
+El video **About-The-Team** de NutriSmart resume el proceso de trabajo realizado por el equipo a lo largo del proyecto. Inicia con una reflexión grupal sobre el origen del problema: cómo ayudar a las personas a mantener una alimentación saludable de forma sostenida. A continuación, se desarrolla el proceso de diseño y arquitectura, mostrando cómo el equipo construyó un lenguaje común a través del EventStorming y definió los bounded contexts del sistema bajo un enfoque de Domain-Driven Design. Luego se documenta la etapa de implementación, abarcando el desarrollo del frontend en Angular y su posterior extensión al backend en Spring Boot, destacando la coherencia arquitectónica mantenida a lo largo de los sprints. El video concluye con el testimonio individual de cada integrante, donde cada uno describe las actividades realizadas, los outcomes logrados y las competencias comunicativas desarrolladas durante el proyecto.
+
+### Pauta de Secuencias de Contenido
+
+| Sección | Inicio (hh:mm:ss) |
+|---|---|
+| Introducción | 00:00:00 |
+| Contexto del proyecto | 00:01:00 |
+| Proceso de trabajo | 00:02:15 |
+| Testimonio – Ángela Espinoza | 00:05:10 |
+| Testimonio – Brandon Soto | 00:06:06 |
+| Testimonio – Olenka Del Aguila | 00:07:05 |
+| Testimonio – Joel Mora | 00:08:20 |
+| Testimonio – Ángel Villarreal | 00:09:28 |
+| Cierre | 00:10:28 |
+
+### Cuadro Representativo
+
+![Imagen About-the-team](../assets/img/abt_team.jpg)
+
+### URLs de Publicación
+
+- **Microsoft Stream:** [Link Stream](https://upcedupe-my.sharepoint.com/:v:/g/personal/u202417857_upc_edu_pe/IQBZsJjpaxFpSIn7Vna2BKZDAWDoPUpVPvQbJ1kLrhkd3f0?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=J62esl)
+  `https://upcedupe-my.sharepoint.com/:v:/g/personal/u202417857_upc_edu_pe/IQBZsJjpaxFpSIn7Vna2BKZDAWDoPUpVPvQbJ1kLrhkd3f0?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=J62esl 
+- **YouTube:** [Link Youtube](https://www.youtube.com/watch?v=zSNGdlIPOXI)
+  `https://www.youtube.com/watch?v=zSNGdlIPOXI`
