@@ -954,7 +954,9 @@ El Sprint 3 abarca la construcción del backend completo de la plataforma NutriS
 
 El Sprint 3 tiene como objetivo entregar el backend completo de la plataforma NutriSmart. El desarrollo cubre los bounded contexts de IAM (TS01), Nutrition Tracking — Food Catalog (TS02), Nutrition Tracking — Meal Log y Balance Diario (TS03), Nutrition Tracking — Smart Scan (TS04), Restaurant Intelligence (TS05), Metabolic Adaptation (TS06), Behavioral Consistency (TS07), Smart Recommendation (TS08), Subscriptions (TS09) y Analytics (TS10), siguiendo la arquitectura DDD por bounded context con capas `domain`, `application`, `infrastructure` e `interfaces`. La integración con Stripe, wearables y Google Health API queda fuera del alcance de este sprint. Todos los endpoints son documentados con springdoc-openapi 3.0.2 y Swagger UI.
 
-URL del Board (Trello): [Enlace Trello Sprint 3](https://trello.com/invite/b/sprint-backlog-3-nutrismart)
+![Board Sprint 3](../assets/img/sprint3/sprintbacklog.png)
+
+URL del Board (Trello): [Enlace Trello Sprint 3](https://trello.com/invite/b/6a324d0a407108191564f8e5/ATTIe781d1b527b8ef53d1540aacdf84146d5982BED7/sprint-backlog-3)
 
 | US ID | US Title | Task ID | Task Title | Description | Est. (h) | Assigned To | Status |
 |-------|----------|---------|------------|-------------|----------|-------------|--------|
@@ -1477,7 +1479,7 @@ Durante el Sprint 3, el equipo completó la implementación del backend completo
 
 Los bounded contexts implementados cubren: autenticación y gestión de usuarios con JWT (IAM), gestión de suscripciones sin procesamiento de pagos real (Subscriptions), adherencia conductual con los cuatro estados ON_TRACK/AT_RISK/DROPPED/RECOVERED (Behavioral Consistency), registro y análisis nutricional diario (Nutrition Tracking), métricas corporales y actividad física manual con estimación MET (Metabolic Adaptation), análisis de menús de restaurante con IA DeepSeek y ranking de platos compatibles (Restaurant Intelligence), recomendaciones contextuales con clima vía OpenWeatherMap (Smart Recommendation) y dashboard analítico con historial de adherencia (Analytics).
 
-A continuación se presentan capturas de Swagger UI mostrando los endpoints implementados y ejercitados durante el sprint.
+![Swagger](../assets/img/sprint3/swagger.png)
 
 **IAM — AuthController y UsersController:**
 
@@ -1511,7 +1513,9 @@ Los endpoints de adaptación metabólica exponen el registro y consulta de métr
 
 Los endpoints de analytics exponen el dashboard diario del usuario con métricas consolidadas y la línea de tiempo de adherencia conductual. El endpoint de exportación PDF está restringido a usuarios con plan Premium.
 
-**URL del video de demostración del Sprint 3:** [Video sprint 3 — pendiente de enlace final]
+**URL del video de demostración del Sprint 3:** [Video del sprint 3](https://upcedupe-my.sharepoint.com/:v:/g/personal/u202417857_upc_edu_pe/IQALj-97MSKOTKqBTU5O-MMQATA02rRMc3bB2bv81Bco8nY?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=YrDcHj)  
+
+`https://upcedupe-my.sharepoint.com/:v:/g/personal/u202417857_upc_edu_pe/IQALj-97MSKOTKqBTU5O-MMQATA02rRMc3bB2bv81Bco8nY?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=YrDcHj`
 
 #### 5.2.3.6. Services Documentation Evidence for Sprint Review
 
