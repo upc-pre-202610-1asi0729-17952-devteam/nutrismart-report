@@ -932,7 +932,7 @@ Los objetivos son de validar la usabilidad, efectividad y claridad de NutriSmart
 - Link: [Link de las entrevistas](...)
 - Resumen: Jorge destacó el impacto visual de las imágenes y la variedad de verduras presentadas en la plataforma. Valoró significativamente la facilidad y practicidad del registro nutricional, así como la funcionalidad que le permite visualizar en detalle las calorías, proteínas, carbohidratos, grasas y fibras consumidas. Consideró que la analítica es útil y de fácil acceso para cualquier tipo de usuario. Sugirió mejoras específicas como la inclusión de videos de ejercicios básicos de bajo impacto y testimonios de usuarios que hayan logrado resultados. Finalmente, recomendaría la plataforma a sus conocidos debido a su practicidad y utilidad en el seguimiento del progreso de pérdida de peso.
 
-![E1S1 - Capture](../assets/img/chapter5-interviews/...)
+![E1S1 - Capture](../assets/img/chapter5-interviews/Entrevista1-S1.png)
 
 ##### Entrevista 2:
 
@@ -943,7 +943,7 @@ Los objetivos son de validar la usabilidad, efectividad y claridad de NutriSmart
 - Link: [Link de las entrevistas](...)
 - Resumen: Tatiana encontró el procedimiento general intuitivo y fácil de entender. Aprecio las funcionalidades presentadas como Smart Scan y Nutricion Gobal, considerándolas útiles para su objetivo. Valoró los precios accesibles de los planes. Durante la configuración inicial, no presentó dificultades en la comprensión de datos personales ni restricciones alimentarias. Resaltó especialmente la sección de porcentajes de macronutrientes que le ayuda a identificar qué debería consumir. La visualización del progreso corporal le pareció motivadora y de utilidad para reforzar su meta. Recomendaría la plataforma a familiares y amigos por su innovación y facilidad para mantener una vida saludable en el día a día.
 
-![E2S1 - Capture](../assets/img/chapter5-interviews/...)
+![E2S1 - Capture](../assets/img/chapter5-interviews/Entrevista2-S1.png)
 
 ##### Entrevista 3:
 
@@ -954,7 +954,7 @@ Los objetivos son de validar la usabilidad, efectividad y claridad de NutriSmart
 - Link: [Link de las entrevistas](...)
 - Resumen: Larisa encontró la plataforma especialmente intuitiva y moderna, destacando la claridad en el flujo de registro e inicio de sesión. Se mostró entusiasmada con las recomendaciones personalizadas basadas en el clima y ubicación, considerándolas prácticas para su estilo de vida actual. Valoró la funcionalidad de agregar ingredientes disponibles en casa para recetas personalizadas, viéndola como una ventaja económica. El dashboard principal le pareció visualmente atractivo y fácil de interpretar para monitorear su progreso diario. Sugirió mejoras en la gamificación de objetivos y mayor variedad de contenido educativo sobre nutrición básica. Expresó su disposición a recomendar la plataforma a sus compañeras de universidad por su diseño amigable y funcionalidades adaptadas a jóvenes adultos con objetivos de bienestar.
 
-![E3S1 - Capture](../assets/img/chapter5-interviews/...)
+![E3S1 - Capture](../assets/img/chapter5-interviews/Entrevista3-S1.png)
 
 #### Segmento 2: Ganancia de masa muscular
 
