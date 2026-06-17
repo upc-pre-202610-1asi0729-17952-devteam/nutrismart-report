@@ -1618,6 +1618,7 @@ El Diagrama de Contexto (Nivel 1 del modelo C4) representa a NutriSmart como un 
 	- `OpenWeatherMap:` Provee datos climáticos para ajustar las sugerencias de comidas.
 	- `Stripe:` Gestiona de forma segura los pagos y el estado de las suscripciones.
 	- `Geolocation API:` Provee la ubicación actual del usuario para el Modo Viaje y las recomendaciones contextuales(plan Pro/Premium).
+	- `DeepSeek API:` Genera y provee sugerencias de recetas en función de los ingredientes disponibles y el contexto nutricional del usuario.
 
 ![Context Diagram](../assets/img/artifacts/1nutrismart-SystemContext.png)
 
@@ -1650,7 +1651,7 @@ El Diagrama de Componentes (Nivel 3 del modelo C4) describe la estructura intern
 
 **A. Single Page Application Components (Frontend)**
 
-El Single Page Application se organiza en 7 Bounded Contexts, cada uno con 4 capas siguiendo el patrón de arquitectura del Domain-Driven Design.
+El Single Page Application se organiza en 8 Bounded Contexts, cada uno con 4 capas siguiendo el patrón de arquitectura del Domain-Driven Design.
 
 El diagrama a continuación muestra todos los componentes de la arquitectura en un único bloque, dado que Structurizr no soporta la agrupación visual por Bounded Context en las vistas de componentes.
 
@@ -1696,7 +1697,7 @@ Para apreciar la separación por capas Domain-Driven Design de cada Bounded Cont
 
 **B. API Application Components (Backend)**
 
-El API Application se organiza en 7 Bounded Contexts y un Shared Kernel, cada uno siguiendo el patrón de arquitectura del Domain-Driven Design.
+El API Application se organiza en 8 Bounded Contexts y un Shared Kernel, cada uno siguiendo el patrón de arquitectura del Domain-Driven Design.
 
 El diagrama a continuación muestra todos los componentes de la arquitectura en un único bloque, dado que Structurizr no soporta la agrupación visual por Bounded Context en las vistas de componentes.
 
@@ -1712,7 +1713,7 @@ Para apreciar la separación por capas Domain-Driven Design de cada Bounded Cont
 
    ![IAM Backend Diagram](../assets/img/artifacts/14nutrismart-IAMBackendDiagram.png)
 
- - **Nutrition Tracking:** Gestiona el registro de comidas y el procesamiento de Smart Scan. Se integra con Google Cloud Vision y Nutrition Data Providers.
+ - **Nutrition Tracking:** Gestiona el registro de comidas y el procesamiento de Smart Scan. Se integra con Google Cloud Vision, Nutrition Data Providers y DeepSeek API para obtener sugerencias de recetas asociadas a las comidas registradas.
 
    ![Nutrition Backend Diagram](../assets/img/artifacts/15nutrismart-NutritionBackendDiagram.png)
 
@@ -1728,7 +1729,7 @@ Para apreciar la separación por capas Domain-Driven Design de cada Bounded Cont
 
    ![Restaurant Backend Diagram](../assets/img/artifacts/18nutrismart-RestaurantBackendDiagram.png)
 
- - **Smart Recommendations:** Procesa datos contextuales para generar sugerencias personalizadas. Se integra con OpenWeatherMap y Geolocation API.
+ - **Smart Recommendations:** Procesa datos contextuales para generar sugerencias personalizadas. Se integra con OpenWeatherMap, Geolocation API y DeepSeek API para la generación de recetas basadas en el contexto del usuario.
 
    ![Recs Backend Diagram](../assets/img/artifacts/19nutrismart-RecsBackendDiagram.png)
 
