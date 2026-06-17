@@ -1,0 +1,116 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Nutrition Tracking — Interfaces layer (nutrismart-platform)
+
+' ─── Boundary stubs: application layer ───────────────────────────────────────
+package "nutritiontracking.application [boundary]" {
+  interface DailyIntakeCommandService <<port>>
+  interface DailyIntakeQueryService <<port>>
+  interface FoodItemCommandService <<port>>
+  interface FoodItemQueryService <<port>>
+  interface MealRecordCommandService <<port>>
+  interface MealRecordQueryService <<port>>
+  interface SmartScanCommandService <<port>>
+}
+
+package "nutritiontracking.interfaces.rest" {
+  class DailyIntakeController <<@RestController>> {
+    - commandService: DailyIntakeCommandService
+    - queryService: DailyIntakeQueryService
+  }
+  class DailyBalanceController <<@RestController>> {
+    - queryService: DailyIntakeQueryService
+  }
+  class FoodsController <<@RestController>> {
+    - commandService: FoodItemCommandService
+    - queryService: FoodItemQueryService
+  }
+  class NutritionLogController <<@RestController>> {
+    - commandService: MealRecordCommandService
+    - queryService: MealRecordQueryService
+  }
+  class SmartScanController <<@RestController>> {
+    - commandService: SmartScanCommandService
+    --
+    + scanPlate(req: ScanPlateRequest): ResponseEntity
+    + confirmPlateScan(req: ConfirmPlateScanRequest): ResponseEntity
+    .. only /plate and /plate/confirm (menu endpoint removed) ..
+  }
+}
+
+package "nutritiontracking.interfaces.rest.resources" {
+  class CreateDailyIntakeResource <<resource>>
+  class UpdateDailyIntakeResource <<resource>>
+  class DailyIntakeResource <<resource>>
+  class CreateFoodItemResource <<resource>>
+  class UpdateFoodItemResource <<resource>>
+  class FoodItemResource <<resource>>
+  class CreateMealRecordResource <<resource>>
+  class UpdateMealRecordResource <<resource>>
+  class MealRecordResource <<resource>>
+  class ScanPlateRequest <<resource>>
+  class ScanPlateResultResource <<resource>>
+  class ConfirmPlateScanRequest <<resource>>
+}
+
+package "nutritiontracking.interfaces.rest.transform" {
+  class DailyIntakeCommandFromResourceAssembler <<assembler>>
+  class DailyIntakeResourceFromEntityAssembler <<assembler>>
+  class FoodItemCommandFromResourceAssembler <<assembler>>
+  class FoodItemResourceFromEntityAssembler <<assembler>>
+  class MealRecordCommandFromResourceAssembler <<assembler>>
+  class MealRecordResourceFromEntityAssembler <<assembler>>
+}
+
+package "nutritiontracking.interfaces.acl" {
+  interface NutritionTrackingContextFacade <<ACL>>
+}
+
+' ─── Legacy / unused: menu-scan resources (migrated to restaurantintelligence) ─
+package "nutritiontracking.interfaces.rest.resources [legacy / unused]" #EEEEEE {
+  class ScanMenuRequest <<resource>>
+  class ScanMenuResultResource <<resource>>
+}
+note bottom of "nutritiontracking.interfaces.rest.resources [legacy / unused]"
+  No longer referenced by any controller — the menu-scan
+  endpoint moved to restaurantintelligence (MenuScanController).
+  Left unconnected rather than linked artificially.
+end note
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+DailyIntakeController --> DailyIntakeCommandService : uses >
+DailyIntakeController --> DailyIntakeQueryService : uses >
+DailyBalanceController --> DailyIntakeQueryService : uses >
+FoodsController --> FoodItemCommandService : uses >
+FoodsController --> FoodItemQueryService : uses >
+NutritionLogController --> MealRecordCommandService : uses >
+NutritionLogController --> MealRecordQueryService : uses >
+SmartScanController --> SmartScanCommandService : uses >
+
+DailyIntakeController ..> CreateDailyIntakeResource : consumes >
+DailyIntakeController ..> DailyIntakeResource : produces >
+DailyIntakeController ..> DailyIntakeCommandFromResourceAssembler : uses >
+DailyIntakeController ..> DailyIntakeResourceFromEntityAssembler : uses >
+FoodsController ..> CreateFoodItemResource : consumes >
+FoodsController ..> FoodItemResource : produces >
+FoodsController ..> FoodItemCommandFromResourceAssembler : uses >
+FoodsController ..> FoodItemResourceFromEntityAssembler : uses >
+NutritionLogController ..> CreateMealRecordResource : consumes >
+NutritionLogController ..> MealRecordResource : produces >
+NutritionLogController ..> MealRecordCommandFromResourceAssembler : uses >
+NutritionLogController ..> MealRecordResourceFromEntityAssembler : uses >
+SmartScanController ..> ScanPlateRequest : consumes >
+SmartScanController ..> ScanPlateResultResource : produces >
+SmartScanController ..> ConfirmPlateScanRequest : consumes >
+
+UpdateDailyIntakeResource ..> DailyIntakeCommandFromResourceAssembler : read by <
+UpdateFoodItemResource ..> FoodItemCommandFromResourceAssembler : read by <
+UpdateMealRecordResource ..> MealRecordCommandFromResourceAssembler : read by <
+DailyBalanceController ..> DailyIntakeResource : produces >
+NutritionTrackingContextFacade ..> DailyIntakeQueryService : backed by >
+
+@enduml

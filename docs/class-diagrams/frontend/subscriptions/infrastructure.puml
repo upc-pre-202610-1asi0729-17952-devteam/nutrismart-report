@@ -4,87 +4,56 @@ skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-' ─── Boundary stubs: shared/infrastructure ───────────────────────────────────
-package "shared/infrastructure [boundary]" {
-  abstract class BaseApi <<boundary>> {
-  }
-  interface BaseAssembler <<boundary>> {
-  }
-  abstract class BaseApiEndpoint <<boundary>> {
-  }
-}
+title Subscriptions — Infrastructure layer (nutrismart-webapp)
 
-' ─── Boundary stubs: subscriptions/domain ────────────────────────────────────
+' ─── Boundary stubs: domain layer ────────────────────────────────────────────
 package "subscriptions/domain [boundary]" {
-  class Subscription <<boundary>> {
-    + id: number
-    + userId: number
-  }
+  class Subscription <<entity>>
+  class BillingRecord <<entity>>
+  class PaymentIntent <<entity>>
+  class PaymentMethod <<value object>>
+  abstract class PaymentGatewayPort <<port>>
+  interface PaymentResult <<dto>>
 }
 
-' ─── Resources ───────────────────────────────────────────────────────────────
-package "subscriptions/infrastructure/resources" {
-
-  class SubscriptionResource <<resource>> {
-    + id: number
-    + userId: number
-    + plan: string
-    + status: string
-    + startedAt: string
-    + expiresAt: string | null
-    + renewedAt: string | null
+package "subscriptions/infrastructure" {
+  class SubscriptionApi <<@Injectable>> {
+    + getSubscription(userId): Observable<Subscription | null>
+    + createSubscription(subscription): Observable<Subscription>
+    + updateSubscription(subscription): Observable<Subscription>
   }
-
-  class SubscriptionsResponse <<resource>> {
-    + subscriptions: SubscriptionResource[]
+  class BillingHistoryApi <<@Injectable>> {
+    + getHistory(userId): Observable<BillingRecord[]>
+    + createRecord(data: NewBillingRecord): Observable<BillingRecord>
   }
-}
-
-' ─── Assemblers ──────────────────────────────────────────────────────────────
-package "subscriptions/infrastructure/assemblers" {
-
   class SubscriptionAssembler <<assembler>> {
-    + toEntityFromResource(resource: SubscriptionResource): Subscription
-    + toResourceFromEntity(entity: Subscription): SubscriptionResource
-    + toEntitiesFromResponse(response: SubscriptionsResponse): Subscription[]
+    + toEntityFromResource(r: SubscriptionResource): Subscription
+    + toResourceFromEntity(e: Subscription): SubscriptionResource
   }
+  class BillingHistoryAssembler <<assembler>> {
+    + toEntityFromResource(r: BillingHistoryResource): BillingRecord
+  }
+  class SimulatedPaymentGateway <<@Injectable>> {
+    + processPayment(intent: PaymentIntent, method: PaymentMethod): Observable<PaymentResult>
+  }
+  interface SubscriptionResource <<resource>>
+  interface BillingHistoryResource <<resource>>
+  interface NewBillingRecord <<dto>>
 }
 
-' ─── HTTP ────────────────────────────────────────────────────────────────────
-package "subscriptions/infrastructure/http" {
-
-  class SubscriptionApiEndpoint <<endpoint>> {
-    - assembler: SubscriptionAssembler
-    --
-    + getAll(): Observable<Subscription[]>
-    + getById(id: number): Observable<Subscription>
-    + create(entity: Subscription): Observable<Subscription>
-    + update(entity: Subscription, id: number): Observable<Subscription>
-    + delete(id: number): Observable<void>
-  }
-
-  class SubscriptionApi <<api>> {
-    - endpoint: SubscriptionApiEndpoint
-    --
-    + getSubscriptionByUserId(userId: number): Observable<Subscription | undefined>
-    + createSubscription(sub: Subscription): Observable<Subscription>
-    + updateSubscription(sub: Subscription): Observable<Subscription>
-    + cancelSubscription(id: number): Observable<Subscription>
-    + upgradePlan(userId: number, plan: SubscriptionPlan): Observable<Subscription>
-  }
-}
-
-SubscriptionApi --|> BaseApi : extends >
-SubscriptionApiEndpoint --|> BaseApiEndpoint : extends >
-SubscriptionAssembler ..|> BaseAssembler : implements >
-
-SubscriptionsResponse "1" *--> "0..*" SubscriptionResource : contains >
-
-SubscriptionAssembler --> SubscriptionResource : reads >
-SubscriptionAssembler --> SubscriptionsResponse : reads >
-SubscriptionAssembler ..> Subscription : produces >
-
-SubscriptionApiEndpoint --> SubscriptionAssembler : uses >
-SubscriptionApi o--> SubscriptionApiEndpoint : delegates to >
+' ─── Relationships ────────────────────────────────────────────────────────────
+SimulatedPaymentGateway --|> PaymentGatewayPort
+SubscriptionApi --> SubscriptionAssembler : maps via >
+BillingHistoryApi --> BillingHistoryAssembler : maps via >
+SubscriptionApi ..> Subscription : returns >
+BillingHistoryApi ..> BillingRecord : returns >
+SubscriptionAssembler ..> Subscription : builds >
+SubscriptionAssembler ..> SubscriptionResource : reads/writes >
+BillingHistoryAssembler ..> BillingRecord : builds >
+BillingHistoryAssembler ..> BillingHistoryResource : reads >
+SimulatedPaymentGateway ..> PaymentIntent : charges >
+SimulatedPaymentGateway ..> PaymentMethod : with method >
+BillingHistoryApi ..> NewBillingRecord : accepts >
+SimulatedPaymentGateway ..> PaymentResult : returns >
 
 @enduml

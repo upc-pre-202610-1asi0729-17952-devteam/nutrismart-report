@@ -1,0 +1,102 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title IAM — Interfaces layer (nutrismart-platform)
+
+' ─── Boundary stubs: application layer ───────────────────────────────────────
+package "iam.application [boundary]" {
+  interface UserCommandService <<port>>
+  interface UserQueryService <<port>>
+  interface AuthCommandService <<port>>
+  interface PasswordResetCommandService <<port>>
+  class RegisterAccountCommand <<command>>
+  class UpdateUserCommand <<command>>
+}
+
+' ─── REST controllers ────────────────────────────────────────────────────────
+package "iam.interfaces.rest" {
+  class AuthController <<@RestController>> {
+    - userQueryService: UserQueryService
+    - authCommandService: AuthCommandService
+    - passwordResetCommandService: PasswordResetCommandService
+    + checkEmail(email: String): ResponseEntity
+    + login(resource: LoginResource): ResponseEntity
+    + forgotPassword(resource: ForgotPasswordResource): ResponseEntity
+    + resetPassword(resource: ResetPasswordResource): ResponseEntity
+  }
+  class UsersController <<@RestController>> {
+    - commandService: UserCommandService
+    - queryService: UserQueryService
+    + getAllUsers(): ResponseEntity<List<UserResource>>
+    + getUserById(id: Long): ResponseEntity<UserResource>
+    + createUser(resource: CreateUserResource): ResponseEntity
+    + updateUser(id: Long, resource: UpdateUserResource): ResponseEntity
+    + deleteUser(id: Long): ResponseEntity
+  }
+}
+
+' ─── REST resources (DTOs) ───────────────────────────────────────────────────
+package "iam.interfaces.rest.resources" {
+  class LoginResource <<resource>>
+  class ForgotPasswordResource <<resource>>
+  class ResetPasswordResource <<resource>>
+  class CreateUserResource <<resource>>
+  class UpdateUserResource <<resource>>
+  class UserResource <<resource>>
+  class AuthResponse <<resource>>
+}
+
+' ─── REST transformers (assemblers) ──────────────────────────────────────────
+package "iam.interfaces.rest.transform" {
+  class CreateUserCommandFromResourceAssembler <<assembler>> {
+    + {static} toCommandFromResource(r: CreateUserResource): RegisterAccountCommand
+  }
+  class UpdateUserCommandFromResourceAssembler <<assembler>> {
+    + {static} toCommandFromResource(id: Long, r: UpdateUserResource): UpdateUserCommand
+  }
+  class UserResourceFromEntityAssembler <<assembler>> {
+    + {static} toResourceFromEntity(user: User): UserResource
+  }
+  class ResponseEntityFromAuthCommandResultAssembler <<assembler>>
+  class ResponseEntityFromUserCommandResultAssembler <<assembler>>
+}
+
+' ─── ACL (published contract) ────────────────────────────────────────────────
+package "iam.interfaces.acl" {
+  interface IamContextFacade <<ACL>> {
+    + getUserSummary(userId: Long): Optional<UserSummaryData>
+  }
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+AuthController --> AuthCommandService : uses >
+AuthController --> UserQueryService : uses >
+AuthController --> PasswordResetCommandService : uses >
+AuthController ..> LoginResource : consumes >
+AuthController ..> ForgotPasswordResource : consumes >
+AuthController ..> ResetPasswordResource : consumes >
+AuthController ..> ResponseEntityFromAuthCommandResultAssembler : uses >
+
+UsersController --> UserCommandService : uses >
+UsersController --> UserQueryService : uses >
+UsersController ..> CreateUserResource : consumes >
+UsersController ..> UpdateUserResource : consumes >
+UsersController ..> UserResource : produces >
+UsersController ..> CreateUserCommandFromResourceAssembler : uses >
+UsersController ..> UpdateUserCommandFromResourceAssembler : uses >
+UsersController ..> UserResourceFromEntityAssembler : uses >
+UsersController ..> ResponseEntityFromUserCommandResultAssembler : uses >
+
+CreateUserCommandFromResourceAssembler ..> CreateUserResource : reads >
+CreateUserCommandFromResourceAssembler ..> RegisterAccountCommand : builds >
+UpdateUserCommandFromResourceAssembler ..> UpdateUserResource : reads >
+UpdateUserCommandFromResourceAssembler ..> UpdateUserCommand : builds >
+UserResourceFromEntityAssembler ..> UserResource : builds >
+AuthResponse ..> LoginResource : returned after >
+
+IamContextFacade ..> UserQueryService : backed by >
+
+@enduml

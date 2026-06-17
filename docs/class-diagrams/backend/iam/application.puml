@@ -1,0 +1,142 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title IAM — Application layer (nutrismart-platform)
+
+' ─── Boundary stubs: domain layer ────────────────────────────────────────────
+package "iam.domain [boundary]" {
+  class User <<aggregate>>
+  interface UserRepository <<port>>
+  interface PasswordResetTokenRepository <<port>>
+  interface EmailService <<domain service>>
+}
+
+' ─── Command / Query ports ───────────────────────────────────────────────────
+package "iam.application.commandservices" {
+
+  interface UserCommandService <<port>> {
+    + handle(c: RegisterAccountCommand): Result<User, UserCommandFailure>
+    + handle(c: UpdateUserCommand): Result<User, UserCommandFailure>
+    + handle(c: UpdateUserPlanCommand): Result<User, UserCommandFailure>
+    + handle(c: DeleteUserCommand): Result<Void, UserCommandFailure>
+  }
+  interface AuthCommandService <<port>> {
+    + handle(c: AuthenticateCommand): Result<AuthTokenData, AuthFailure>
+  }
+  interface PasswordResetCommandService <<port>> {
+    + handle(c: RequestPasswordResetCommand): Result<Void, PasswordResetCommandFailure>
+    + handle(c: ResetPasswordCommand): Result<Void, PasswordResetCommandFailure>
+  }
+  class AuthTokenData <<dto>> {
+    + token: String
+    + userId: Long
+    + email: String
+    + firstName: String
+    + lastName: String
+    + goal: UserGoal
+    + plan: UserPlan
+  }
+  interface AuthFailure <<sealed>>
+  interface UserCommandFailure <<sealed>>
+  interface PasswordResetCommandFailure <<sealed>>
+}
+
+package "iam.application.queryservices" {
+  interface UserQueryService <<port>> {
+    + handle(q: GetUserByIdQuery): Optional<User>
+    + handle(q: GetAllUsersQuery): List<User>
+    + handle(q: GetUserByEmailQuery): Optional<User>
+  }
+}
+
+' ─── Commands ────────────────────────────────────────────────────────────────
+package "iam.application.commands" {
+  class RegisterAccountCommand <<command>>
+  class UpdateUserCommand <<command>>
+  class UpdateUserPlanCommand <<command>>
+  class DeleteUserCommand <<command>>
+  class AuthenticateCommand <<command>>
+  class RequestPasswordResetCommand <<command>>
+  class ResetPasswordCommand <<command>>
+  class SubmitOnboardingProfileCommand <<command>>
+}
+
+package "iam.application.queries" {
+  class GetUserByIdQuery <<query>>
+  class GetUserByEmailQuery <<query>>
+  class GetAllUsersQuery <<query>>
+}
+
+' ─── Service implementations ─────────────────────────────────────────────────
+package "iam.application.internal.commandservices" {
+  class UserCommandServiceImpl {
+    - userRepository: UserRepository
+    - passwordEncoder: PasswordEncoder
+  }
+  class AuthCommandServiceImpl {
+    - userQueryService: UserQueryService
+    - passwordEncoder: PasswordEncoder
+    - jwtService: JwtService
+  }
+  class PasswordResetCommandServiceImpl {
+    - userRepository: UserRepository
+    - tokenRepository: PasswordResetTokenRepository
+    - emailService: EmailService
+    - passwordEncoder: PasswordEncoder
+  }
+}
+
+package "iam.application.internal.queryservices" {
+  class UserQueryServiceImpl {
+    - userRepository: UserRepository
+  }
+}
+
+' ─── ACL ─────────────────────────────────────────────────────────────────────
+package "iam.application.acl" {
+  class IamContextFacadeImpl {
+    - userQueryService: UserQueryService
+    + getUserSummary(userId: Long): Optional<UserSummaryData>
+  }
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+UserCommandServiceImpl ..|> UserCommandService
+AuthCommandServiceImpl ..|> AuthCommandService
+PasswordResetCommandServiceImpl ..|> PasswordResetCommandService
+UserQueryServiceImpl ..|> UserQueryService
+
+UserCommandServiceImpl --> UserRepository : uses >
+UserCommandServiceImpl ..> RegisterAccountCommand : handles >
+UserCommandServiceImpl ..> UpdateUserCommand : handles >
+UserCommandServiceImpl ..> UpdateUserPlanCommand : handles >
+UserCommandServiceImpl ..> DeleteUserCommand : handles >
+UserCommandServiceImpl ..> User : produces >
+
+AuthCommandServiceImpl --> UserQueryService : uses >
+AuthCommandServiceImpl ..> AuthenticateCommand : handles >
+AuthCommandServiceImpl ..> AuthTokenData : produces >
+AuthCommandService ..> AuthFailure : may fail with >
+
+PasswordResetCommandServiceImpl --> UserRepository : uses >
+PasswordResetCommandServiceImpl --> PasswordResetTokenRepository : uses >
+PasswordResetCommandServiceImpl --> EmailService : uses >
+PasswordResetCommandServiceImpl ..> RequestPasswordResetCommand : handles >
+PasswordResetCommandServiceImpl ..> ResetPasswordCommand : handles >
+PasswordResetCommandService ..> PasswordResetCommandFailure : may fail with >
+
+UserQueryServiceImpl --> UserRepository : uses >
+UserQueryServiceImpl ..> GetUserByIdQuery : handles >
+UserQueryServiceImpl ..> GetUserByEmailQuery : handles >
+UserQueryServiceImpl ..> GetAllUsersQuery : handles >
+UserQueryService ..> User : returns >
+
+UserCommandService ..> UserCommandFailure : may fail with >
+SubmitOnboardingProfileCommand ..> User : configures >
+
+IamContextFacadeImpl --> UserQueryService : uses >
+
+@enduml

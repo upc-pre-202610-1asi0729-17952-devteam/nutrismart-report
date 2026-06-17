@@ -4,155 +4,80 @@ skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-' ─── Boundary stub: application layer ────────────────────────────────────────
+title IAM — Presentation layer (nutrismart-webapp)
+
+' ─── Boundary stubs: application & infrastructure ────────────────────────────
 package "iam/application [boundary]" {
-  class IamStore <<boundary>> {
-    + currentUser: Signal<User | null>
-    + isAuthenticated: Signal<boolean>
-    + loading: Signal<boolean>
-    + error: Signal<string | null>
-    + isLoginBlocked: Signal<boolean>
-    + login(email, password): Promise<void>
-    + register(data): Promise<void>
-    + logout(): void
-    + updateProfile(data): Promise<void>
-    + updatePhysicalDetails(data): Promise<void>
-    + changeGoal(goal): Promise<void>
-    + upgradePlan(plan): Promise<void>
-  }
+  class IamStore <<store>>
+  class authGuard <<guard>>
+  class onboardingGuard <<guard>>
+}
+package "iam/infrastructure [boundary]" {
+  class IamApi <<api>>
+}
+package "shared/infrastructure [boundary]" {
+  class CityLookupApi <<api>>
 }
 
-' ─── ViewModels ──────────────────────────────────────────────────────────────
-package "iam/presentation/viewmodels" {
-
-  class LoginVm <<view model>> {
-    + email: string
-    + password: string
-    + showPassword: boolean
-    + errorKey: string | null
-    + loading: boolean
-  }
-
-  class RegisterVm <<view model>> {
-    + firstName: string
-    + lastName: string
-    + email: string
-    + password: string
-    + confirmPassword: string
-    + errorKey: string | null
-    + loading: boolean
-  }
-
-  class OnboardingStepVm <<view model>> {
-    + currentStep: number
-    + totalSteps: number
-    + goalKey: string
-    + activityKey: string
-    + selectedRestrictionKeys: string[]
-    + selectedConditionKeys: string[]
-    + progressPercent: number
-  }
-
-  class ProfilePanelVm <<view model>> {
-    + activePanel: string
-    + fullName: string
-    + email: string
-    + bmi: number
-    + goalKey: string
-    + activityKey: string
-    + planKey: string
-    + isGoalLocked: boolean
-    + daysUntilUnlock: number
-    + unlockDate: string
-  }
-
-  class UserSummaryVm <<view model>> {
-    + firstName: string
-    + initials: string
-    + isPro: boolean
-    + isPremium: boolean
-    + planKey: string
-  }
-}
-
-' ─── Views ───────────────────────────────────────────────────────────────────
 package "iam/presentation/views" {
-
-  class Login <<view>> {
+  class Login <<@Component view>> {
     - iamStore: IamStore
-    --
-    + showPassword: WritableSignal<boolean>
-    + loginError: WritableSignal<string | null>
-    + loading: WritableSignal<boolean>
-    --
+    - router: Router
+    - fb: FormBuilder
     + onSubmit(): void
   }
-
-  class Register <<view>> {
+  class Register <<@Component view>> {
     - iamStore: IamStore
-    --
-    + loading: WritableSignal<boolean>
-    + registerError: WritableSignal<string | null>
-    --
+    - iamApi: IamApi
     + onSubmit(): void
   }
-
-  class ForgotPassword <<view>> {
-    - iamStore: IamStore
-    --
+  class ForgotPassword <<@Component view>> {
+    - iamApi: IamApi
     + onSubmit(): void
   }
-
-  class Onboarding <<view>> {
-    - iamStore: IamStore
-    --
-    + currentStep: WritableSignal<number>
-    + selectedGoal: WritableSignal<UserGoal | null>
-    + selectedActivity: WritableSignal<ActivityLevel | null>
-    + selectedRestrictions: WritableSignal<DietaryRestriction[]>
-    + selectedConditions: WritableSignal<MedicalCondition[]>
-    + availableCities: WritableSignal<string[]>
-    --
-    + onNext(): void
-    + onBack(): void
-    + onFinish(): void
+  class ResetPassword <<@Component view>> {
+    - iamApi: IamApi
+    - route: ActivatedRoute
   }
-
-  class Profile <<view>> {
-    - iamStore: IamStore
-    --
-    + activePanel: WritableSignal<string>
-    + selectedGoal: WritableSignal<UserGoal | null>
-    + selectedActivity: WritableSignal<ActivityLevel | null>
-    + isGoalLocked: Signal<boolean>
-    + daysUntilUnlock: Signal<number>
-    + unlockDate: Signal<string>
-    --
-    + onSavePersonal(): void
-    + onSavePhysical(): void
-    + onChangePassword(): void
-    + onSwitchGoal(): void
+  class Onboarding <<@Component view>> {
+    + iamStore: IamStore
+    + metabolicStore: MetabolicStore
   }
-
-  class Subscription <<view>> {
-    - iamStore: IamStore
-    --
-    + onSelectPlan(plan: string): void
+  class Profile <<@Component view>> {
+    + iamStore: IamStore
+    - cityLookupApi: CityLookupApi
   }
+  class Subscription <<@Component view>> {
+    - iamStore: IamStore
+    + isSetupMode: boolean
+  }
+}
+
+package "iam/presentation [routes]" {
+  class IamRoutes <<routes>>
+  class OnboardingRoutes <<routes>>
+  class ProfileRoutes <<routes>>
 }
 
 ' ─── Relationships ────────────────────────────────────────────────────────────
-Login o--> IamStore : uses >
-Register o--> IamStore : uses >
-ForgotPassword o--> IamStore : uses >
-Onboarding o--> IamStore : uses >
-Profile o--> IamStore : uses >
-Subscription o--> IamStore : uses >
+Login --> IamStore : uses >
+Register --> IamStore : uses >
+Register --> IamApi : uses >
+ForgotPassword --> IamApi : uses >
+ResetPassword --> IamApi : uses >
+Onboarding --> IamStore : uses >
+Profile --> IamStore : uses >
+Profile --> CityLookupApi : uses >
+Subscription --> IamStore : uses >
 
-Login ..> LoginVm : builds >
-Register ..> RegisterVm : builds >
-Onboarding ..> OnboardingStepVm : builds >
-Profile ..> ProfilePanelVm : builds >
-Profile ..> UserSummaryVm : builds >
+IamRoutes ..> Login : routes to >
+IamRoutes ..> Register : routes to >
+IamRoutes ..> ForgotPassword : routes to >
+IamRoutes ..> ResetPassword : routes to >
+IamRoutes ..> authGuard : guarded by >
+OnboardingRoutes ..> Onboarding : routes to >
+OnboardingRoutes ..> onboardingGuard : guarded by >
+ProfileRoutes ..> Profile : routes to >
+ProfileRoutes ..> Subscription : routes to >
 
 @enduml

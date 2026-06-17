@@ -1,0 +1,129 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Smart Recommendation — Interfaces layer (nutrismart-platform)
+
+' ─── Boundary stubs: application layer ───────────────────────────────────────
+package "smartrecommendation.application [boundary]" {
+  interface PantryItemCommandService <<port>>
+  interface PantryItemQueryService <<port>>
+  interface RecipeSuggestionCommandService <<port>>
+  interface RecipeSuggestionQueryService <<port>>
+  interface RecommendationCardCommandService <<port>>
+  interface RecommendationCardQueryService <<port>>
+  interface RecommendationSessionCommandService <<port>>
+  interface RecommendationSessionQueryService <<port>>
+  interface TravelContextCommandService <<port>>
+  interface TravelContextQueryService <<port>>
+  interface LocationSnapshotCommandService <<port>>
+  interface LocationSnapshotQueryService <<port>>
+  interface WeatherSnapshotCommandService <<port>>
+  interface WeatherSnapshotQueryService <<port>>
+}
+
+package "smartrecommendation.interfaces.rest" {
+  class PantryController <<@RestController>>
+  class RecipesController <<@RestController>>
+  class RecommendationCardsController <<@RestController>> {
+    - generationLock: RecommendationCardGenerationLock
+  }
+  class RecommendationSessionsController <<@RestController>>
+  class TravelContextsController <<@RestController>>
+  class UserLocationSnapshotsController <<@RestController>>
+  class WeatherSnapshotsController <<@RestController>>
+}
+
+package "smartrecommendation.interfaces.rest.resources" {
+  class CreatePantryItemResource <<resource>>
+  class PantryItemResource <<resource>>
+  class CreateRecipeSuggestionResource <<resource>>
+  class RecipeSuggestionResource <<resource>>
+  class CreateRecommendationCardResource <<resource>>
+  class RecommendationCardResource <<resource>>
+  class CreateRecommendationSessionResource <<resource>>
+  class UpdateRecommendationSessionResource <<resource>>
+  class RecommendationSessionResource <<resource>>
+  class CreateTravelContextResource <<resource>>
+  class UpdateTravelContextResource <<resource>>
+  class TravelContextResource <<resource>>
+  class CreateLocationSnapshotResource <<resource>>
+  class LocationSnapshotResource <<resource>>
+  class CreateWeatherSnapshotResource <<resource>>
+  class UpdateWeatherSnapshotResource <<resource>>
+  class SyncWeatherSnapshotResource <<resource>>
+  class WeatherSnapshotResource <<resource>>
+}
+
+package "smartrecommendation.interfaces.rest.transform" {
+  class AddPantryItemCommandFromResourceAssembler <<assembler>>
+  class PantryItemResourceFromEntityAssembler <<assembler>>
+  class CreateRecipeSuggestionCommandFromResourceAssembler <<assembler>>
+  class RecipeSuggestionResourceFromEntityAssembler <<assembler>>
+  class CreateRecommendationCardCommandFromResourceAssembler <<assembler>>
+  class RecommendationCardResourceFromEntityAssembler <<assembler>>
+  class CreateRecommendationSessionCommandFromResourceAssembler <<assembler>>
+  class RecommendationSessionResourceFromEntityAssembler <<assembler>>
+  class CreateTravelContextCommandFromResourceAssembler <<assembler>>
+  class TravelContextResourceFromEntityAssembler <<assembler>>
+  class CreateLocationSnapshotCommandFromResourceAssembler <<assembler>>
+  class LocationSnapshotResourceFromEntityAssembler <<assembler>>
+  class CreateWeatherSnapshotCommandFromResourceAssembler <<assembler>>
+  class SyncWeatherSnapshotCommandFromResourceAssembler <<assembler>>
+  class WeatherSnapshotResourceFromEntityAssembler <<assembler>>
+}
+
+' ─── Relationships: controllers use services ─────────────────────────────────
+PantryController --> PantryItemCommandService : uses >
+PantryController --> PantryItemQueryService : uses >
+RecipesController --> RecipeSuggestionCommandService : uses >
+RecipesController --> RecipeSuggestionQueryService : uses >
+RecommendationCardsController --> RecommendationCardCommandService : uses >
+RecommendationCardsController --> RecommendationCardQueryService : uses >
+RecommendationSessionsController --> RecommendationSessionCommandService : uses >
+RecommendationSessionsController --> RecommendationSessionQueryService : uses >
+TravelContextsController --> TravelContextCommandService : uses >
+TravelContextsController --> TravelContextQueryService : uses >
+UserLocationSnapshotsController --> LocationSnapshotCommandService : uses >
+UserLocationSnapshotsController --> LocationSnapshotQueryService : uses >
+WeatherSnapshotsController --> WeatherSnapshotCommandService : uses >
+WeatherSnapshotsController --> WeatherSnapshotQueryService : uses >
+
+' ─── controllers <-> resources / assemblers ──────────────────────────────────
+PantryController ..> CreatePantryItemResource : consumes >
+PantryController ..> PantryItemResource : produces >
+PantryController ..> AddPantryItemCommandFromResourceAssembler : uses >
+PantryController ..> PantryItemResourceFromEntityAssembler : uses >
+RecipesController ..> CreateRecipeSuggestionResource : consumes >
+RecipesController ..> RecipeSuggestionResource : produces >
+RecipesController ..> CreateRecipeSuggestionCommandFromResourceAssembler : uses >
+RecipesController ..> RecipeSuggestionResourceFromEntityAssembler : uses >
+RecommendationCardsController ..> CreateRecommendationCardResource : consumes >
+RecommendationCardsController ..> RecommendationCardResource : produces >
+RecommendationCardsController ..> CreateRecommendationCardCommandFromResourceAssembler : uses >
+RecommendationCardsController ..> RecommendationCardResourceFromEntityAssembler : uses >
+RecommendationSessionsController ..> CreateRecommendationSessionResource : consumes >
+RecommendationSessionsController ..> RecommendationSessionResource : produces >
+RecommendationSessionsController ..> CreateRecommendationSessionCommandFromResourceAssembler : uses >
+RecommendationSessionsController ..> RecommendationSessionResourceFromEntityAssembler : uses >
+RecommendationSessionsController ..> UpdateRecommendationSessionResource : consumes >
+TravelContextsController ..> CreateTravelContextResource : consumes >
+TravelContextsController ..> TravelContextResource : produces >
+TravelContextsController ..> CreateTravelContextCommandFromResourceAssembler : uses >
+TravelContextsController ..> TravelContextResourceFromEntityAssembler : uses >
+TravelContextsController ..> UpdateTravelContextResource : consumes >
+UserLocationSnapshotsController ..> CreateLocationSnapshotResource : consumes >
+UserLocationSnapshotsController ..> LocationSnapshotResource : produces >
+UserLocationSnapshotsController ..> CreateLocationSnapshotCommandFromResourceAssembler : uses >
+UserLocationSnapshotsController ..> LocationSnapshotResourceFromEntityAssembler : uses >
+WeatherSnapshotsController ..> CreateWeatherSnapshotResource : consumes >
+WeatherSnapshotsController ..> WeatherSnapshotResource : produces >
+WeatherSnapshotsController ..> CreateWeatherSnapshotCommandFromResourceAssembler : uses >
+WeatherSnapshotsController ..> SyncWeatherSnapshotCommandFromResourceAssembler : uses >
+WeatherSnapshotsController ..> WeatherSnapshotResourceFromEntityAssembler : uses >
+WeatherSnapshotsController ..> SyncWeatherSnapshotResource : consumes >
+WeatherSnapshotsController ..> UpdateWeatherSnapshotResource : consumes >
+
+@enduml

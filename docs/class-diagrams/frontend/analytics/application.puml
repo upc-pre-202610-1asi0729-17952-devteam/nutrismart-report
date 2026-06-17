@@ -4,77 +4,48 @@ skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-' ─── Boundary stubs: infrastructure ─────────────────────────────────────────
-package "analytics/infrastructure [boundary]" {
-  class AnalyticsApi <<boundary>> {
-  }
-}
+title Analytics — Application layer (nutrismart-webapp)
 
-' ─── Boundary stubs: domain ──────────────────────────────────────────────────
+' ─── Boundary stubs: domain & infrastructure ─────────────────────────────────
 package "analytics/domain [boundary]" {
-  class AnalyticsData <<boundary>> {
-  }
+  class AnalyticsData <<interface>>
 }
-
-' ─── Boundary stubs: shared ──────────────────────────────────────────────────
-package "shared/application [boundary]" {
-  class DomainEventBus <<boundary>> {
-    + publish(event: DomainEvent): void
-    + events$: Observable<DomainEvent>
-  }
+package "analytics/infrastructure [boundary]" {
+  class AnalyticsApi <<api>>
+  class AnalyticsAssembler <<assembler>>
+  class PdfGeneratorService <<service>>
 }
-
 package "iam/application [boundary]" {
-  class IamStore <<boundary>> {
-    + currentUser: Signal<User | null>
-  }
+  class IamStore <<store>>
 }
 
-' ─── Application ─────────────────────────────────────────────────────────────
 package "analytics/application" {
-
-  class AnalyticsStore <<store>> {
-    ' Writable signals
-    - _currentAnalyticsData: WritableSignal<AnalyticsData | null>
-    - _loading: WritableSignal<boolean>
-    - _error: WritableSignal<string | null>
-    - _selectedPeriod: WritableSignal<AnalyticsPeriod>
-    - _exportPdfModalOpen: WritableSignal<boolean>
-    ' Read-only signals
+  class AnalyticsStore <<@Injectable store>> {
+    - analyticsApi: AnalyticsApi
+    - analyticsAssembler: AnalyticsAssembler
+    - pdfGenerator: PdfGeneratorService
+    - iamStore: IamStore
+    --
     + currentAnalyticsData: Signal<AnalyticsData | null>
     + loading: Signal<boolean>
     + error: Signal<string | null>
     + selectedPeriod: Signal<AnalyticsPeriod>
-    + exportPdfModalOpen: Signal<boolean>
-    ' Computed signals
-    + averageCalorieIntake: Signal<number>
-    + averageProteinIntake: Signal<number>
-    + currentStreak: Signal<number>
-    + weightChange: Signal<number>
-    + weightChangeDirection: Signal<WeightChangeDirection>
-    + weightChangeStatus: Signal<WeightChangeStatus>
-    + dailyCaloriesHistory: Signal<DailyCaloriesHistory[]>
-    + macroAnalysis: Signal<MacroAnalysis>
-    + daysWithCompleteLog: Signal<number>
-    + weightEvolution: Signal<WeightPoint[]>
-    + goalWeight: Signal<number>
-    + adherenceHistory: Signal<AdherenceHistoryEntry[]>
-    + behavioralEvents: Signal<BehavioralEvent[]>
-    + proteinCompliance: Signal<number>
     + isPremiumUser: Signal<boolean>
     + allowedPeriods: Signal<AnalyticsPeriod[]>
+    + exportPdfModalOpen: Signal<boolean>
     --
-    + loadAnalyticsData(userId: number, period: AnalyticsPeriod): Promise<void>
-    + exportReport(userId: number): Promise<void>
+    + loadAnalyticsData(period: AnalyticsPeriod): Observable<AnalyticsData | undefined>
+    + exportReport(options: PdfReportOptions): Observable<Blob>
     + openExportPdfModal(): void
     + closeExportPdfModal(): void
-    + clear(): void
   }
 }
 
-' ─── Dependencies ────────────────────────────────────────────────────────────
-AnalyticsStore o--> AnalyticsApi : uses >
-AnalyticsStore o--> IamStore : uses >
-AnalyticsStore ..> AnalyticsData : manages >
+' ─── Relationships ────────────────────────────────────────────────────────────
+AnalyticsStore --> AnalyticsApi : uses >
+AnalyticsStore --> AnalyticsAssembler : maps via >
+AnalyticsStore --> PdfGeneratorService : exports via >
+AnalyticsStore --> IamStore : reads user/plan >
+AnalyticsStore ..> AnalyticsData : holds >
 
 @enduml

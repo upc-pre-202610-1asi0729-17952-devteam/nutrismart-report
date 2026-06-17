@@ -1,0 +1,139 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title IAM — Domain layer (nutrismart-webapp)
+
+package "iam/domain/model" {
+
+  enum ActivityLevel {
+    SEDENTARY
+    MODERATE
+    ACTIVE
+    VERY_ACTIVE
+  }
+  enum DietaryRestriction {
+    LACTOSE_FREE
+    GLUTEN_FREE
+    VEGAN
+    VEGETARIAN
+    NUT_FREE
+    SEAFOOD_FREE
+    KOSHER
+    HALAL
+  }
+  enum MedicalCondition {
+    TYPE_2_DIABETES
+    HIGH_BLOOD_PRESSURE
+    COELIAC_DISEASE
+    HYPOTHYROIDISM
+    KIDNEY_DISEASE
+    GOUT
+  }
+  enum SubscriptionPlan {
+    BASIC
+    PRO
+    PREMIUM
+  }
+  enum UserGoal {
+    WEIGHT_LOSS
+    MUSCLE_GAIN
+  }
+
+  class MetabolicTargets <<value object>> {
+    + readonly dailyCalorieTarget: number
+    + readonly proteinTarget: number
+    + readonly carbsTarget: number
+    + readonly fatTarget: number
+    + readonly fiberTarget: number
+    + readonly bmr: number
+    + readonly tdee: number
+    --
+    + {static} calculate(weightKg, heightCm, age, sex, activityLevel, goal): MetabolicTargets
+    + {static} withExtraEnergy(base: MetabolicTargets, extraKcalPerDay): MetabolicTargets
+  }
+
+  class MedicalDietaryWarning <<value object>> {
+    + readonly condition: MedicalCondition
+    + readonly nutrientToLimitKey: string
+    + readonly descriptionKey: string
+    + readonly severity: MedicalWarningSeverity
+    --
+    + isAdvisory(): boolean
+    + isStrict(): boolean
+  }
+
+  class User <<entity>> {
+    - _id: number
+    - _firstName: string
+    - _lastName: string
+    - _email: string
+    - _goal: UserGoal
+    - _weight: number
+    - _height: number
+    - _activityLevel: ActivityLevel
+    - _plan: SubscriptionPlan | null
+    - _restrictions: DietaryRestriction[]
+    - _medicalConditions: string[]
+    - _dailyCalorieTarget: number
+    - _proteinTarget: number
+    - _carbsTarget: number
+    - _fatTarget: number
+    - _fiberTarget: number
+    - _birthday: string
+    - _biologicalSex: string
+    - _createdAt: string
+    - _homeCity: string
+    - _goalStartedAt: string
+    - _streak: number
+    - _consecutiveMisses: number
+    - _token: string
+    - _planExpiresAt: string | null
+    --
+    + constructor(props: UserProps)
+    .. accessors (get/set) for every field ..
+  }
+}
+
+package "iam/domain/services" {
+  class MedicalRestrictionPolicy <<domain service>> {
+    - {static} RESTRICTION_MAP: Record<MedicalCondition, DietaryRestriction>
+    - {static} WARNING_MAP: Record<MedicalCondition, MedicalDietaryWarning>
+    --
+    + {static} deriveRestrictions(conditions: string[]): DietaryRestriction[]
+    + {static} getWarnings(conditions: string[]): MedicalDietaryWarning[]
+  }
+}
+
+' ─── Shared kernel ───────────────────────────────────────────────────────────
+package "shared/infrastructure [external]" {
+  interface BaseEntity
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+User ..|> BaseEntity
+User "1" o--> "1" UserGoal : pursues >
+User "1" o--> "1" ActivityLevel : level >
+User "1" o--> "0..1" SubscriptionPlan : subscribed to >
+User "1" *--> "0..*" DietaryRestriction : restricted by >
+
+MetabolicTargets "1" o--> "1" ActivityLevel : computed from >
+MetabolicTargets "1" o--> "1" UserGoal : computed from >
+MedicalDietaryWarning "1" o--> "1" MedicalCondition : for condition >
+
+MedicalRestrictionPolicy ..> MedicalCondition : maps >
+MedicalRestrictionPolicy ..> DietaryRestriction : derives >
+MedicalRestrictionPolicy ..> MedicalDietaryWarning : produces >
+
+note bottom of User
+  User applies MetabolicTargets and exposes
+  effective restrictions / medical warnings
+  derived via MedicalRestrictionPolicy.
+end note
+
+User ..> MetabolicTargets : applies >
+User ..> MedicalDietaryWarning : exposes >
+
+@enduml

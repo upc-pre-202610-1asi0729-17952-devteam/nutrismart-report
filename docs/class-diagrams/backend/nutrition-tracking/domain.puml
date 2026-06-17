@@ -1,0 +1,123 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Nutrition Tracking — Domain layer (nutrismart-platform)
+
+package "nutritiontracking.domain.model.aggregates" {
+
+  class FoodItem <<aggregate root>> {
+    - id: Long
+    - name: String
+    - nameEs: String
+    - source: String
+    - servingSize: Double
+    - servingUnit: String
+    - caloriesPer100g: Double
+    - proteinPer100g: Double
+    - carbsPer100g: Double
+    - fatPer100g: Double
+    - fiberPer100g: Double
+    - sugarPer100g: Double
+    - restrictions: List<FoodRestriction>
+    - nameKey: String
+    - category: String
+    - itemType: String
+    - weatherTypes: List<String>
+    - originCity: String
+    - originCountry: String
+    --
+    + {static} create(...): FoodItem
+    + {static} rehydrate(...): FoodItem
+  }
+
+  class MealRecord <<aggregate root>> {
+    - id: Long
+    - userId: Long
+    - foodId: Long
+    - foodItemName: String
+    - foodItemNameEs: String
+    - mealType: MealType
+    - quantity: Double
+    - unit: String
+    - calories: Double
+    - protein: Double
+    - carbs: Double
+    - fat: Double
+    - fiber: Double
+    - sugar: Double
+    - loggedAt: Instant
+    --
+    + {static} create(...): MealRecord
+    + {static} rehydrate(...): MealRecord
+    + update(...): void
+  }
+
+  class DailyIntake <<aggregate root>> {
+    - id: Long
+    - userId: Long
+    - date: LocalDate
+    - dailyGoal: Double
+    - consumed: Double
+    - active: Double
+    --
+    + {static} create(...): DailyIntake
+    + {static} rehydrate(...): DailyIntake
+    + update(dailyGoal, consumed, active): void
+  }
+}
+
+package "nutritiontracking.domain.model.valueobjects" {
+  enum FoodRestriction {
+    LACTOSE_FREE
+    GLUTEN_FREE
+    VEGAN
+    VEGETARIAN
+    NUT_FREE
+    SEAFOOD_FREE
+    KOSHER
+    HALAL
+  }
+  enum MealType {
+    BREAKFAST
+    LUNCH
+    SNACK
+    DINNER
+  }
+  enum NutritionalRiskLevel {
+    SAFE
+    MODERATE
+    HIGH
+  }
+}
+
+package "nutritiontracking.domain.model.repositories" {
+  interface FoodItemRepository <<port>>
+  interface MealRecordRepository <<port>>
+  interface DailyIntakeRepository <<port>>
+}
+
+package "nutritiontracking.domain.model.exceptions" {
+  class DomainInvalidExceptions <<exception>>
+}
+
+note bottom of NutritionalRiskLevel
+  Defined in the domain but not referenced
+  by any aggregate. Only persisted through
+  NutritionalRiskLevelAttributeConverter
+  (see infrastructure.puml).
+end note
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+FoodItem "1" *--> "0..*" FoodRestriction : tagged with >
+MealRecord "1" o--> "1" MealType : meal type >
+MealRecord "0..*" ..> "1" FoodItem : references foodId >
+
+FoodItemRepository ..> FoodItem : persists >
+MealRecordRepository ..> MealRecord : persists >
+DailyIntakeRepository ..> DailyIntake : persists >
+DomainInvalidExceptions ..> MealRecord : guards invariants of >
+
+@enduml

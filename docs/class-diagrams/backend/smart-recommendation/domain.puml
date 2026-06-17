@@ -1,0 +1,151 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Smart Recommendation — Domain layer (nutrismart-platform)
+
+package "smartrecommendation.domain.model.aggregates" {
+
+  class RecommendationSession <<aggregate root>> {
+    - id: Long
+    - userId: Long
+    - adherenceStatus: AdherenceStatus
+    - consecutiveMisses: Integer
+    - simplifiedKcalTarget: Double
+    - createdAt: Instant
+    - isActive: Boolean
+    - weatherSnapshotId: Long
+    --
+    + {static} create(...): RecommendationSession
+    + {static} rehydrate(...): RecommendationSession
+    + update(...): void
+    + deactivate(): void
+  }
+
+  class RecipeSuggestion <<aggregate root>> {
+    - id: Long
+    - name: String
+    - nameEs: String
+    - goalType: UserGoal
+    - prepTimeMinutes: Integer
+    - estimatedCalories: Double
+    - estimatedProtein: Double
+    - estimatedCarbs: Double
+    - estimatedFat: Double
+    - ingredients: List<String>
+    --
+    + {static} create(...): RecipeSuggestion
+    + {static} rehydrate(...): RecipeSuggestion
+  }
+
+  class RecommendationCard <<aggregate root>> {
+    - id: Long
+    - badge: String
+    - weatherType: WeatherType
+    - travelCity: String
+    - cardType: String
+    - foodId: Long
+    - description: String
+    - descriptionEs: String
+    --
+    + {static} create(...): RecommendationCard
+    + {static} rehydrate(...): RecommendationCard
+  }
+
+  class WeatherSnapshot <<aggregate root>> {
+    - id: Long
+    - city: String
+    - country: String
+    - temperatureCelsius: Double
+    - condition: String
+    - weatherType: WeatherType
+    - updatedAt: Instant
+    --
+    + {static} create(...): WeatherSnapshot
+    + {static} rehydrate(...): WeatherSnapshot
+    + update(...): void
+  }
+
+  class TravelContext <<aggregate root>> {
+    - id: Long
+    - userId: Long
+    - city: String
+    - country: String
+    - isActive: Boolean
+    - isManual: Boolean
+    - activatedAt: Instant
+    --
+    + {static} create(...): TravelContext
+    + {static} rehydrate(...): TravelContext
+    + update(...): void
+  }
+
+  class LocationSnapshot <<aggregate root>> {
+    - id: Long
+    - userId: Long
+    - city: String
+    - country: String
+    - recordedAt: Instant
+    --
+    + {static} create(...): LocationSnapshot
+    + {static} rehydrate(...): LocationSnapshot
+  }
+
+  class PantryItem <<aggregate root>> {
+    - id: Long
+    - userId: Long
+    - foodId: Long
+    - quantityG: Double
+    --
+    + {static} create(...): PantryItem
+    + {static} rehydrate(...): PantryItem
+  }
+}
+
+package "smartrecommendation.domain.model.valueobjects" {
+  enum WeatherType {
+    HOT
+    COLD
+    MILD
+  }
+}
+
+' ─── Reused value objects from other contexts ────────────────────────────────
+package "<<shared kernel>> [external]" {
+  enum UserGoal <<iam VO>>
+  enum AdherenceStatus <<behavioralconsistency VO>>
+}
+
+package "smartrecommendation.domain.model.repositories" {
+  interface RecommendationSessionRepository <<port>>
+  interface RecipeSuggestionRepository <<port>>
+  interface RecommendationCardRepository <<port>>
+  interface WeatherSnapshotRepository <<port>>
+  interface TravelContextRepository <<port>>
+  interface LocationSnapshotRepository <<port>>
+  interface PantryItemRepository <<port>>
+}
+
+package "smartrecommendation.domain.model.exceptions" {
+  class DomainInvalidExceptions <<exception>>
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+RecommendationSession "1" o--> "1" AdherenceStatus : adherence >
+RecommendationSession "0..*" ..> "1" WeatherSnapshot : weatherSnapshotId >
+RecipeSuggestion "1" o--> "1" UserGoal : targets >
+RecommendationCard "1" o--> "1" WeatherType : for weather >
+WeatherSnapshot "1" o--> "1" WeatherType : classified as >
+
+RecommendationSessionRepository ..> RecommendationSession : persists >
+RecipeSuggestionRepository ..> RecipeSuggestion : persists >
+RecommendationCardRepository ..> RecommendationCard : persists >
+WeatherSnapshotRepository ..> WeatherSnapshot : persists >
+TravelContextRepository ..> TravelContext : persists >
+LocationSnapshotRepository ..> LocationSnapshot : persists >
+PantryItemRepository ..> PantryItem : persists >
+DomainInvalidExceptions ..> RecommendationSession : guards invariants of >
+
+@enduml

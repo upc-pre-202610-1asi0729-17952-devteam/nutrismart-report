@@ -1,0 +1,80 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Analytics — Application layer (nutrismart-platform)
+
+' ─── Boundary stub: domain layer ─────────────────────────────────────────────
+package "analytics.domain [boundary]" {
+  class Analytics <<aggregate>>
+}
+
+package "analytics.application.commandservices" {
+  interface AnalyticsCommandService <<port>> {
+    + handle(c: UpdateDailyDashboardCommand): Result<Analytics, AnalyticsCommandFailure>
+    + handle(c: UpdateAdherenceProgressCommand): Result<Analytics, AnalyticsCommandFailure>
+  }
+  interface AnalyticsCommandFailure <<sealed>>
+}
+
+package "analytics.application.queryservices" {
+  interface AnalyticsQueryService <<port>> {
+    + handle(q: GetDashboardByUserIdQuery): Optional<Analytics>
+    + handle(q: GetAnalyticsByUserIdQuery): Optional<Analytics>
+  }
+}
+
+package "analytics.application.commands" {
+  class UpdateDailyDashboardCommand <<command>>
+  class UpdateAdherenceProgressCommand <<command>>
+}
+
+package "analytics.application.queries" {
+  class GetDashboardByUserIdQuery <<query>>
+  class GetAnalyticsByUserIdQuery <<query>>
+}
+
+' ─── ACL ports (driven, implemented by infrastructure) ───────────────────────
+package "analytics.application.ports" {
+  interface UserDataPort <<port>>
+  interface NutritionSummaryPort <<port>>
+  interface BodyMetricsSummaryPort <<port>>
+  interface BehavioralSummaryPort <<port>>
+}
+
+package "analytics.application.internal.commandservices" {
+  class AnalyticsCommandServiceImpl {
+    - analyticsQueryService: AnalyticsQueryService
+  }
+}
+
+package "analytics.application.internal.queryservices" {
+  class AnalyticsQueryServiceImpl {
+    - userDataPort: UserDataPort
+    - nutritionSummaryPort: NutritionSummaryPort
+    - bodyMetricsSummaryPort: BodyMetricsSummaryPort
+    - behavioralSummaryPort: BehavioralSummaryPort
+  }
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+AnalyticsCommandServiceImpl ..|> AnalyticsCommandService
+AnalyticsQueryServiceImpl ..|> AnalyticsQueryService
+
+AnalyticsCommandServiceImpl --> AnalyticsQueryService : uses >
+AnalyticsCommandServiceImpl ..> UpdateDailyDashboardCommand : handles >
+AnalyticsCommandServiceImpl ..> UpdateAdherenceProgressCommand : handles >
+AnalyticsCommandServiceImpl ..> Analytics : produces >
+AnalyticsCommandService ..> AnalyticsCommandFailure : may fail with >
+
+AnalyticsQueryServiceImpl --> UserDataPort : uses >
+AnalyticsQueryServiceImpl --> NutritionSummaryPort : uses >
+AnalyticsQueryServiceImpl --> BodyMetricsSummaryPort : uses >
+AnalyticsQueryServiceImpl --> BehavioralSummaryPort : uses >
+AnalyticsQueryServiceImpl ..> GetDashboardByUserIdQuery : handles >
+AnalyticsQueryServiceImpl ..> GetAnalyticsByUserIdQuery : handles >
+AnalyticsQueryServiceImpl ..> Analytics : assembles >
+
+@enduml

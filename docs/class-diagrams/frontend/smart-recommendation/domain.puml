@@ -1,0 +1,82 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Smart Recommendation — Domain layer (nutrismart-webapp)
+
+package "smart-recommendation/domain/model" {
+  class RecommendationSession <<entity>> {
+    - #userId: number
+    - #adherenceStatus: AdherenceStatus
+    - #consecutiveMisses: number
+    - #simplifiedKcalTarget: number
+    - #isActive: boolean
+    - #weatherSnapshotId: string | null
+    - #contextualAdjustment: ContextualTargetAdjustment | null
+  }
+  class PantryItem <<entity>> {
+    - _foodId: string
+    - _name: string
+    - _category: IngredientCategory
+    - _quantityGrams: number
+    - _caloriesPer100g: number
+  }
+  class RecipeSuggestion <<entity>> {
+    - _name: string
+    - _calories: number
+    - _protein: number
+    - _carbs: number
+    - _fat: number
+    - _ingredients: RecipeIngredient[]
+  }
+  class WeatherContext <<entity>> {
+    - #snapshotId: string
+    - #city: string
+    - #temperatureCelsius: number
+    - #condition: string
+    - #weatherType: WeatherType
+  }
+  class TravelContext <<entity>> {
+    - #city: string
+    - #country: string
+    - #isActive: boolean
+    - #isManual: boolean
+  }
+  class LocationSnapshot <<entity>> {
+    - #city: string
+    - #country: string
+    - #recordedAt: string
+  }
+  class ContextualTargetAdjustment <<value object>> {
+    + readonly factor: number
+    + readonly reason: string
+    + readonly source: AdjustmentSource
+    + applyTo(baseTarget: number): number
+    + get isEffective(): boolean
+  }
+  class RecipeIngredient <<interface>>
+  enum AdherenceStatus
+  enum WeatherType
+}
+
+package "shared/domain [external]" {
+  interface BaseEntity
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+RecommendationSession ..|> BaseEntity
+PantryItem ..|> BaseEntity
+RecipeSuggestion ..|> BaseEntity
+WeatherContext ..|> BaseEntity
+TravelContext ..|> BaseEntity
+LocationSnapshot ..|> BaseEntity
+
+RecommendationSession "1" o--> "1" AdherenceStatus : adherence >
+RecommendationSession "1" o--> "0..1" ContextualTargetAdjustment : adjusted by >
+RecommendationSession "0..*" ..> "1" WeatherContext : weatherSnapshotId >
+WeatherContext "1" o--> "1" WeatherType : classified as >
+RecipeSuggestion "1" *--> "0..*" RecipeIngredient : made of >
+
+@enduml

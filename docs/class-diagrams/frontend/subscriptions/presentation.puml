@@ -4,92 +4,68 @@ skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-' ─── Boundary stub: application layer ────────────────────────────────────────
+title Subscriptions — Presentation layer (nutrismart-webapp)
+
+' ─── Boundary stubs: application layer ───────────────────────────────────────
 package "subscriptions/application [boundary]" {
-  class SubscriptionsStore <<boundary>> {
-    + currentSubscription: Signal<Subscription | null>
-    + loading: Signal<boolean>
-    + error: Signal<string | null>
-    + isActive: Signal<boolean>
-    + isPro: Signal<boolean>
-    + isPremium: Signal<boolean>
-    + features: Signal<PlanFeatures>
-    + daysUntilExpiry: Signal<number | null>
-    + upgradeToPlan(plan: SubscriptionPlan): Promise<void>
-    + cancelSubscription(): Promise<void>
-    + canAccess(feature): boolean
-  }
+  class SubscriptionsStore <<store>>
+  class PaymentStore <<store>>
 }
-
 package "iam/application [boundary]" {
-  class IamStore <<boundary>> {
-    + currentUser: Signal<User | null>
-  }
+  class IamStore <<store>>
 }
 
-' ─── ViewModels ──────────────────────────────────────────────────────────────
-package "subscriptions/presentation/viewmodels" {
-
-  class PlanCardVm <<view model>> {
-    + planKey: string
-    + priceLabel: string
-    + billingKey: string
-    + featuresKeys: string[]
-    + isCurrentPlan: boolean
-    + isRecommended: boolean
-    + ctaKey: string
-    + disabled: boolean
-  }
-
-  class FeatureRowVm <<view model>> {
-    + featureKey: string
-    + basicEnabled: boolean
-    + proEnabled: boolean
-    + premiumEnabled: boolean
-    + highlightPlan: string
-  }
-
-  class SubscriptionStatusVm <<view model>> {
-    + planKey: string
-    + statusKey: string
-    + expiryLabel: string | null
-    + daysUntilExpiry: number | null
-    + isPro: boolean
-    + isPremium: boolean
-    + canCancel: boolean
-  }
-
-  class SubscriptionPlansVm <<view model>> {
-    + plans: PlanCardVm[]
-    + featureRows: FeatureRowVm[]
-    + currentStatusVm: SubscriptionStatusVm
-    + isLoading: boolean
-    + errorKey: string | null
-  }
-}
-
-' ─── Views ───────────────────────────────────────────────────────────────────
 package "subscriptions/presentation/views" {
-
-  class SubscriptionPlansView <<view>> {
-    - subscriptionsStore: SubscriptionsStore
+  class SubscriptionPlans <<@Component view>> {
+    # store: SubscriptionsStore
+    - payStore: PaymentStore
     - iamStore: IamStore
-    --
-    + plansVm: Signal<SubscriptionPlansVm>
-    + isLoading: Signal<boolean>
-    --
-    + onSelectPlan(planKey: string): void
-    + onCancel(): void
   }
+  class PaymentGateway <<@Component view>> {
+    - store: PaymentStore
+    - fb: FormBuilder
+  }
+  class CheckoutSummary <<@Component view>> {
+    # store: PaymentStore
+    - iamStore: IamStore
+  }
+  class SubscriptionConfirmed <<@Component view>> {
+    - store: PaymentStore
+  }
+  class BillingPanel <<@Component view>> {
+    # store: SubscriptionsStore
+    - payStore: PaymentStore
+    - iamStore: IamStore
+  }
+  class UpgradeGate <<@Component view>> {
+    - iamStore: IamStore
+    - paymentStore: PaymentStore
+  }
+}
+
+package "subscriptions/presentation [routes]" {
+  class SubscriptionsRoutes <<routes>>
 }
 
 ' ─── Relationships ────────────────────────────────────────────────────────────
-SubscriptionPlansView o--> SubscriptionsStore : uses >
-SubscriptionPlansView o--> IamStore : uses >
-SubscriptionPlansView ..> SubscriptionPlansVm : builds >
+SubscriptionPlans --> SubscriptionsStore : uses >
+SubscriptionPlans --> PaymentStore : uses >
+SubscriptionPlans --> IamStore : uses >
+PaymentGateway --> PaymentStore : uses >
+CheckoutSummary --> PaymentStore : uses >
+CheckoutSummary --> IamStore : uses >
+SubscriptionConfirmed --> PaymentStore : uses >
+BillingPanel --> SubscriptionsStore : uses >
+BillingPanel --> PaymentStore : uses >
+BillingPanel --> IamStore : uses >
+UpgradeGate --> PaymentStore : uses >
+UpgradeGate --> IamStore : uses >
 
-SubscriptionPlansVm "1" *--> "0..*" PlanCardVm : contains >
-SubscriptionPlansVm "1" *--> "0..*" FeatureRowVm : contains >
-SubscriptionPlansVm "1" *--> "1" SubscriptionStatusVm : contains >
+SubscriptionsRoutes ..> SubscriptionPlans : routes to >
+SubscriptionsRoutes ..> PaymentGateway : routes to >
+SubscriptionsRoutes ..> CheckoutSummary : routes to >
+SubscriptionsRoutes ..> SubscriptionConfirmed : routes to >
+SubscriptionsRoutes ..> BillingPanel : routes to >
+SubscriptionsRoutes ..> UpgradeGate : routes to >
 
 @enduml

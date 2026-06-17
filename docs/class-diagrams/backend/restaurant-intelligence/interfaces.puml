@@ -1,0 +1,44 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Restaurant Intelligence — Interfaces layer (nutrismart-platform)
+
+' ─── Boundary stubs ──────────────────────────────────────────────────────────
+package "restaurantintelligence.application [boundary]" {
+  interface MenuScanCommandService <<port>>
+}
+package "<<iam>> [external]" {
+  interface UserQueryService <<port>>
+}
+
+package "restaurantintelligence.interfaces.rest" {
+  class MenuScanController <<@RestController>> {
+    - commandService: MenuScanCommandService
+    - userQueryService: UserQueryService
+    --
+    + scanMenu(request: ScanMenuPhotoRequest): ResponseEntity
+    .. @PostMapping /api/v1/restaurant-intelligence/menu-scan ..
+  }
+}
+
+package "restaurantintelligence.interfaces.rest.resources" {
+  class ScanMenuPhotoRequest <<resource>> {
+    + imageBase64: String
+  }
+  class MenuScanResultResource <<resource>> {
+    + rankedDishes: List<RankedDishResource>
+  }
+  class RankedDishResource <<resource>>
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+MenuScanController --> MenuScanCommandService : uses >
+MenuScanController --> UserQueryService : uses >
+MenuScanController ..> ScanMenuPhotoRequest : consumes >
+MenuScanController ..> MenuScanResultResource : produces >
+MenuScanResultResource "1" *--> "0..*" RankedDishResource : contains >
+
+@enduml
