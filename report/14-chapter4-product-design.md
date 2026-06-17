@@ -1725,7 +1725,7 @@ Para apreciar la separación por capas Domain-Driven Design de cada Bounded Cont
 
    ![Behavioral Backend Diagram](../assets/img/artifacts/17nutrismart-BehavioralBackendDiagram.png)
 
-- **Restaurant Intelligence:** Procesa fotos de menús, filtra platos por restricciones y rankea las opciones más compatibles con el perfil del usuario. Se integra con Google Cloud Vision API y Nutritional Data Providers.
+- **Restaurant Intelligence:** Procesa fotos de menús, filtra platos por restricciones y rankea las opciones más compatibles con el perfil del usuario. Se integra con Google Cloud Vision API, Nutritional Data Providers y DeepSeek API para sugerir recetas asociadas a los platos compatibles.
 
    ![Restaurant Backend Diagram](../assets/img/artifacts/18nutrismart-RestaurantBackendDiagram.png)
 
