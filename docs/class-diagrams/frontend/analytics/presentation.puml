@@ -4,182 +4,51 @@ skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-' ─── Boundary stub: application layer ────────────────────────────────────────
+title Analytics — Presentation layer (nutrismart-webapp)
+
+' ─── Boundary stubs: application layer ───────────────────────────────────────
 package "analytics/application [boundary]" {
-  class AnalyticsStore <<boundary>> {
-    + currentAnalyticsData: Signal<AnalyticsData | null>
-    + loading: Signal<boolean>
-    + error: Signal<string | null>
-    + selectedPeriod: Signal<AnalyticsPeriod>
-    + exportPdfModalOpen: Signal<boolean>
-    + averageCalorieIntake: Signal<number>
-    + currentStreak: Signal<number>
-    + weightChange: Signal<number>
-    + dailyCaloriesHistory: Signal<DailyCaloriesHistory[]>
-    + macroAnalysis: Signal<MacroAnalysis>
-    + isPremiumUser: Signal<boolean>
-    + allowedPeriods: Signal<AnalyticsPeriod[]>
-    + loadAnalyticsData(userId, period): Promise<void>
-    + exportReport(userId): Promise<void>
-    + openExportPdfModal(): void
-    + closeExportPdfModal(): void
-  }
+  class AnalyticsStore <<store>>
 }
 
-' ─── ViewModels ──────────────────────────────────────────────────────────────
-package "analytics/presentation/viewmodels" {
-
-  class MetricCardVm <<view model>> {
-    + labelKey: string
-    + value: string | number
-    + unit: string
-    + trendDirection: string
-    + colorClass: string
-  }
-
-  class DailyCaloriesChartVm <<view model>> {
-    + dates: string[]
-    + consumedValues: number[]
-    + goalValues: number[]
-    + activeValues: number[]
-    + periodKey: string
-  }
-
-  class WeightEvolutionChartVm <<view model>> {
-    + dates: string[]
-    + weights: number[]
-    + goalWeight: number
-    + directionKey: string
-    + statusKey: string
-    + deltaLabel: string
-  }
-
-  class AverageMacrosPanelVm <<view model>> {
-    + proteinPercent: number
-    + carbsPercent: number
-    + fatPercent: number
-    + proteinLabel: string
-    + carbsLabel: string
-    + fatLabel: string
-    + complianceLabel: string
-  }
-
-  class AdherenceTimelineVm <<view model>> {
-    + entries: AdherenceEntryVm[]
-    + currentStreak: number
-    + streakLabel: string
-  }
-
-  class AdherenceEntryVm <<view model>> {
-    + dateLabel: string
-    + statusKey: string
-    + statusClass: string
-  }
-
-  class BehavioralEventItemVm <<view model>> {
-    + dateLabel: string
-    + eventTypeKey: string
-    + descriptionKey: string
-    + severityClass: string
-  }
-
-  class AnalyticsDashboardVm <<view model>> {
-    + periodKey: string
-    + allowedPeriods: string[]
-    + isPremium: boolean
-    + metrics: MetricCardVm[]
-  }
-}
-
-' ─── Views ───────────────────────────────────────────────────────────────────
 package "analytics/presentation/views" {
-
-  class AnalyticsDashboardView <<view>> {
-    - analyticsStore: AnalyticsStore
-    --
-    + dashboardVm: Signal<AnalyticsDashboardVm>
-    + caloriesChartVm: Signal<DailyCaloriesChartVm>
-    + weightChartVm: Signal<WeightEvolutionChartVm>
-    + macrosVm: Signal<AverageMacrosPanelVm>
-    + adherenceVm: Signal<AdherenceTimelineVm>
-    + isLoading: Signal<boolean>
-    --
-    + onPeriodChange(period: string): void
-    + onExport(): void
+  class AnalyticsDashboardComponent <<@Component view>> {
+    # analyticsStore: AnalyticsStore
+    - translate: TranslateService
   }
-
-  class ExportPdfReportView <<view>> {
-    - analyticsStore: AnalyticsStore
-    --
-    + isOpen: Signal<boolean>
-    --
-    + onConfirm(): void
-    + onClose(): void
-  }
+  class ExportPdfReportViewComponent <<@Component view>>
 }
 
-' ─── Components ──────────────────────────────────────────────────────────────
 package "analytics/presentation/components" {
+  class AdherenceHistoryTimelineComponent <<@Component>>
+  class AverageMacrosPanelComponent <<@Component>>
+  class BehavioralEventsListComponent <<@Component>>
+  class DailyCaloriesChartComponent <<@Component>>
+  class ExportPdfButtonComponent <<@Component>>
+  class MetricCardComponent <<@Component>>
+  class PeriodToggleComponent <<@Component>>
+  class WeightEvolutionChartComponent <<@Component>>
+}
 
-  class MetricCard <<component>> {
-    + vm: InputSignal<MetricCardVm>
-  }
-
-  class DailyCaloriesChart <<component>> {
-    + vm: InputSignal<DailyCaloriesChartVm>
-  }
-
-  class WeightEvolutionChart <<component>> {
-    + vm: InputSignal<WeightEvolutionChartVm>
-  }
-
-  class AverageMacrosPanel <<component>> {
-    + vm: InputSignal<AverageMacrosPanelVm>
-  }
-
-  class AdherenceHistoryTimeline <<component>> {
-    + vm: InputSignal<AdherenceTimelineVm>
-  }
-
-  class BehavioralEventsList <<component>> {
-    + events: InputSignal<BehavioralEventItemVm[]>
-  }
-
-  class PeriodToggle <<component>> {
-    + selectedPeriod: InputSignal<string>
-    + allowedPeriods: InputSignal<string[]>
-    --
-    + periodChanged: OutputEmitterRef<string>
-  }
-
-  class ExportPdfButton <<component>> {
-    + isPremium: InputSignal<boolean>
-    --
-    + exportRequested: OutputEmitterRef<void>
-  }
+package "analytics/presentation [routes]" {
+  class AnalyticsRoutes <<routes>>
 }
 
 ' ─── Relationships ────────────────────────────────────────────────────────────
-AnalyticsDashboardView o--> AnalyticsStore : uses >
-ExportPdfReportView o--> AnalyticsStore : uses >
+AnalyticsDashboardComponent --> AnalyticsStore : uses >
+ExportPdfReportViewComponent --> AnalyticsStore : uses >
 
-AnalyticsDashboardView ..> AnalyticsDashboardVm : builds >
-AnalyticsDashboardView ..> DailyCaloriesChartVm : builds >
-AnalyticsDashboardView ..> WeightEvolutionChartVm : builds >
-AnalyticsDashboardView ..> AverageMacrosPanelVm : builds >
-AnalyticsDashboardView ..> AdherenceTimelineVm : builds >
-AnalyticsDashboardView ..> BehavioralEventItemVm : builds >
+AnalyticsDashboardComponent *--> AdherenceHistoryTimelineComponent : composes >
+AnalyticsDashboardComponent *--> AverageMacrosPanelComponent : composes >
+AnalyticsDashboardComponent *--> BehavioralEventsListComponent : composes >
+AnalyticsDashboardComponent *--> DailyCaloriesChartComponent : composes >
+AnalyticsDashboardComponent *--> MetricCardComponent : composes >
+AnalyticsDashboardComponent *--> PeriodToggleComponent : composes >
+AnalyticsDashboardComponent *--> WeightEvolutionChartComponent : composes >
+AnalyticsDashboardComponent *--> ExportPdfButtonComponent : composes >
+ExportPdfReportViewComponent *--> ExportPdfButtonComponent : composes >
 
-AnalyticsDashboardView --> MetricCard : hosts >
-AnalyticsDashboardView --> DailyCaloriesChart : hosts >
-AnalyticsDashboardView --> WeightEvolutionChart : hosts >
-AnalyticsDashboardView --> AverageMacrosPanel : hosts >
-AnalyticsDashboardView --> AdherenceHistoryTimeline : hosts >
-AnalyticsDashboardView --> BehavioralEventsList : hosts >
-AnalyticsDashboardView --> PeriodToggle : hosts >
-AnalyticsDashboardView --> ExportPdfButton : hosts >
-
-AdherenceTimelineVm "1" *--> "0..*" AdherenceEntryVm : contains >
-AnalyticsDashboardVm "1" *--> "0..*" MetricCardVm : contains >
+AnalyticsRoutes ..> AnalyticsDashboardComponent : routes to >
+AnalyticsRoutes ..> ExportPdfReportViewComponent : routes to >
 
 @enduml

@@ -1,0 +1,65 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Restaurant Intelligence — Domain layer (nutrismart-webapp)
+
+package "restaurant-intelligence/domain/model" {
+  class MenuAnalysis <<entity>> {
+    - _id: number
+    - _rankedDishes: RankedDish[]
+    - _restrictedDishes: RestrictedDish[]
+    - _scannedAt: string
+    - _restaurantName: string
+    --
+    + get bestDish(): RankedDish | null
+    + get alternatives(): RankedDish[]
+    + get hasRestrictedDishes(): boolean
+    + get hasCompatibleDishes(): boolean
+  }
+  class RankedDish <<value object>> {
+    + readonly rank: number
+    + readonly name: string
+    + readonly nameEs: string | null
+    + readonly calories: number
+    + readonly protein: number
+    + readonly carbs: number
+    + readonly fat: number
+    + readonly compatibilityScore: number
+    + readonly justification: string
+    + readonly conflictingRestrictions: DietaryRestriction[]
+    + getLocalizedName(lang: string): string
+  }
+  class RestrictedDish <<value object>>
+}
+
+package "restaurant-intelligence/domain/events" {
+  class RestaurantMealAnalyzed <<domain event>> {
+    + readonly userId: number
+    + readonly mealType: MealType
+    + readonly totalCalories: number
+  }
+}
+
+' ─── External (other contexts / shared) ──────────────────────────────────────
+package "shared/domain [external]" {
+  abstract class DomainEvent
+  interface BaseEntity
+}
+package "<<other contexts>> [external]" {
+  enum DietaryRestriction <<iam>>
+  enum MealType <<nutrition-tracking>>
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+MenuAnalysis ..|> BaseEntity
+RestaurantMealAnalyzed --|> DomainEvent
+
+MenuAnalysis "1" *--> "0..*" RankedDish : ranks >
+MenuAnalysis "1" *--> "0..*" RestrictedDish : flags >
+RankedDish "1" o--> "0..*" DietaryRestriction : conflicts with >
+RestaurantMealAnalyzed ..> MealType : carries >
+
+@enduml

@@ -1,0 +1,79 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Restaurant Intelligence — Infrastructure layer (nutrismart-platform)
+
+' ─── Boundary stubs: application output ports ────────────────────────────────
+package "restaurantintelligence.application.ports.output [boundary]" {
+  interface MenuImageRecognitionPort <<port>>
+  interface MenuRankingPort <<port>>
+  interface UserProfileLookupPort <<port>>
+  interface FoodNutritionLookupPort <<port>>
+  interface SubscriptionStatusLookupPort <<port>>
+}
+
+' ─── External bounded-context contracts ──────────────────────────────────────
+package "<<other contexts>> [external]" {
+  interface FoodItemRepository <<nutritiontracking port>>
+  interface UserQueryService <<iam port>>
+  interface SubscriptionRepository <<subscriptions port>>
+}
+
+' ─── ACL adapters ────────────────────────────────────────────────────────────
+package "restaurantintelligence.infrastructure.acl" {
+  class FoodNutritionLookupAdapter {
+    - foodItemRepository: FoodItemRepository
+  }
+  class RestaurantUserProfileLookupAdapter {
+    - userQueryService: UserQueryService
+  }
+  class SubscriptionStatusLookupAdapter {
+    - subscriptionRepository: SubscriptionRepository
+  }
+}
+
+' ─── External AI adapters ────────────────────────────────────────────────────
+package "restaurantintelligence.infrastructure.external.gemini" {
+  class GeminiMenuAdapter {
+    - client: GeminiMenuClient
+  }
+  class GeminiMenuClient
+  class GeminiMenuConfig
+  class GeminiMenuRequest <<dto>>
+  class GeminiMenuResponse <<dto>>
+}
+package "restaurantintelligence.infrastructure.external.deepseek" {
+  class DeepSeekMenuRankingAdapter {
+    - client: DeepSeekMenuClient
+  }
+  class DeepSeekMenuClient
+  class DeepSeekMenuConfig
+  class DeepSeekMenuRequest <<dto>>
+  class DeepSeekMenuResponse <<dto>>
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+FoodNutritionLookupAdapter ..|> FoodNutritionLookupPort
+RestaurantUserProfileLookupAdapter ..|> UserProfileLookupPort
+SubscriptionStatusLookupAdapter ..|> SubscriptionStatusLookupPort
+GeminiMenuAdapter ..|> MenuImageRecognitionPort
+DeepSeekMenuRankingAdapter ..|> MenuRankingPort
+
+FoodNutritionLookupAdapter --> FoodItemRepository : queries >
+RestaurantUserProfileLookupAdapter --> UserQueryService : queries >
+SubscriptionStatusLookupAdapter --> SubscriptionRepository : queries >
+
+GeminiMenuAdapter --> GeminiMenuClient : calls >
+GeminiMenuConfig ..> GeminiMenuClient : provides RestTemplate >
+GeminiMenuClient ..> GeminiMenuRequest : sends >
+GeminiMenuClient ..> GeminiMenuResponse : receives >
+
+DeepSeekMenuRankingAdapter --> DeepSeekMenuClient : calls >
+DeepSeekMenuConfig ..> DeepSeekMenuClient : provides RestTemplate >
+DeepSeekMenuClient ..> DeepSeekMenuRequest : sends >
+DeepSeekMenuClient ..> DeepSeekMenuResponse : receives >
+
+@enduml

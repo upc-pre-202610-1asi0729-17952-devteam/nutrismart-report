@@ -4,124 +4,69 @@ skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-' ─── Boundary stubs: infrastructure ─────────────────────────────────────────
-package "iam/infrastructure [boundary]" {
-  class IamApi <<boundary>> {
-  }
-}
+title IAM — Application layer (nutrismart-webapp)
 
-' ─── Boundary stubs: domain ──────────────────────────────────────────────────
+' ─── Boundary stubs: domain & infrastructure ─────────────────────────────────
 package "iam/domain [boundary]" {
-  class User <<boundary>> {
-  }
+  class User <<entity>>
+  enum UserGoal
+  enum ActivityLevel
+  enum DietaryRestriction
+  enum MedicalCondition
 }
-
-' ─── Boundary stubs: shared ──────────────────────────────────────────────────
+package "iam/infrastructure [boundary]" {
+  class IamApi <<api>>
+}
 package "shared/application [boundary]" {
-  class DomainEventBus <<boundary>> {
-    + publish(event: DomainEvent): void
-    + events$: Observable<DomainEvent>
-  }
+  class DomainEventBus <<event bus>>
 }
 
-' ─── Boundary stubs: shared/domain (published events) ────────────────────────
-package "shared/domain [boundary]" {
-  class AccountCreated <<boundary>> {
-  }
-  class OnboardingCompleted <<boundary>> {
-  }
-  class ProfileUpdated <<boundary>> {
-  }
-  class PlanUpgraded <<boundary>> {
-  }
-  class GoalSwitched <<boundary>> {
-  }
-  class MetabolicTargetSet <<boundary>> {
-  }
-  class RestrictionsChanged <<boundary>> {
-  }
-}
-
-' ─── Application ─────────────────────────────────────────────────────────────
 package "iam/application" {
 
-  class IamStore <<store>> {
-    ' Writable signals
-    - _currentUser: WritableSignal<User | null>
-    - _isAuthenticated: WritableSignal<boolean>
-    - _loading: WritableSignal<boolean>
-    - _error: WritableSignal<string | null>
-    - _failedLoginAttempts: WritableSignal<number>
-    - _blockedUntil: WritableSignal<Date | null>
-    ' Read-only signals
+  class IamStore <<@Injectable store>> {
+    - iamApi: IamApi
+    - router: Router
+    - eventBus: DomainEventBus
+    --
     + currentUser: Signal<User | null>
     + isAuthenticated: Signal<boolean>
     + loading: Signal<boolean>
     + error: Signal<string | null>
-    + isLoginBlocked: Signal<boolean>
-    + loginBlockedUntil: Signal<Date | null>
     --
-    + login(email: string, password: string): Promise<void>
-    + register(data: RegisterDto): Promise<void>
+    + login(email, password): Observable<User>
     + logout(): void
-    + updateProfile(data: ProfileDto): Promise<void>
-    + updatePhysicalDetails(data: PhysicalDto): Promise<void>
-    + updateWeightOnly(weightKg: number): Promise<void>
-    + changeGoal(goal: UserGoal): Promise<void>
-    + addRestriction(restriction: DietaryRestriction): Promise<void>
-    + removeRestriction(restriction: DietaryRestriction): Promise<void>
-    + addMedicalCondition(condition: MedicalCondition): Promise<void>
-    + addMedicalConditionEnum(condition: MedicalCondition): Promise<void>
-    + removeMedicalCondition(condition: MedicalCondition): Promise<void>
-    + setRestrictions(restrictions: DietaryRestriction[]): Promise<void>
-    + setMedicalConditions(conditions: MedicalCondition[]): Promise<void>
-    + upgradePlan(plan: SubscriptionPlan): Promise<void>
-    + restoreSession(): void
-    + saveSession(): void
+    + updatePhysicalDetails(w, h, level: ActivityLevel): void
+    + updateWeightOnly(weightKg): void
+    + changeGoal(goal: UserGoal): void
+    + addRestriction(r: DietaryRestriction): void
+    + removeRestriction(r: DietaryRestriction): void
+    + setRestrictions(restrictions: DietaryRestriction[]): void
+    + addMedicalConditionEnum(c: MedicalCondition): void
+    + removeMedicalCondition(c: string): void
+    - saveSession(user: User): void
+    - clearSession(): void
+    - restoreSession(): void
+    - subscribeToMetabolicTargets(): void
   }
 
-  class AuthGuard <<guard>> {
-    - iamStore: IamStore
-    --
-    + canActivate(route, state): boolean | UrlTree
-  }
-
-  class OnboardingGuard <<guard>> {
-    - iamStore: IamStore
-    --
-    + canActivate(route, state): boolean | UrlTree
-  }
-
-  class PlanGuard <<guard>> {
-    - iamStore: IamStore
-    --
-    + canActivate(route, state): boolean | UrlTree
-  }
-
-  class SubscriptionGuard <<guard>> {
-    - iamStore: IamStore
-    --
-    + canActivate(route, state): boolean | UrlTree
-  }
+  class authGuard <<CanActivateFn>>
+  class onboardingGuard <<CanActivateFn>>
+  class planGuard <<CanActivateFn>>
+  class subscriptionGuard <<CanActivateFn>>
 }
 
-' ─── Dependencies ────────────────────────────────────────────────────────────
-IamStore o--> IamApi : uses >
-IamStore o--> DomainEventBus : uses >
-IamStore ..> User : manages >
+' ─── Relationships ────────────────────────────────────────────────────────────
+IamStore --> IamApi : uses >
+IamStore --> DomainEventBus : publishes/subscribes >
+IamStore ..> User : holds state of >
+IamStore ..> UserGoal : mutates >
+IamStore ..> DietaryRestriction : mutates >
+IamStore ..> MedicalCondition : mutates >
+IamStore ..> ActivityLevel : updates >
 
-AuthGuard o--> IamStore : uses >
-OnboardingGuard o--> IamStore : uses >
-PlanGuard o--> IamStore : uses >
-SubscriptionGuard o--> IamStore : uses >
-
-' ─── Published events ────────────────────────────────────────────────────────
-IamStore ..> AccountCreated : publishes >
-IamStore ..> OnboardingCompleted : publishes >
-IamStore ..> ProfileUpdated : publishes >
-IamStore ..> PlanUpgraded : publishes >
-IamStore ..> GoalSwitched : publishes >
-IamStore ..> MetabolicTargetSet : publishes >
-IamStore ..> RestrictionsChanged : publishes >
+authGuard ..> IamStore : checks session via >
+onboardingGuard ..> IamStore : checks profile via >
+planGuard ..> IamStore : checks plan via >
+subscriptionGuard ..> IamStore : checks plan via >
 
 @enduml

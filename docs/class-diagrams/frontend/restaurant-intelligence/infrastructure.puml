@@ -4,95 +4,50 @@ skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-' ─── Boundary stubs: shared/infrastructure ───────────────────────────────────
-package "shared/infrastructure [boundary]" {
-  abstract class BaseApi <<boundary>> {
-  }
-  interface BaseAssembler <<boundary>> {
-  }
-  abstract class BaseApiEndpoint <<boundary>> {
-  }
-}
+title Restaurant Intelligence — Infrastructure layer (nutrismart-webapp)
 
-' ─── Boundary stubs: restaurant-intelligence/domain ──────────────────────────
+' ─── Boundary stubs: domain layer ────────────────────────────────────────────
 package "restaurant-intelligence/domain [boundary]" {
-  class MenuAnalysis <<boundary>> {
-    + id: number
-    + userId: number
-  }
+  class MenuAnalysis <<entity>>
+}
+package "shared/infrastructure [external]" {
+  class BaseApi
+  interface BaseAssembler
+  interface BaseResource
+  interface BaseResponse
 }
 
-' ─── Resources ───────────────────────────────────────────────────────────────
-package "restaurant-intelligence/infrastructure/resources" {
-
-  class AnalyzedDishResource <<resource>> {
-    + name: string
-    + nameKey: string
-    + calories: number
-    + protein: number
-    + carbs: number
-    + fat: number
-    + goalScore: number
-    + restrictionConflicts: string[]
-    + isRecommended: boolean
+package "restaurant-intelligence/infrastructure" {
+  class RestaurantMenuApi <<@Injectable>> {
+    - _http: HttpClient
+    - _translate: TranslateService
+    + scanMenuPhoto(imageBase64): Observable<RawMenuScan>
+    + rankMenuDishes(menuAnalysisId, userRestrictions): Observable<RawMenuScan>
   }
-
-  class MenuAnalysisResource <<resource>> {
-    + id: number
-    + userId: number
-    + restaurantName: string
-    + menuImageBase64: string
-    + analyzedAt: string
-    + dishes: AnalyzedDishResource[]
-    + status: string
-  }
-
-  class MenuAnalysisResponse <<resource>> {
-    + menuAnalyses: MenuAnalysisResource[]
-  }
-}
-
-' ─── Assemblers ──────────────────────────────────────────────────────────────
-package "restaurant-intelligence/infrastructure/assemblers" {
-
-  class RestaurantMenuAssembler <<assembler>> {
-    + toEntityFromResource(resource: MenuAnalysisResource): MenuAnalysis
-    + toResourceFromEntity(entity: MenuAnalysis): MenuAnalysisResource
+  class MenuAnalysisAssembler <<assembler>> {
+    + toEntityFromResource(r: MenuAnalysisResource): MenuAnalysis
+    + toResourceFromEntity(e: MenuAnalysis): MenuAnalysisResource
     + toEntitiesFromResponse(response: MenuAnalysisResponse): MenuAnalysis[]
   }
+  interface RawMenuDish <<dto>>
+  interface RawMenuScan <<dto>>
+  interface MenuAnalysisResource <<resource>>
+  interface MenuAnalysisResponse <<response>>
+  interface RankedDishResource <<resource>>
+  interface RestrictedDishResource <<resource>>
 }
 
-' ─── HTTP ────────────────────────────────────────────────────────────────────
-package "restaurant-intelligence/infrastructure/http" {
+' ─── Relationships ────────────────────────────────────────────────────────────
+RestaurantMenuApi --|> BaseApi
+MenuAnalysisAssembler ..|> BaseAssembler
+MenuAnalysisResource --|> BaseResource
+MenuAnalysisResponse --|> BaseResponse
 
-  class RestaurantMenuApiEndpoint <<endpoint>> {
-    - assembler: RestaurantMenuAssembler
-    --
-    + getAll(): Observable<MenuAnalysis[]>
-    + getById(id: number): Observable<MenuAnalysis>
-    + create(entity: MenuAnalysis): Observable<MenuAnalysis>
-  }
-
-  class RestaurantMenuApi <<api>> {
-    - endpoint: RestaurantMenuApiEndpoint
-    --
-    + analyzeMenu(userId: number, imageBase64: string, restaurantName: string): Observable<MenuAnalysis>
-    + getAnalysisHistory(userId: number): Observable<MenuAnalysis[]>
-  }
-}
-
-RestaurantMenuApi --|> BaseApi : extends >
-RestaurantMenuApiEndpoint --|> BaseApiEndpoint : extends >
-RestaurantMenuAssembler ..|> BaseAssembler : implements >
-
-MenuAnalysisResponse "1" *--> "0..*" MenuAnalysisResource : contains >
-MenuAnalysisResource "1" *--> "0..*" AnalyzedDishResource : contains >
-
-RestaurantMenuAssembler --> MenuAnalysisResource : reads >
-RestaurantMenuAssembler --> MenuAnalysisResponse : reads >
-RestaurantMenuAssembler ..> MenuAnalysis : produces >
-
-RestaurantMenuApiEndpoint --> RestaurantMenuAssembler : uses >
-RestaurantMenuApi o--> RestaurantMenuApiEndpoint : delegates to >
+RestaurantMenuApi ..> RawMenuScan : returns >
+RawMenuScan "1" *--> "0..*" RawMenuDish : contains >
+MenuAnalysisAssembler ..> MenuAnalysis : builds >
+MenuAnalysisAssembler ..> MenuAnalysisResource : reads/writes >
+MenuAnalysisResource "1" *--> "0..*" RankedDishResource : contains >
+MenuAnalysisResource "1" *--> "0..*" RestrictedDishResource : contains >
 
 @enduml

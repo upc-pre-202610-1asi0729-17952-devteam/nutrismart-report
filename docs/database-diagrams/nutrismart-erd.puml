@@ -2,350 +2,319 @@
 skinparam monochrome false
 skinparam linetype ortho
 skinparam packageStyle rectangle
+hide circle
+
+title NutriSmart — Entity Relationship Diagram (derived from JPA entities, nutrismart-platform)
+
+' Convention: every table extends AuditableAbstractPersistenceEntity
+'   → id BIGINT <<PK>>, created_at TIMESTAMP, updated_at TIMESTAMP
+' user_id / food_id / weather_snapshot_id are application-level references
+' (stored as BIGINT, not DB-enforced FKs in code, modelled here as logical FKs).
 
 ' ─── IAM ─────────────────────────────────────────────────────────────────────
-
 package "Identity & Access Management" #E8F4FD {
-  entity "iam_users" as users {
-    * id : UUID <<PK>>
+  entity "users" as users {
+    * id : BIGINT <<PK>>
     --
     * email : VARCHAR(255) <<UNIQUE>>
     * password_hash : TEXT
-    * first_name : VARCHAR(100)
-    * last_name : VARCHAR(100)
-    avatar_url : TEXT
-    * role : VARCHAR(20)
-    onboarding_completed : BOOLEAN
-    * created_at : TIMESTAMP
-    * updated_at : TIMESTAMP
+    * first_name : VARCHAR
+    * last_name : VARCHAR
+    * goal : VARCHAR(20)
+    * weight : DOUBLE
+    * height : DOUBLE
+    * activity_level : VARCHAR(20)
+    plan : VARCHAR(10)
+    restrictions : TEXT
+    medical_conditions : TEXT
+    * daily_calorie_target : DOUBLE
+    * protein_target : DOUBLE
+    * carbs_target : DOUBLE
+    * fat_target : DOUBLE
+    * fiber_target : DOUBLE
+    * streak : INT
+    * consecutive_misses : INT
+    birthday : DATE
+    biological_sex : VARCHAR
+    home_city : VARCHAR
+    goal_started_at : DATE
+    plan_expires_at : DATE
   }
-}
-
-' ─── METABOLIC ADAPTATION ────────────────────────────────────────────────────
-
-package "Metabolic Adaptation" #EAFAF1 {
-  entity "metabolic_profiles" as metabolic_profiles {
-    * id : UUID <<PK>>
+  entity "password_reset_tokens" as prt {
+    * id : BIGINT <<PK>>
     --
-    * user_id : UUID <<FK>> <<UNIQUE>>
-    * weight_kg : NUMERIC(6,2)
-    * height_cm : NUMERIC(5,2)
-    * birth_date : DATE
-    * biological_sex : VARCHAR(10)
-    * activity_level : VARCHAR(30)
-    * goal_type : VARCHAR(20)
-    target_weight_kg : NUMERIC(6,2)
-    * bmi : NUMERIC(5,2)
-    * bmr : NUMERIC(8,2)
-    * tdee : NUMERIC(8,2)
-    * daily_calorie_target : NUMERIC(8,2)
-    * protein_target_g : NUMERIC(8,2)
-    * carbs_target_g : NUMERIC(8,2)
-    * fat_target_g : NUMERIC(8,2)
-    * created_at : TIMESTAMP
-    * updated_at : TIMESTAMP
-  }
-  entity "metabolic_weight_records" as weight_records {
-    * id : UUID <<PK>>
-    --
-    * user_id : UUID <<FK>>
-    * weight_kg : NUMERIC(6,2)
-    * recorded_at : DATE
-    note : TEXT
-    * created_at : TIMESTAMP
-  }
-  entity "metabolic_activity_logs" as activity_logs {
-    * id : UUID <<PK>>
-    --
-    * user_id : UUID <<FK>>
-    * date : DATE
-    * total_calories_burned : NUMERIC(8,2)
-    * source : VARCHAR(20)
-    synced_at : TIMESTAMP
-    * created_at : TIMESTAMP
-    * updated_at : TIMESTAMP
-  }
-  entity "metabolic_activity_records" as activity_records {
-    * id : UUID <<PK>>
-    --
-    * log_id : UUID <<FK>>
-    * activity_type : VARCHAR(30)
-    * duration_minutes : INTEGER
-    * calories_burned : NUMERIC(8,2)
-    * recorded_at : TIMESTAMP
-  }
-  entity "metabolic_wearable_tokens" as wearable_tokens {
-    * id : UUID <<PK>>
-    --
-    * user_id : UUID <<FK>> <<UNIQUE>>
-    * access_token : TEXT
-    * refresh_token : TEXT
+    * token : VARCHAR <<UNIQUE>>
+    * user_id : BIGINT <<FK>>
     * expires_at : TIMESTAMP
-    * created_at : TIMESTAMP
-  }
-}
-
-' ─── NUTRITION TRACKING ──────────────────────────────────────────────────────
-
-package "Nutrition Tracking" #FEF9E7 {
-  entity "nutrition_food_items" as food_items {
-    * id : UUID <<PK>>
-    --
-    * name : VARCHAR(255)
-    brand : VARCHAR(255)
-    external_id : VARCHAR(100)
-    * calories_per_100g : NUMERIC(8,2)
-    * protein_per_100g : NUMERIC(8,2)
-    * carbs_per_100g : NUMERIC(8,2)
-    * fat_per_100g : NUMERIC(8,2)
-    fiber_per_100g : NUMERIC(8,2)
-    * source : VARCHAR(50)
-    * created_at : TIMESTAMP
-  }
-  entity "nutrition_logs" as nutrition_logs {
-    * id : UUID <<PK>>
-    --
-    * user_id : UUID <<FK>>
-    * date : DATE
-    * daily_calorie_target : NUMERIC(8,2)
-    dietary_restrictions : TEXT
-    * created_at : TIMESTAMP
-    * updated_at : TIMESTAMP
-  }
-  entity "nutrition_meal_records" as meal_records {
-    * id : UUID <<PK>>
-    --
-    * log_id : UUID <<FK>>
-    * food_item_id : UUID <<FK>>
-    * amount_grams : NUMERIC(8,2)
-    * meal_type : VARCHAR(20)
-    * source : VARCHAR(30)
-    * logged_at : TIMESTAMP
+    * used : BOOLEAN
   }
 }
 
 ' ─── BEHAVIORAL CONSISTENCY ──────────────────────────────────────────────────
-
-package "Behavioral Consistency" #E8F8F5 {
-  entity "behavioral_progress" as behavioral_progress {
-    * id : UUID <<PK>>
+package "Behavioral Consistency" #FDF2E9 {
+  entity "behavioral_progress" as bp {
+    * id : BIGINT <<PK>>
     --
-    * user_id : UUID <<FK>> <<UNIQUE>>
-    * adherence_status : VARCHAR(20)
-    * streak : INTEGER
-    * consecutive_misses : INTEGER
-    last_goal_met_date : DATE
-    goal_met_dates : TEXT
-    * updated_at : TIMESTAMP
+    * user_id : BIGINT <<FK>> <<UNIQUE>>
+    * adherence_status : VARCHAR
+    * streak : INT
+    * consecutive_misses : INT
+    * weekly_completion_rate : DOUBLE
+    * last_evaluated_at : TIMESTAMP
   }
-  entity "behavioral_eating_patterns" as eating_patterns {
-    * id : UUID <<PK>>
-    --
-    * user_id : UUID <<FK>> <<UNIQUE>>
-    * pattern_type : VARCHAR(30)
-    * weekly_completion_rate : NUMERIC(5,2)
-    * current_streak : INTEGER
-    * consecutive_misses : INTEGER
-    * analyzed_at : TIMESTAMP
+  entity "behavioral_progress_goal_met_dates" as bpgmd {
+    * behavioral_progress_id : BIGINT <<FK>>
+    goal_met_date : DATE
   }
-  entity "behavioral_recovery_plans" as recovery_plans {
-    * id : UUID <<PK>>
+  entity "eating_behavior_patterns" as ebp {
+    * id : BIGINT <<PK>>
     --
-    * user_id : UUID <<FK>>
-    * trigger : VARCHAR(40)
-    * status : VARCHAR(20)
-    * activated_at : TIMESTAMP
-    resolved_at : TIMESTAMP
+    * user_id : BIGINT <<FK>> <<UNIQUE>>
+    * pattern_type : VARCHAR
+    * detected_at : TIMESTAMP
   }
-  entity "behavioral_recovery_actions" as recovery_actions {
-    * id : UUID <<PK>>
+  entity "recovery_plans" as rp {
+    * id : BIGINT <<PK>>
     --
-    * plan_id : UUID <<FK>>
-    * type : VARCHAR(40)
-    * description_key : VARCHAR(100)
-    * priority : INTEGER
-  }
-}
-
-' ─── RESTAURANT INTELLIGENCE ─────────────────────────────────────────────────
-
-package "Restaurant Intelligence" #FEF5E7 {
-  entity "restaurant_menu_analyses" as menu_analyses {
-    * id : UUID <<PK>>
-    --
-    * user_id : UUID <<FK>>
-    raw_image_text : TEXT
-    * analyzed_at : TIMESTAMP
-  }
-  entity "restaurant_analyzed_dishes" as analyzed_dishes {
-    * id : UUID <<PK>>
-    --
-    * analysis_id : UUID <<FK>>
-    * name : VARCHAR(255)
-    * estimated_calories : NUMERIC(8,2)
-    * estimated_protein_g : NUMERIC(8,2)
-    * estimated_carbs_g : NUMERIC(8,2)
-    * estimated_fat_g : NUMERIC(8,2)
-    * is_restricted : BOOLEAN
-    restriction_reason : TEXT
-    * compatibility_score : NUMERIC(5,2)
-    * rank_position : INTEGER
-  }
-}
-
-' ─── SMART RECOMMENDATIONS ───────────────────────────────────────────────────
-
-package "Smart Recommendations" #FDF2F8 {
-  entity "recs_sets" as recs_sets {
-    * id : UUID <<PK>>
-    --
-    * user_id : UUID <<FK>>
-    * type : VARCHAR(30)
-    * context_json : TEXT
-    * generated_at : TIMESTAMP
+    * user_id : BIGINT <<FK>>
+    * status : VARCHAR
+    * drop_trigger : VARCHAR
+    * actions : TEXT
     * expires_at : TIMESTAMP
   }
-  entity "recs_items" as recs_items {
-    * id : UUID <<PK>>
+}
+
+' ─── METABOLIC ADAPTATION ────────────────────────────────────────────────────
+package "Metabolic Adaptation" #EAFAF1 {
+  entity "body_metrics" as bm {
+    * id : BIGINT <<PK>>
     --
-    * set_id : UUID <<FK>>
-    * type : VARCHAR(30)
-    * title : VARCHAR(255)
-    * description : TEXT
-    * priority : INTEGER
-    food_item_ref : UUID
+    * user_id : BIGINT <<FK>>
+    * weight_kg : DOUBLE
+    * height_cm : DOUBLE
+    logged_at : TIMESTAMP
+    target_weight_kg : DOUBLE
+    projected_achievement_date : DATE
   }
-  entity "recs_pantry_snapshots" as pantry_snapshots {
-    * id : UUID <<PK>>
+  entity "body_compositions" as bc {
+    * id : BIGINT <<PK>>
     --
-    * user_id : UUID <<FK>> <<UNIQUE>>
-    * updated_at : TIMESTAMP
+    * user_id : BIGINT <<FK>>
+    waist_cm : DOUBLE
+    neck_cm : DOUBLE
+    height_cm : DOUBLE
+    weight_kg : DOUBLE
+    measured_at : TIMESTAMP
+    override_body_fat_percent : DOUBLE
   }
-  entity "recs_pantry_items" as pantry_items {
-    * id : UUID <<PK>>
+  entity "activity_logs" as al {
+    * id : BIGINT <<PK>>
     --
-    * snapshot_id : UUID <<FK>>
-    * name : VARCHAR(255)
-    * quantity : NUMERIC(8,2)
-    * unit : VARCHAR(20)
+    * user_id : BIGINT <<FK>>
+    activity_type : VARCHAR
+    * duration_minutes : INT
+    * calories_burned : DOUBLE
+    timestamp : TIMESTAMP
+  }
+  entity "wearable_connections" as wc {
+    * id : BIGINT <<PK>>
+    --
+    * user_id : BIGINT <<FK>>
+    * provider : VARCHAR
+    status : VARCHAR
+    last_synced_at : TIMESTAMP
+    authorized_at : TIMESTAMP
+  }
+  entity "metabolic_adaptation_logs" as mal {
+    * id : BIGINT <<PK>>
+    --
+    * user_id : BIGINT <<FK>>
+    triggered_by : VARCHAR
+    previous_bmr / new_bmr : DOUBLE
+    previous_tdee / new_tdee : DOUBLE
+    previous/new calories,protein,carbs,fat : DOUBLE
+    changed_at : TIMESTAMP
   }
 }
 
-' ─── ANALYTICS & REPORTING ───────────────────────────────────────────────────
-
-package "Analytics & Reporting" #F4ECF7 {
-  entity "analytics_daily_dashboards" as daily_dashboards {
-    * id : UUID <<PK>>
+' ─── NUTRITION TRACKING ──────────────────────────────────────────────────────
+package "Nutrition Tracking" #FEF9E7 {
+  entity "foods" as foods {
+    * id : BIGINT <<PK>>
     --
-    * user_id : UUID <<FK>>
-    * date : DATE
-    * calories_consumed : NUMERIC(8,2)
-    * calorie_target : NUMERIC(8,2)
-    * calories_burned : NUMERIC(8,2)
-    * protein_consumed_g : NUMERIC(8,2)
-    * carbs_consumed_g : NUMERIC(8,2)
-    * fat_consumed_g : NUMERIC(8,2)
-    * adherence_status : VARCHAR(20)
-    * usage_streak : INTEGER
-    * updated_at : TIMESTAMP
+    name : VARCHAR
+    name_es : VARCHAR
+    source : VARCHAR
+    serving_size : DOUBLE
+    serving_unit : VARCHAR
+    restrictions : TEXT
+    name_key : VARCHAR <<UNIQUE>>
+    category : VARCHAR
+    item_type : VARCHAR
+    weather_types : TEXT
+    origin_city : VARCHAR
+    origin_country : VARCHAR
   }
-  entity "analytics_progress_reports" as reports {
-    * id : UUID <<PK>>
+  entity "nutrition_log" as nlog {
+    * id : BIGINT <<PK>>
     --
-    * user_id : UUID <<FK>>
-    * period_start : DATE
-    * period_end : DATE
-    * period_type : VARCHAR(20)
-    avg_daily_calories : NUMERIC(8,2)
-    avg_protein_g : NUMERIC(8,2)
-    avg_carbs_g : NUMERIC(8,2)
-    avg_fat_g : NUMERIC(8,2)
-    total_calories_burned : NUMERIC(10,2)
-    weight_change_kg : NUMERIC(6,2)
-    adherence_percent : NUMERIC(5,2)
-    overall_adherence_percent : NUMERIC(5,2)
-    days_logged : INTEGER
-    * generated_at : TIMESTAMP
+    * user_id : BIGINT <<FK>>
+    food_id : BIGINT <<FK>>
+    food_item_name : VARCHAR
+    meal_type : VARCHAR
+    quantity : DOUBLE
+    calories : DOUBLE
+    protein/carbs/fat/fiber/sugar : DOUBLE
+    logged_at : TIMESTAMP
   }
-  entity "analytics_weight_data_points" as weight_points {
-    * id : UUID <<PK>>
+  entity "daily_intake" as di {
+    * id : BIGINT <<PK>>
     --
-    * report_id : UUID <<FK>>
-    * date : DATE
-    * weight_kg : NUMERIC(6,2)
+    user_id : BIGINT <<FK>>
+    date : DATE
+    daily_goal : DOUBLE
+    consumed : DOUBLE
+    active : DOUBLE
   }
 }
 
-' ─── SUBSCRIPTIONS & BILLING ─────────────────────────────────────────────────
-
-package "Subscriptions & Billing" #FDEDEC {
-  entity "billing_subscriptions" as subscriptions {
-    * id : UUID <<PK>>
+' ─── SMART RECOMMENDATION ─────────────────────────────────────────────────────
+package "Smart Recommendation" #F4ECF7 {
+  entity "pantry" as pantry {
+    * id : BIGINT <<PK>>
     --
-    * user_id : UUID <<FK>> <<UNIQUE>>
-    * plan_type : VARCHAR(20)
-    * status : VARCHAR(20)
-    stripe_subscription_id : TEXT
-    * current_period_start : DATE
-    * current_period_end : DATE
-    canceled_at : TIMESTAMP
-    * created_at : TIMESTAMP
-    * updated_at : TIMESTAMP
+    * user_id : BIGINT <<FK>>
+    * food_id : BIGINT <<FK>>
+    * quantity_g : DOUBLE
   }
-  entity "billing_invoices" as invoices {
-    * id : UUID <<PK>>
+  entity "recommendation_sessions" as rs {
+    * id : BIGINT <<PK>>
     --
-    * subscription_id : UUID <<FK>>
-    * user_id : UUID <<FK>>
-    * amount : NUMERIC(10,2)
-    * currency : VARCHAR(3)
-    * status : VARCHAR(20)
-    stripe_invoice_id : TEXT
-    * created_at : TIMESTAMP
+    * user_id : BIGINT <<FK>>
+    adherence_status : VARCHAR
+    consecutive_misses : INT
+    simplified_kcal_target : DOUBLE
+    * is_active : BOOLEAN
+    weather_snapshot_id : BIGINT <<FK>>
+  }
+  entity "weather_snapshots" as ws {
+    * id : BIGINT <<PK>>
+    --
+    * city : VARCHAR
+    country : VARCHAR
+    temperature_celsius : DOUBLE
+    weather_condition : VARCHAR
+    * weather_type : VARCHAR
+  }
+  entity "travel_contexts" as tc {
+    * id : BIGINT <<PK>>
+    --
+    * user_id : BIGINT <<FK>>
+    * city : VARCHAR
+    country : VARCHAR
+    * is_active : BOOLEAN
+    * is_manual : BOOLEAN
+    activated_at : TIMESTAMP
+  }
+  entity "user_location_snapshots" as uls {
+    * id : BIGINT <<PK>>
+    --
+    * user_id : BIGINT <<FK>>
+    * city : VARCHAR
+    country : VARCHAR
+    recorded_at : TIMESTAMP
+  }
+  entity "recommendation_cards" as rc {
+    * id : BIGINT <<PK>>
+    --
+    badge : VARCHAR
+    weather_type : VARCHAR
+    travel_city : VARCHAR
+    * card_type : VARCHAR
+    * food_id : BIGINT <<FK>>
+    description : TEXT
+    description_es : TEXT
+  }
+  entity "recipes" as recipes {
+    * id : BIGINT <<PK>>
+    --
+    * name : VARCHAR
+    name_es : VARCHAR
+    goal_type : VARCHAR
+    prep_time_minutes : INT
+    estimated_calories : DOUBLE
+    estimated_protein/carbs/fat : DOUBLE
+    ingredients : TEXT
+  }
+}
+
+' ─── SUBSCRIPTIONS ───────────────────────────────────────────────────────────
+package "Subscriptions" #FADBD8 {
+  entity "subscriptions" as subs {
+    * id : BIGINT <<PK>>
+    --
+    * user_id : BIGINT <<FK>> <<UNIQUE>>
+    plan : VARCHAR(10)
+    status : VARCHAR
+    billing_cycle_start : DATE
+    billing_cycle_end : DATE
+  }
+  entity "billing_history" as bh {
+    * id : BIGINT <<PK>>
+    --
+    * user_id : BIGINT <<FK>>
+    plan : VARCHAR(10)
+    amount : DOUBLE
+    currency : VARCHAR
     paid_at : TIMESTAMP
+    status : VARCHAR
   }
 }
 
-' ─── RELATIONSHIPS ────────────────────────────────────────────────────────────
+' ─── RELATIONSHIPS (cardinality) ─────────────────────────────────────────────
+' 1:N
+users ||--o{ prt           : "1:N  has reset tokens"
+users ||--o{ recovery_plans : "1:N  follows"
+users ||--o{ bm            : "1:N  logs"
+users ||--o{ bc            : "1:N  logs"
+users ||--o{ al            : "1:N  logs"
+users ||--o{ wc            : "1:N  connects"
+users ||--o{ mal           : "1:N  recalculations"
+users ||--o{ nlog          : "1:N  logs meals"
+users ||--o{ di            : "1:N  daily totals"
+users ||--o{ pantry        : "1:N  owns"
+users ||--o{ rs            : "1:N  sessions"
+users ||--o{ tc            : "1:N  travels"
+users ||--o{ uls           : "1:N  locations"
+users ||--o{ bh            : "1:N  billed"
 
-' IAM → all
-users ||--|| metabolic_profiles       : "has"
-users ||--o{ weight_records           : "logs"
-users ||--o{ activity_logs            : "has"
-users ||--o| wearable_tokens          : "connects"
-users ||--o{ nutrition_logs           : "has"
-users ||--|| behavioral_progress      : "tracks"
-users ||--o| eating_patterns          : "has"
-users ||--o{ recovery_plans           : "receives"
-users ||--o{ menu_analyses            : "performs"
-users ||--o{ recs_sets                : "receives"
-users ||--o| pantry_snapshots         : "holds"
-users ||--o{ daily_dashboards         : "has"
-users ||--o{ reports                  : "generates"
-users ||--|| subscriptions            : "holds"
-users ||--o{ invoices                 : "billed"
+' 1:1 (user_id UNIQUE)
+users ||--|| bp            : "1:1  progress"
+users ||--|| ebp           : "1:1  pattern"
+users ||--|| subs          : "1:1  subscription"
 
-' Metabolic Adaptation
-activity_logs    ||--o{ activity_records  : "contains"
+' element collection
+bp ||--o{ bpgmd            : "1:N  goal-met dates"
 
-' Nutrition Tracking
-nutrition_logs   ||--o{ meal_records      : "contains"
-food_items       ||--o{ meal_records      : "referenced by"
+' food references
+foods ||--o{ nlog          : "1:N  logged as"
+foods ||--o{ pantry        : "1:N  stocked as"
+foods ||--o{ rc            : "1:N  featured in"
 
-' Behavioral Consistency
-recovery_plans   ||--o{ recovery_actions  : "contains"
+' weather reference
+ws ||--o{ rs               : "1:N  contextualizes"
 
-' Restaurant Intelligence
-menu_analyses    ||--o{ analyzed_dishes   : "contains"
+note bottom of recipes
+  ** recipes has NO foreign key ** in the real schema.
+  It is a global, AI-generated catalog filtered by goal_type
+  (enum, not a table). Left unconnected per the source code —
+  reported separately rather than linked artificially.
+end note
 
-' Smart Recommendations
-recs_sets        ||--o{ recs_items        : "contains"
-pantry_snapshots ||--o{ pantry_items      : "contains"
-
-' Analytics
-reports          ||--o{ weight_points     : "contains"
-
-' Billing
-subscriptions    ||--o{ invoices          : "generates"
+note as N1
+  Analytics is a read-model bounded context: it has
+  NO tables of its own and aggregates data from the
+  other contexts via ACL ports at query time.
+end note
 
 @enduml

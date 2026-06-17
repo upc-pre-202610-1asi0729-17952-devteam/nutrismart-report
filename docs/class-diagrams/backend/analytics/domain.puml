@@ -1,0 +1,63 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Analytics — Domain layer (nutrismart-platform)
+
+package "analytics.domain.model.aggregates" {
+  class Analytics <<aggregate root>> {
+    - userId: Long
+    - firstName: String
+    - lastName: String
+    - dailyCalorieTarget: Double
+    - consumed: Double
+    - active: Double
+    - caloriesRemaining: Double
+    - proteinTarget: Double
+    - carbsTarget: Double
+    - fatTarget: Double
+    - proteinConsumed: Double
+    - carbsConsumed: Double
+    - fatConsumed: Double
+    - adherenceStatus: AdherenceStatus
+    - streak: Integer
+    - consecutiveMisses: Integer
+    - weeklyCompletionRate: Double
+    - weightKg: Double
+    - heightCm: Double
+    - bmi: Double
+    - bmiCategory: BmiCategory
+    - date: LocalDate
+  }
+}
+
+package "analytics.domain.model.valueobjects" {
+  enum AdherenceStatus {
+    ON_TRACK
+    AT_RISK
+    DROPPED
+  }
+  enum BmiCategory {
+    UNDERWEIGHT
+    NORMAL
+    OVERWEIGHT
+    OBESE
+    --
+    + {static} fromBmi(bmi: double): BmiCategory
+  }
+}
+
+package "analytics.domain.model.exceptions" {
+  class DomainInvalidExceptions <<exception>> {
+    + DomainInvalidExceptions(message: String)
+  }
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+Analytics "1" o--> "1" AdherenceStatus : adherence >
+Analytics "1" o--> "1" BmiCategory : bmi category >
+DomainInvalidExceptions ..> Analytics : guards invariants of >
+
+@enduml

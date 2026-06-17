@@ -1,0 +1,46 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Analytics — Domain layer (nutrismart-webapp)
+
+package "analytics/domain/model" {
+  class AnalyticsData <<interface>> {
+    + dailyCalories: DailyCaloriesHistory[]
+    + macros: MacroAnalysis
+    + adherenceHistory: AdherenceHistoryEntry[]
+    + behavioralEvents: BehavioralEvent[]
+  }
+  class DailyCaloriesHistory <<interface>>
+  class MacroAnalysis <<interface>>
+  class AdherenceHistoryEntry <<interface>>
+  class BehavioralEvent <<interface>>
+
+  note top of AnalyticsData
+    Type aliases: AnalyticsPeriod ('7_DAYS'|'30_DAYS'|'90_DAYS'),
+    AdherenceStatus, WeightChangeDirection/Status, MacroKey, MacroColorKey.
+  end note
+}
+
+package "analytics/domain/service" {
+  class AnalyticsDomainService <<domain service>> {
+    + classifyAdherence(calories, target): AdherenceStatus
+    + isCompleteDay(calories, target): boolean
+    + computeStreak(dailyMap, dateArray): number
+    + detectBehavioralTransitions(history: AdherenceHistoryEntry[]): BehavioralEvent[]
+    + computeProteinCompliance(consumed, target): string
+  }
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+AnalyticsData "1" *--> "0..*" DailyCaloriesHistory : contains >
+AnalyticsData "1" *--> "1" MacroAnalysis : contains >
+AnalyticsData "1" *--> "0..*" AdherenceHistoryEntry : contains >
+AnalyticsData "1" *--> "0..*" BehavioralEvent : contains >
+
+AnalyticsDomainService ..> AdherenceHistoryEntry : analyzes >
+AnalyticsDomainService ..> BehavioralEvent : produces >
+
+@enduml

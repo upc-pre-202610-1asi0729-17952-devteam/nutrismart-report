@@ -1,0 +1,78 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Subscriptions — Domain layer (nutrismart-platform)
+
+package "subscriptions.domain.model.aggregates" {
+  class Subscription <<aggregate root>> {
+    - id: Long
+    - userId: Long
+    - plan: SubscriptionPlan
+    - status: SubscriptionStatus
+    - billingCycleStart: LocalDate
+    - billingCycleEnd: LocalDate
+    - createdAt: Instant
+    --
+    + {static} create(userId: Long, plan: SubscriptionPlan): Subscription
+    + {static} rehydrate(...): Subscription
+    + update(plan, status, ...): void
+  }
+  class BillingRecord <<aggregate root>> {
+    - id: Long
+    - userId: Long
+    - plan: SubscriptionPlan
+    - amount: Double
+    - currency: String
+    - paidAt: Instant
+    - status: String
+    --
+    + {static} create(userId, plan, amount, ...): BillingRecord
+    + {static} rehydrate(...): BillingRecord
+  }
+}
+
+package "subscriptions.domain.model.valueobjects" {
+  enum SubscriptionPlan {
+    BASIC
+    PRO
+    PREMIUM
+  }
+  enum SubscriptionStatus {
+    ACTIVE
+    CANCELLED
+    EXPIRED
+  }
+}
+
+package "subscriptions.domain.model.repositories" {
+  interface SubscriptionRepository <<port>> {
+    + findById(id: Long): Optional<Subscription>
+    + findByUserId(userId: Long): Optional<Subscription>
+    + findAll(): List<Subscription>
+    + save(s: Subscription): Subscription
+  }
+  interface BillingRecordRepository <<port>> {
+    + findById(id: Long): Optional<BillingRecord>
+    + findAll(): List<BillingRecord>
+    + save(r: BillingRecord): BillingRecord
+  }
+}
+
+package "subscriptions.domain.model.exceptions" {
+  class DomainInvalidExceptions <<exception>>
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+Subscription "1" o--> "1" SubscriptionPlan : plan >
+Subscription "1" o--> "1" SubscriptionStatus : status >
+BillingRecord "1" o--> "1" SubscriptionPlan : billed for >
+BillingRecord "0..*" ..> "1" Subscription : settles >
+
+SubscriptionRepository ..> Subscription : persists >
+BillingRecordRepository ..> BillingRecord : persists >
+DomainInvalidExceptions ..> Subscription : guards invariants of >
+
+@enduml

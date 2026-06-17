@@ -4,153 +4,75 @@ skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-' ─── Boundary stubs: infrastructure ─────────────────────────────────────────
-package "nutrition-tracking/infrastructure [boundary]" {
-  class NutritionApi <<boundary>> {
-  }
-  class PlateScanApi <<boundary>> {
-  }
-}
+title Nutrition Tracking — Application layer (nutrismart-webapp)
 
-' ─── Boundary stubs: domain ──────────────────────────────────────────────────
+' ─── Boundary stubs: domain & infrastructure ─────────────────────────────────
 package "nutrition-tracking/domain [boundary]" {
-  class FoodItem <<boundary>> {
-  }
-  class MealRecord <<boundary>> {
-  }
-  class DailyIntake <<boundary>> {
-  }
-  class ScanResult <<boundary>> {
-  }
-  class PreLogGuardrail <<boundary>> {
-  }
-  class MacroWarning <<boundary>> {
-  }
+  class FoodItem <<entity>>
+  class MealRecord <<entity>>
+  class DailyIntake <<entity>>
+  class ScanResult <<entity>>
+  enum MealType
+  enum DietaryRestriction
+}
+package "nutrition-tracking/infrastructure [boundary]" {
+  class NutritionApi <<api>>
+  class PlateScanApi <<api>>
+}
+package "<<other contexts>> [external]" {
+  class IamStore <<iam>>
+  class WearableStore <<metabolic-adaptation>>
+  class DomainEventBus <<shared>>
+  class NotificationService <<shared>>
 }
 
-' ─── Boundary stubs: domain events ───────────────────────────────────────────
-package "nutrition-tracking/domain/events [boundary]" {
-  class DailyTargetsSet <<boundary>> {
-  }
-  class FoodSearchExecuted <<boundary>> {
-  }
-  class MealPhotoAnalyzed <<boundary>> {
-  }
-}
-
-' ─── Boundary stubs: shared ──────────────────────────────────────────────────
-package "shared/application [boundary]" {
-  class DomainEventBus <<boundary>> {
-    + publish(event: DomainEvent): void
-    + events$: Observable<DomainEvent>
-  }
-}
-
-package "shared/domain [boundary]" {
-  class MealRecorded <<boundary>> {
-  }
-  class MealRemoved <<boundary>> {
-  }
-  class MealEntryUpdated <<boundary>> {
-  }
-  class MealSkipped <<boundary>> {
-  }
-  class DailyGoalMet <<boundary>> {
-  }
-  class DailyGoalExceeded <<boundary>> {
-  }
-  class RestrictedItemBlocked <<boundary>> {
-  }
-  class DailyProgressUpdated <<boundary>> {
-  }
-}
-
-' ─── Application ─────────────────────────────────────────────────────────────
 package "nutrition-tracking/application" {
-
-  class NutritionStore <<store>> {
-    ' Writable signals
-    - _foodItems: WritableSignal<FoodItem[]>
-    - _mealRecords: WritableSignal<MealRecord[]>
-    - _dailyIntakes: WritableSignal<DailyIntake[]>
-    - _loading: WritableSignal<boolean>
-    - _error: WritableSignal<string | null>
-    - _searchQuery: WritableSignal<string>
-    - _userRestrictions: WritableSignal<string[]>
-    - _goalExceededToday: WritableSignal<boolean>
-    - _allMealsMetToday: WritableSignal<boolean>
-    - _preLogGuardrails: WritableSignal<PreLogGuardrail[]>
-    ' Read-only signals
+  class NutritionStore <<@Injectable store>> {
+    - nutritionApi: NutritionApi
+    - iamStore: IamStore
+    - notificationService: NotificationService
+    - eventBus: DomainEventBus
+    - wearableStore: WearableStore
+    --
     + foodItems: Signal<FoodItem[]>
     + mealRecords: Signal<MealRecord[]>
     + dailyIntakes: Signal<DailyIntake[]>
-    + loading: Signal<boolean>
-    + error: Signal<string | null>
     + searchQuery: Signal<string>
-    + userRestrictions: Signal<string[]>
-    + preLogGuardrails: Signal<PreLogGuardrail[]>
-    + hasBlockingGuardrail: Signal<boolean>
-    ' Computed signals
-    + recordsByMealType: Signal<Record<MealType, MealRecord[]>>
-    + dailyTotals: Signal<MacroTotals>
-    + isDailyGoalExceeded: Signal<boolean>
-    + allMealsLogged: Signal<boolean>
-    + todayMacroWarnings: Signal<{ approaching: MacroWarning[]; exceeded: MacroWarning[] }>
-    + todayActiveCalories: Signal<number>
-    --
-    + searchFoods(query: string): void
-    + clearSearch(): void
-    + loadMealHistory(): Promise<void>
-    + loadDailyBalance(): Promise<void>
-    + evaluatePreLog(food: FoodItem, qty: number): void
-    + recordMeal(food: FoodItem, qty: number, unit: string, type: MealType): Promise<void>
-    + adjustPortion(record: MealRecord, qty: number): Promise<void>
-    + removeMeal(id: number): Promise<void>
-    + getDailyIntakeFor(date: Date): DailyIntake | null
-    + checkMealWindows(): void
-    + runEndOfDayCheck(): void
-    + checkAndPublishDailyGoalEvents(): void
+    + userRestrictions: Signal<DietaryRestriction[]>
+    + goalExceededToday: Signal<boolean>
+    + allMealsMetToday: Signal<boolean>
   }
-
-  class PlateScanStore <<store>> {
-    ' Writable signals
-    - _currentScan: WritableSignal<ScanResult | null>
-    - _loading: WritableSignal<boolean>
-    - _error: WritableSignal<string | null>
-    ' Read-only signals
-    + currentScan: Signal<ScanResult | null>
-    + loading: Signal<boolean>
-    + error: Signal<string | null>
+  class PlateScanStore <<@Injectable store>> {
+    - plateScanApi: PlateScanApi
+    - iamStore: IamStore
+    - nutritionStore: NutritionStore
+    - eventBus: DomainEventBus
     --
-    + analyzePlate(imageBase64: string, mealType: MealType): Promise<void>
-    + confirmScan(): Promise<void>
-    + clearScan(): void
+    + totalEstimatedCalories: Signal<number>
+    + hasScanItems: Signal<boolean>
+    + macroAlerts: Signal<MacroAlert[]>
+    + analyzePlatePhoto(imageBase64): Promise<void>
+    + logScannedPlate(mealType: MealType): Promise<void>
+    + updateScannedItemQuantity(itemId, newQuantity): void
   }
 }
 
-' ─── Dependencies ────────────────────────────────────────────────────────────
-NutritionStore o--> NutritionApi : uses >
-NutritionStore o--> DomainEventBus : uses >
-PlateScanStore o--> PlateScanApi : uses >
-PlateScanStore o--> DomainEventBus : uses >
+' ─── Relationships ────────────────────────────────────────────────────────────
+NutritionStore --> NutritionApi : uses >
+NutritionStore --> IamStore : reads user >
+NutritionStore --> NotificationService : notifies via >
+NutritionStore --> DomainEventBus : subscribes/publishes >
+NutritionStore --> WearableStore : reads active kcal >
+NutritionStore ..> FoodItem : holds >
+NutritionStore ..> MealRecord : holds >
+NutritionStore ..> DailyIntake : holds >
+NutritionStore ..> DietaryRestriction : tracks >
 
-NutritionStore ..> MealRecord : manages >
-NutritionStore ..> FoodItem : searches >
-NutritionStore ..> DailyIntake : tracks >
-NutritionStore ..> PreLogGuardrail : evaluates >
-PlateScanStore ..> ScanResult : manages >
-
-' ─── Published events ────────────────────────────────────────────────────────
-NutritionStore ..> MealRecorded : publishes >
-NutritionStore ..> MealRemoved : publishes >
-NutritionStore ..> MealEntryUpdated : publishes >
-NutritionStore ..> MealSkipped : publishes >
-NutritionStore ..> DailyGoalMet : publishes >
-NutritionStore ..> DailyGoalExceeded : publishes >
-NutritionStore ..> RestrictedItemBlocked : publishes >
-NutritionStore ..> DailyProgressUpdated : publishes >
-NutritionStore ..> DailyTargetsSet : publishes >
-NutritionStore ..> FoodSearchExecuted : publishes >
-PlateScanStore ..> MealPhotoAnalyzed : publishes >
+PlateScanStore --> PlateScanApi : uses >
+PlateScanStore --> IamStore : reads user >
+PlateScanStore --> NutritionStore : logs meals via >
+PlateScanStore --> DomainEventBus : publishes >
+PlateScanStore ..> ScanResult : holds >
+PlateScanStore ..> MealType : logs by >
 
 @enduml

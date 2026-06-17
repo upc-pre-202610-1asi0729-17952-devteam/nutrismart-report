@@ -1,0 +1,115 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Metabolic Adaptation — Application layer (nutrismart-platform)
+
+' ─── Boundary stubs: domain layer ────────────────────────────────────────────
+package "metabolicadaptation.domain [boundary]" {
+  class BodyMetric <<aggregate>>
+  class BodyComposition <<aggregate>>
+  class ActivityLog <<aggregate>>
+  class WearableConnection <<aggregate>>
+  class MetabolicAdaptationLog <<aggregate>>
+  interface BodyMetricRepository <<port>>
+  interface BodyCompositionRepository <<port>>
+  interface ActivityLogRepository <<port>>
+  interface WearableConnectionRepository <<port>>
+  interface MetabolicAdaptationLogRepository <<port>>
+}
+
+package "metabolicadaptation.application.commandservices" {
+  interface BodyMetricCommandService <<port>>
+  interface BodyCompositionCommandService <<port>>
+  interface ActivityLogCommandService <<port>>
+  interface WearableConnectionCommandService <<port>>
+  interface MetabolicAdaptationLogCommandService <<port>>
+}
+
+package "metabolicadaptation.application.queryservices" {
+  interface BodyMetricQueryService <<port>>
+  interface BodyCompositionQueryService <<port>>
+  interface ActivityLogQueryService <<port>>
+  interface WearableConnectionQueryService <<port>>
+  interface MetabolicAdaptationLogQueryService <<port>>
+}
+
+package "metabolicadaptation.application.commands" {
+  class LogBodyMetricsCommand <<command>>
+  class UpdateBodyMetricCommand <<command>>
+  class LogBodyCompositionCommand <<command>>
+  class UpdateBodyCompositionCommand <<command>>
+  class LogActivityCommand <<command>>
+  class DeleteActivityLogCommand <<command>>
+  class ConnectWearableCommand <<command>>
+  class UpdateWearableConnectionCommand <<command>>
+  class DeleteWearableConnectionCommand <<command>>
+  class RecordMetabolicAdaptationCommand <<command>>
+}
+
+package "metabolicadaptation.application.internal.commandservices" {
+  class BodyMetricCommandServiceImpl
+  class BodyCompositionCommandServiceImpl
+  class ActivityLogCommandServiceImpl
+  class WearableConnectionCommandServiceImpl
+  class MetabolicAdaptationLogCommandServiceImpl
+}
+
+package "metabolicadaptation.application.internal.queryservices" {
+  class BodyMetricQueryServiceImpl
+  class BodyCompositionQueryServiceImpl
+  class ActivityLogQueryServiceImpl
+  class WearableConnectionQueryServiceImpl
+  class MetabolicAdaptationLogQueryServiceImpl
+}
+
+package "metabolicadaptation.application.acl" {
+  class MetabolicAdaptationContextFacadeImpl {
+    - bodyMetricQueryService: BodyMetricQueryService
+  }
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+BodyMetricCommandServiceImpl ..|> BodyMetricCommandService
+BodyCompositionCommandServiceImpl ..|> BodyCompositionCommandService
+ActivityLogCommandServiceImpl ..|> ActivityLogCommandService
+WearableConnectionCommandServiceImpl ..|> WearableConnectionCommandService
+MetabolicAdaptationLogCommandServiceImpl ..|> MetabolicAdaptationLogCommandService
+BodyMetricQueryServiceImpl ..|> BodyMetricQueryService
+BodyCompositionQueryServiceImpl ..|> BodyCompositionQueryService
+ActivityLogQueryServiceImpl ..|> ActivityLogQueryService
+WearableConnectionQueryServiceImpl ..|> WearableConnectionQueryService
+MetabolicAdaptationLogQueryServiceImpl ..|> MetabolicAdaptationLogQueryService
+
+BodyMetricCommandServiceImpl --> BodyMetricRepository : uses >
+BodyCompositionCommandServiceImpl --> BodyCompositionRepository : uses >
+ActivityLogCommandServiceImpl --> ActivityLogRepository : uses >
+WearableConnectionCommandServiceImpl --> WearableConnectionRepository : uses >
+MetabolicAdaptationLogCommandServiceImpl --> MetabolicAdaptationLogRepository : uses >
+BodyMetricQueryServiceImpl --> BodyMetricRepository : uses >
+BodyCompositionQueryServiceImpl --> BodyCompositionRepository : uses >
+ActivityLogQueryServiceImpl --> ActivityLogRepository : uses >
+WearableConnectionQueryServiceImpl --> WearableConnectionRepository : uses >
+MetabolicAdaptationLogQueryServiceImpl --> MetabolicAdaptationLogRepository : uses >
+
+BodyMetricCommandServiceImpl ..> LogBodyMetricsCommand : handles >
+BodyMetricCommandServiceImpl ..> UpdateBodyMetricCommand : handles >
+BodyMetricCommandServiceImpl ..> BodyMetric : produces >
+BodyCompositionCommandServiceImpl ..> LogBodyCompositionCommand : handles >
+BodyCompositionCommandServiceImpl ..> UpdateBodyCompositionCommand : handles >
+BodyCompositionCommandServiceImpl ..> BodyComposition : produces >
+ActivityLogCommandServiceImpl ..> LogActivityCommand : handles >
+ActivityLogCommandServiceImpl ..> DeleteActivityLogCommand : handles >
+ActivityLogCommandServiceImpl ..> ActivityLog : produces >
+WearableConnectionCommandServiceImpl ..> ConnectWearableCommand : handles >
+WearableConnectionCommandServiceImpl ..> UpdateWearableConnectionCommand : handles >
+WearableConnectionCommandServiceImpl ..> DeleteWearableConnectionCommand : handles >
+WearableConnectionCommandServiceImpl ..> WearableConnection : produces >
+MetabolicAdaptationLogCommandServiceImpl ..> RecordMetabolicAdaptationCommand : handles >
+MetabolicAdaptationLogCommandServiceImpl ..> MetabolicAdaptationLog : produces >
+
+MetabolicAdaptationContextFacadeImpl --> BodyMetricQueryService : uses >
+
+@enduml

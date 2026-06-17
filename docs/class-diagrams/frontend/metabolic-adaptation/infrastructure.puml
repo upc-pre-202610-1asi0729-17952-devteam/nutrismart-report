@@ -4,218 +4,88 @@ skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-' ─── Boundary stubs: shared/infrastructure ───────────────────────────────────
-package "shared/infrastructure [boundary]" {
-  abstract class BaseApi <<boundary>> {
-  }
-  interface BaseAssembler <<boundary>> {
-  }
-  abstract class BaseApiEndpoint <<boundary>> {
-  }
-}
+title Metabolic Adaptation — Infrastructure layer (nutrismart-webapp)
 
-' ─── Boundary stubs: metabolic-adaptation/domain ─────────────────────────────
+' ─── Boundary stubs: domain layer ────────────────────────────────────────────
 package "metabolic-adaptation/domain [boundary]" {
-  class BodyMetric <<boundary>> {
-    + id: number
-    + userId: number
-  }
-  class BodyComposition <<boundary>> {
-    + id: number
-  }
-  class NutritionPlan <<boundary>> {
-    + id: number
-  }
-  class WearableConnection <<boundary>> {
-    + id: number
-  }
-  class ActivityLog <<boundary>> {
-    + id: number
-  }
-  class MetabolicAdaptationLog <<boundary>> {
-    + id: number
-  }
+  class BodyMetric <<entity>>
+  class BodyComposition <<entity>>
+  class WearableConnection <<entity>>
+  class ActivityLog <<entity>>
+  class MetabolicAdaptationLog <<entity>>
+}
+package "shared/infrastructure [external]" {
+  class BaseApi
+  class BaseApiEndpoint
+  interface BaseAssembler
+  interface BaseResource
 }
 
-' ─── Resources ───────────────────────────────────────────────────────────────
-package "metabolic-adaptation/infrastructure/resources" {
+package "metabolic-adaptation/infrastructure" {
+  class MetabolicApi <<@Injectable>>
+  class MetabolicAdaptationLogApi <<@Injectable>>
+  class WearableApi <<@Injectable>>
 
-  class BodyMetricResource <<resource>> {
-    + id: number
-    + userId: number
-    + weightKg: number
-    + heightCm: number
-    + loggedAt: string
-    + targetWeightKg: number
-    + projectedAchievementDate: string | null
-  }
+  class BodyMetricEndpoint <<endpoint>>
+  class BodyCompositionEndpoint <<endpoint>>
+  class MetabolicAdaptationLogApiEndpoint <<endpoint>>
+  class WearableConnectionEndpoint <<endpoint>>
+  class ActivityLogEndpoint <<endpoint>>
 
-  class BodyMetricsResponse <<resource>> {
-    + bodyMetrics: BodyMetricResource[]
-  }
+  class BodyMetricAssembler <<assembler>>
+  class BodyCompositionAssembler <<assembler>>
+  class MetabolicAdaptationLogAssembler <<assembler>>
+  class WearableConnectionAssembler <<assembler>>
+  class ActivityLogAssembler <<assembler>>
 
-  class BodyCompositionResource <<resource>> {
-    + id: number
-    + userId: number
-    + waistCm: number
-    + neckCm: number
-    + heightCm: number
-    + weightKg: number
-    + measuredAt: string
-    + previousBodyFatPercent: number | null
-  }
-
-  class BodyCompositionResponse <<resource>> {
-    + bodyCompositions: BodyCompositionResource[]
-  }
-
-  class NutritionPlanResource <<resource>> {
-    + id: number
-    + userId: number
-    + dailyCalorieTarget: number
-    + proteinTargetG: number
-    + carbsTargetG: number
-    + fatTargetG: number
-    + fiberTargetG: number
-    + isActive: boolean
-    + createdAt: string
-  }
-
-  class NutritionPlanResponse <<resource>> {
-    + nutritionPlans: NutritionPlanResource[]
-  }
-
-  class WearableConnectionResource <<resource>> {
-    + id: number
-    + userId: number
-    + provider: string
-    + status: string
-    + lastSyncedAt: string
-    + authorizedAt: string
-  }
-
-  class WearableConnectionResponse <<resource>> {
-    + wearableConnections: WearableConnectionResource[]
-  }
-
-  class ActivityLogResource <<resource>> {
-    + id: number
-    + userId: number
-    + activityType: string
-    + durationMinutes: number
-    + caloriesBurned: number
-    + timestamp: string
-  }
-
-  class ActivityLogResponse <<resource>> {
-    + activityLogs: ActivityLogResource[]
-  }
+  interface BodyMetricResource <<resource>>
+  interface BodyCompositionResource <<resource>>
+  interface NutritionPlanResource <<resource>>
+  interface MetabolicAdaptationLogResource <<resource>>
+  interface WearableConnectionResource <<resource>>
+  interface ActivityLogResource <<resource>>
 }
 
-' ─── Assemblers ──────────────────────────────────────────────────────────────
-package "metabolic-adaptation/infrastructure/assemblers" {
+' (response interfaces extend shared BaseResponse — omitted for brevity)
 
-  class BodyMetricAssembler <<assembler>> {
-    + toEntityFromResource(resource: BodyMetricResource): BodyMetric
-    + toResourceFromEntity(entity: BodyMetric): BodyMetricResource
-    + toEntitiesFromResponse(response: BodyMetricsResponse): BodyMetric[]
-  }
+' ─── Relationships ────────────────────────────────────────────────────────────
+MetabolicApi --|> BaseApi
+MetabolicAdaptationLogApi --|> BaseApi
+WearableApi --|> BaseApi
+BodyMetricEndpoint --|> BaseApiEndpoint
+BodyCompositionEndpoint --|> BaseApiEndpoint
+MetabolicAdaptationLogApiEndpoint --|> BaseApiEndpoint
+WearableConnectionEndpoint --|> BaseApiEndpoint
+ActivityLogEndpoint --|> BaseApiEndpoint
+BodyMetricAssembler ..|> BaseAssembler
+BodyCompositionAssembler ..|> BaseAssembler
+MetabolicAdaptationLogAssembler ..|> BaseAssembler
+WearableConnectionAssembler ..|> BaseAssembler
+ActivityLogAssembler ..|> BaseAssembler
+BodyMetricResource --|> BaseResource
+WearableConnectionResource --|> BaseResource
 
-  class BodyCompositionAssembler <<assembler>> {
-    + toEntityFromResource(resource: BodyCompositionResource): BodyComposition
-    + toResourceFromEntity(entity: BodyComposition): BodyCompositionResource
-    + toEntitiesFromResponse(response: BodyCompositionResponse): BodyComposition[]
-  }
+MetabolicApi --> BodyMetricEndpoint : via >
+MetabolicApi --> BodyCompositionEndpoint : via >
+MetabolicAdaptationLogApi --> MetabolicAdaptationLogApiEndpoint : via >
+WearableApi --> WearableConnectionEndpoint : via >
+WearableApi --> ActivityLogEndpoint : via >
 
-  class NutritionPlanAssembler <<assembler>> {
-    + toEntityFromResource(resource: NutritionPlanResource): NutritionPlan
-    + toResourceFromEntity(entity: NutritionPlan): NutritionPlanResource
-    + toEntitiesFromResponse(response: NutritionPlanResponse): NutritionPlan[]
-  }
+BodyMetricEndpoint --> BodyMetricAssembler : maps via >
+BodyCompositionEndpoint --> BodyCompositionAssembler : maps via >
+MetabolicAdaptationLogApiEndpoint --> MetabolicAdaptationLogAssembler : maps via >
+WearableConnectionEndpoint --> WearableConnectionAssembler : maps via >
+ActivityLogEndpoint --> ActivityLogAssembler : maps via >
 
-  class WearableConnectionAssembler <<assembler>> {
-    + toEntityFromResource(resource: WearableConnectionResource): WearableConnection
-    + toResourceFromEntity(entity: WearableConnection): WearableConnectionResource
-    + toEntitiesFromResponse(response: WearableConnectionResponse): WearableConnection[]
-  }
-
-  class ActivityLogAssembler <<assembler>> {
-    + toEntityFromResource(resource: ActivityLogResource): ActivityLog
-    + toResourceFromEntity(entity: ActivityLog): ActivityLogResource
-    + toEntitiesFromResponse(response: ActivityLogResponse): ActivityLog[]
-  }
-}
-
-' ─── HTTP ────────────────────────────────────────────────────────────────────
-package "metabolic-adaptation/infrastructure/http" {
-
-  class MetabolicApiEndpoint <<endpoint>> {
-    - bodyMetricAssembler: BodyMetricAssembler
-    - compositionAssembler: BodyCompositionAssembler
-    - planAssembler: NutritionPlanAssembler
-  }
-
-  class MetabolicApi <<api>> {
-    - endpoint: MetabolicApiEndpoint
-    --
-    + logWeight(metric: BodyMetric): Observable<BodyMetric>
-    + getMetricsHistory(userId: number): Observable<BodyMetric[]>
-    + getAllMetricsHistory(userId: number): Observable<BodyMetric[]>
-    + getMetabolicTargets(userId: number): Observable<NutritionPlan>
-    + setTargetWeight(userId: number, target: number): Observable<BodyMetric>
-    + setComposition(comp: BodyComposition): Observable<BodyComposition>
-    + getComposition(userId: number): Observable<BodyComposition>
-    + updateWeight(metric: BodyMetric): Observable<BodyMetric>
-  }
-
-  class WearableApiEndpoint <<endpoint>> {
-    - connectionAssembler: WearableConnectionAssembler
-    - activityAssembler: ActivityLogAssembler
-  }
-
-  class WearableApi <<api>> {
-    - endpoint: WearableApiEndpoint
-    --
-    + getWearableConnection(userId: number): Observable<WearableConnection>
-    + connectGoogleFit(userId: number, token: string): Observable<WearableConnection>
-    + disconnectWearable(userId: number): Observable<void>
-    + syncNow(userId: number): Observable<WearableConnection>
-    + markSyncFailed(userId: number): Observable<WearableConnection>
-    + logManualActivity(log: ActivityLog): Observable<ActivityLog>
-    + getActivityLogs(userId: number): Observable<ActivityLog[]>
-  }
-}
-
-MetabolicApi --|> BaseApi : extends >
-WearableApi --|> BaseApi : extends >
-MetabolicApiEndpoint --|> BaseApiEndpoint : extends >
-WearableApiEndpoint --|> BaseApiEndpoint : extends >
-
-BodyMetricAssembler ..|> BaseAssembler : implements >
-BodyCompositionAssembler ..|> BaseAssembler : implements >
-NutritionPlanAssembler ..|> BaseAssembler : implements >
-WearableConnectionAssembler ..|> BaseAssembler : implements >
-ActivityLogAssembler ..|> BaseAssembler : implements >
-
-BodyMetricsResponse "1" *--> "0..*" BodyMetricResource : contains >
-BodyCompositionResponse "1" *--> "0..*" BodyCompositionResource : contains >
-NutritionPlanResponse "1" *--> "0..*" NutritionPlanResource : contains >
-WearableConnectionResponse "1" *--> "0..*" WearableConnectionResource : contains >
-ActivityLogResponse "1" *--> "0..*" ActivityLogResource : contains >
-
-BodyMetricAssembler ..> BodyMetric : produces >
-BodyCompositionAssembler ..> BodyComposition : produces >
-NutritionPlanAssembler ..> NutritionPlan : produces >
-WearableConnectionAssembler ..> WearableConnection : produces >
-ActivityLogAssembler ..> ActivityLog : produces >
-
-MetabolicApiEndpoint --> BodyMetricAssembler : uses >
-MetabolicApiEndpoint --> BodyCompositionAssembler : uses >
-MetabolicApiEndpoint --> NutritionPlanAssembler : uses >
-WearableApiEndpoint --> WearableConnectionAssembler : uses >
-WearableApiEndpoint --> ActivityLogAssembler : uses >
-
-MetabolicApi o--> MetabolicApiEndpoint : delegates to >
-WearableApi o--> WearableApiEndpoint : delegates to >
+BodyMetricAssembler ..> BodyMetric : builds >
+BodyMetricAssembler ..> BodyMetricResource : reads/writes >
+BodyCompositionAssembler ..> BodyComposition : builds >
+BodyCompositionAssembler ..> BodyCompositionResource : reads/writes >
+MetabolicAdaptationLogAssembler ..> MetabolicAdaptationLog : builds >
+WearableConnectionAssembler ..> WearableConnection : builds >
+ActivityLogAssembler ..> ActivityLog : builds >
+ActivityLogAssembler ..> ActivityLogResource : reads/writes >
+MetabolicAdaptationLogAssembler ..> MetabolicAdaptationLogResource : reads/writes >
+MetabolicApi ..> NutritionPlanResource : transports >
 
 @enduml

@@ -4,169 +4,77 @@ skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-' ─── Boundary stubs: infrastructure ─────────────────────────────────────────
-package "metabolic-adaptation/infrastructure [boundary]" {
-  class MetabolicApi <<boundary>> {
-  }
-  class WearableApi <<boundary>> {
-  }
-}
+title Metabolic Adaptation — Application layer (nutrismart-webapp)
 
-' ─── Boundary stubs: domain ──────────────────────────────────────────────────
+' ─── Boundary stubs: domain & infrastructure ─────────────────────────────────
 package "metabolic-adaptation/domain [boundary]" {
-  class BodyMetric <<boundary>> {
-  }
-  class BodyComposition <<boundary>> {
-  }
-  class NutritionPlan <<boundary>> {
-  }
-  class WearableConnection <<boundary>> {
-  }
-  class ActivityLog <<boundary>> {
-  }
+  class BodyMetric <<entity>>
+  class NutritionPlan <<entity>>
+  class MetabolicAdaptationLog <<entity>>
+  class WearableConnection <<entity>>
+  class ActivityLog <<entity>>
+  class ActivityType <<value object>>
+}
+package "metabolic-adaptation/infrastructure [boundary]" {
+  class MetabolicApi <<api>>
+  class MetabolicAdaptationLogApi <<api>>
+  class WearableApi <<api>>
+}
+package "<<other contexts>> [external]" {
+  class IamStore <<iam>>
+  class DomainEventBus <<shared>>
 }
 
-' ─── Boundary stubs: shared ──────────────────────────────────────────────────
-package "shared/application [boundary]" {
-  class DomainEventBus <<boundary>> {
-    + publish(event: DomainEvent): void
-    + events$: Observable<DomainEvent>
-  }
-}
-
-package "shared/domain [boundary]" {
-  class MetabolicTargetSet <<boundary>> {
-  }
-  class WeightLogged <<boundary>> {
-  }
-  class TargetWeightSet <<boundary>> {
-  }
-  class BodyMetricsUpdated <<boundary>> {
-  }
-  class StagnationDetected <<boundary>> {
-  }
-  class GoalSwitched <<boundary>> {
-  }
-  class OnboardingCompleted <<boundary>> {
-  }
-  class ActivitySynced <<boundary>> {
-  }
-  class WearableConnected <<boundary>> {
-  }
-  class ActiveCaloriesCalculated <<boundary>> {
-  }
-}
-
-' ─── Application ─────────────────────────────────────────────────────────────
 package "metabolic-adaptation/application" {
-
-  class MetabolicStore <<store>> {
-    ' Writable signals
-    - _currentMetric: WritableSignal<BodyMetric | null>
-    - _metricsHistory: WritableSignal<BodyMetric[]>
-    - _allHistory: WritableSignal<BodyMetric[]>
-    - _composition: WritableSignal<BodyComposition | null>
-    - _nutritionPlan: WritableSignal<NutritionPlan | null>
-    - _selectedDays: WritableSignal<number>
-    - _loading: WritableSignal<boolean>
-    - _error: WritableSignal<string | null>
-    - _adaptationHistory: WritableSignal<MetabolicAdaptationLog[]>
-    ' Read-only signals
-    + currentMetric: Signal<BodyMetric | null>
-    + metricsHistory: Signal<BodyMetric[]>
-    + composition: Signal<BodyComposition | null>
-    + nutritionPlan: Signal<NutritionPlan | null>
-    + selectedDays: Signal<number>
-    + loading: Signal<boolean>
-    + error: Signal<string | null>
-    ' Computed signals
+  class MetabolicStore <<@Injectable store>> {
+    - api: MetabolicApi
+    - adaptationLogApi: MetabolicAdaptationLogApi
+    - iamStore: IamStore
+    - eventBus: DomainEventBus
+    --
     + daysInCurrentGoal: Signal<number>
     + daysUntilUnlock: Signal<number>
-    + isGoalLocked: Signal<boolean>
     + unlockDate: Signal<string>
-    + isStale: Signal<boolean>
+    + significantAdaptations: Signal<MetabolicAdaptationLog[]>
     + isMuscleGain: Signal<boolean>
     + hasLoggedToday: Signal<boolean>
     + hasStagnated: Signal<boolean>
-    + recentHistory: Signal<BodyMetric[]>
-    + chartPoints: Signal<ChartPoint[]>
-    --
-    + initialise(userId: number): Promise<void>
-    + logWeight(weightKg: number): Promise<void>
-    + setTargetWeight(targetKg: number): Promise<void>
-    + loadHistory(): Promise<void>
-    + loadAllHistory(): Promise<void>
-    + setComposition(data: CompositionDto): Promise<void>
-    + switchGoal(goal: UserGoal): Promise<void>
-    + recalculateForGoal(goal: UserGoal): Promise<void>
-    + applyInitialTarget(user: User): Promise<void>
-    + runDailyStagnationCheck(): void
-    + publishMetabolicTargetSet(plan: NutritionPlan): void
-    + checkAndPublishStagnation(): void
+    + chartPoints: Signal<...>
   }
-
-  class WearableStore <<store>> {
-    ' Writable signals
-    - _connection: WritableSignal<WearableConnection | null>
-    - _activityLogs: WritableSignal<ActivityLog[]>
-    - _estimatedCalories: WritableSignal<number>
-    - _loading: WritableSignal<boolean>
-    - _error: WritableSignal<string | null>
-    - _stagnationSuggestion: WritableSignal<string | null>
-    - _activitySuggestionForRecovery: WritableSignal<string | null>
-    - _premiumEnabled: WritableSignal<boolean>
-    ' Read-only signals
-    + connection: Signal<WearableConnection | null>
-    + activityLogs: Signal<ActivityLog[]>
-    + estimatedCalories: Signal<number>
-    + loading: Signal<boolean>
-    + error: Signal<string | null>
-    + stagnationSuggestion: Signal<string | null>
-    + activitySuggestionForRecovery: Signal<string | null>
-    + premiumEnabled: Signal<boolean>
-    ' Computed signals
+  class WearableStore <<@Injectable store>> {
+    - api: WearableApi
+    - iamStore: IamStore
+    - eventBus: DomainEventBus
+    --
     + netCalorieAdjustment: Signal<number>
     + netDailyTarget: Signal<number>
     + todayLogs: Signal<ActivityLog[]>
     + weekLogs: Signal<ActivityLog[]>
     + activityTypeKeys: Signal<string[]>
-    + recentLogs: Signal<ActivityLog[]>
-    --
-    + load(userId: number): Promise<void>
-    + connectGoogleFit(userId: number, token: string): Promise<void>
-    + disconnectWearable(userId: number): Promise<void>
-    + syncNow(userId: number): Promise<void>
-    + previewCalories(durationMin: number, type: string): number
-    + logManualActivity(data: ManualActivityDto): Promise<void>
-    + analyzeWeeklyTrend(): void
+    + load(): Promise<void>
+    + connectGoogleFit(): Promise<void>
+    + disconnectWearable(): Promise<void>
+    + syncNow(): Promise<void>
   }
+  class bodyProgressGoalGuard <<CanActivateFn>>
 }
 
-' ─── Dependencies ────────────────────────────────────────────────────────────
-MetabolicStore o--> MetabolicApi : uses >
-MetabolicStore o--> DomainEventBus : uses >
-WearableStore o--> WearableApi : uses >
-WearableStore o--> DomainEventBus : uses >
+' ─── Relationships ────────────────────────────────────────────────────────────
+MetabolicStore --> MetabolicApi : uses >
+MetabolicStore --> MetabolicAdaptationLogApi : uses >
+MetabolicStore --> IamStore : reads user >
+MetabolicStore --> DomainEventBus : subscribes/publishes >
+MetabolicStore ..> BodyMetric : holds >
+MetabolicStore ..> NutritionPlan : computes >
+MetabolicStore ..> MetabolicAdaptationLog : holds >
 
-MetabolicStore ..> BodyMetric : manages >
-MetabolicStore ..> BodyComposition : tracks >
-MetabolicStore ..> NutritionPlan : manages >
-WearableStore ..> WearableConnection : manages >
-WearableStore ..> ActivityLog : logs >
+WearableStore --> WearableApi : uses >
+WearableStore --> IamStore : reads user >
+WearableStore --> DomainEventBus : publishes >
+WearableStore ..> WearableConnection : holds >
+WearableStore ..> ActivityLog : holds >
+WearableStore ..> ActivityType : reads keys >
 
-' ─── Published events ────────────────────────────────────────────────────────
-MetabolicStore ..> MetabolicTargetSet : publishes >
-MetabolicStore ..> WeightLogged : publishes >
-MetabolicStore ..> TargetWeightSet : publishes >
-MetabolicStore ..> BodyMetricsUpdated : publishes >
-MetabolicStore ..> StagnationDetected : publishes >
-WearableStore ..> ActivitySynced : publishes >
-WearableStore ..> WearableConnected : publishes >
-WearableStore ..> ActiveCaloriesCalculated : publishes >
-
-' ─── Subscribed events ───────────────────────────────────────────────────────
-OnboardingCompleted ..> MetabolicStore : triggers applyInitialTarget >
-GoalSwitched ..> MetabolicStore : triggers recalculation >
-StagnationDetected ..> WearableStore : triggers activity suggestion >
+bodyProgressGoalGuard ..> IamStore : checks goal via >
 
 @enduml

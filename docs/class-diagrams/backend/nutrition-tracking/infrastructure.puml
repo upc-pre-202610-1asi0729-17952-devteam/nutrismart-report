@@ -1,0 +1,117 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Nutrition Tracking — Infrastructure layer (nutrismart-platform)
+
+' ─── Boundary stubs: domain & application ports ──────────────────────────────
+package "nutritiontracking.domain [boundary]" {
+  class FoodItem <<aggregate>>
+  class MealRecord <<aggregate>>
+  class DailyIntake <<aggregate>>
+  interface FoodItemRepository <<port>>
+  interface MealRecordRepository <<port>>
+  interface DailyIntakeRepository <<port>>
+  enum MealType
+  enum NutritionalRiskLevel
+}
+package "nutritiontracking.application.ports [boundary]" {
+  interface ExternalFoodDataPort <<port>>
+  interface FoodEnrichmentPort <<port>>
+  interface PlateImageRecognitionPort <<port>>
+  interface PlateItemMatchPort <<port>>
+}
+
+' ─── Persistence ─────────────────────────────────────────────────────────────
+package "nutritiontracking.infrastructure.persistence.jpa.entities" {
+  class FoodItemJpaEntity <<@Entity foods>>
+  class MealRecordJpaEntity <<@Entity nutrition_log>>
+  class DailyIntakeJpaEntity <<@Entity daily_intake>>
+}
+package "nutritiontracking.infrastructure.persistence.jpa" {
+  class FoodItemPersistenceAdapter
+  class MealRecordPersistenceAdapter
+  class DailyIntakePersistenceAdapter
+  interface SpringDataFoodItemJpaRepository <<JpaRepository>>
+  interface SpringDataMealRecordJpaRepository <<JpaRepository>>
+  interface SpringDataDailyIntakeJpaRepository <<JpaRepository>>
+  class FoodItemPersistenceMapper <<mapper>>
+  class MealRecordPersistenceMapper <<mapper>>
+  class DailyIntakePersistenceMapper <<mapper>>
+}
+package "nutritiontracking.infrastructure.persistence.jpa.converters" {
+  class MealTypeAttributeConverter <<@Converter>>
+  class NutritionalRiskLevelAttributeConverter <<@Converter>>
+}
+
+' ─── External AI / data adapters (active) ────────────────────────────────────
+package "nutritiontracking.infrastructure.external.usda" {
+  class USDAFoodDataAdapter
+  class USDAFoodDataClient
+}
+package "nutritiontracking.infrastructure.external.deepseek" {
+  class DeepSeekFoodEnrichmentAdapter
+  class DeepSeekPlateMatchAdapter
+  class DeepSeekClient
+}
+package "nutritiontracking.infrastructure.external.gemini" {
+  class GeminiVisionAdapter
+  class GeminiVisionClient
+}
+
+' ─── Legacy / unused: menu-scan adapters (migrated to restaurantintelligence) ─
+package "nutritiontracking.infrastructure [legacy / unused]" #EEEEEE {
+  class DeepSeekMenuRankingAdapter
+  class UserProfileLookupAdapter
+  interface MenuRankingPort <<port>>
+  interface UserProfileLookupPort <<port>>
+  interface ImageRecognitionPort <<port>>
+}
+note bottom of "nutritiontracking.infrastructure [legacy / unused]"
+  These adapters/ports remain as Spring beans but are not
+  injected by any active service after menu scanning moved
+  to the restaurantintelligence BC. ImageRecognitionPort has
+  no implementor at all. Kept (real implements-relations shown)
+  but disconnected from the active flow.
+end note
+
+' ─── Relationships (active) ──────────────────────────────────────────────────
+FoodItemPersistenceAdapter ..|> FoodItemRepository
+MealRecordPersistenceAdapter ..|> MealRecordRepository
+DailyIntakePersistenceAdapter ..|> DailyIntakeRepository
+
+FoodItemPersistenceAdapter --> SpringDataFoodItemJpaRepository : delegates >
+MealRecordPersistenceAdapter --> SpringDataMealRecordJpaRepository : delegates >
+DailyIntakePersistenceAdapter --> SpringDataDailyIntakeJpaRepository : delegates >
+
+SpringDataFoodItemJpaRepository ..> FoodItemJpaEntity : manages >
+SpringDataMealRecordJpaRepository ..> MealRecordJpaEntity : manages >
+SpringDataDailyIntakeJpaRepository ..> DailyIntakeJpaEntity : manages >
+
+FoodItemPersistenceMapper ..> FoodItem : maps >
+FoodItemPersistenceMapper ..> FoodItemJpaEntity : maps >
+MealRecordPersistenceMapper ..> MealRecord : maps >
+MealRecordPersistenceMapper ..> MealRecordJpaEntity : maps >
+DailyIntakePersistenceMapper ..> DailyIntake : maps >
+DailyIntakePersistenceMapper ..> DailyIntakeJpaEntity : maps >
+
+MealTypeAttributeConverter ..> MealType : converts >
+NutritionalRiskLevelAttributeConverter ..> NutritionalRiskLevel : converts >
+
+USDAFoodDataAdapter ..|> ExternalFoodDataPort
+USDAFoodDataAdapter --> USDAFoodDataClient : calls >
+DeepSeekFoodEnrichmentAdapter ..|> FoodEnrichmentPort
+DeepSeekPlateMatchAdapter ..|> PlateItemMatchPort
+DeepSeekFoodEnrichmentAdapter --> DeepSeekClient : calls >
+DeepSeekPlateMatchAdapter --> DeepSeekClient : calls >
+GeminiVisionAdapter ..|> PlateImageRecognitionPort
+GeminiVisionAdapter --> GeminiVisionClient : calls >
+
+' ─── Relationships (legacy, real implements-relations) ───────────────────────
+DeepSeekMenuRankingAdapter ..|> MenuRankingPort
+UserProfileLookupAdapter ..|> UserProfileLookupPort
+DeepSeekMenuRankingAdapter --> DeepSeekClient : calls >
+
+@enduml
