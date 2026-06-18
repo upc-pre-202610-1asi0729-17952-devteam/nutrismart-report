@@ -1,0 +1,144 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Smart Recommendation — Application layer (nutrismart-platform)
+
+' ─── Boundary stubs: domain layer ────────────────────────────────────────────
+package "smartrecommendation.domain [boundary]" {
+  class RecommendationSession <<aggregate>>
+  class RecipeSuggestion <<aggregate>>
+  class RecommendationCard <<aggregate>>
+  class WeatherSnapshot <<aggregate>>
+  class TravelContext <<aggregate>>
+  class LocationSnapshot <<aggregate>>
+  class PantryItem <<aggregate>>
+  interface RecommendationSessionRepository <<port>>
+  interface RecipeSuggestionRepository <<port>>
+  interface RecommendationCardRepository <<port>>
+  interface WeatherSnapshotRepository <<port>>
+  interface TravelContextRepository <<port>>
+  interface LocationSnapshotRepository <<port>>
+  interface PantryItemRepository <<port>>
+}
+
+package "smartrecommendation.application.commandservices" {
+  interface RecommendationSessionCommandService <<port>>
+  interface RecipeSuggestionCommandService <<port>>
+  interface RecommendationCardCommandService <<port>>
+  interface WeatherSnapshotCommandService <<port>>
+  interface TravelContextCommandService <<port>>
+  interface LocationSnapshotCommandService <<port>>
+  interface PantryItemCommandService <<port>>
+  interface RecipeImportCommandService <<port>>
+  interface ImportRecommendationCardsCommandService <<port>>
+}
+
+package "smartrecommendation.application.queryservices" {
+  interface RecommendationSessionQueryService <<port>>
+  interface RecipeSuggestionQueryService <<port>>
+  interface RecommendationCardQueryService <<port>>
+  interface WeatherSnapshotQueryService <<port>>
+  interface TravelContextQueryService <<port>>
+  interface LocationSnapshotQueryService <<port>>
+  interface PantryItemQueryService <<port>>
+}
+
+' ─── Driven ports (AI / external / cross-context lookup) ──────────────────────
+package "smartrecommendation.application.ports" {
+  interface ExternalWeatherPort <<port>>
+  interface RecipeGenerationPort <<port>>
+  interface RecommendationCardGenerationPort <<port>>
+  interface FoodItemLookupPort <<port>>
+  interface IngredientLookupPort <<port>>
+}
+
+package "smartrecommendation.application.internal.commandservices" {
+  class RecommendationSessionCommandServiceImpl
+  class RecipeSuggestionCommandServiceImpl
+  class RecommendationCardCommandServiceImpl
+  class WeatherSnapshotCommandServiceImpl {
+    - snapshotRepository: WeatherSnapshotRepository
+    - externalWeatherPort: ExternalWeatherPort
+  }
+  class TravelContextCommandServiceImpl
+  class LocationSnapshotCommandServiceImpl
+  class PantryItemCommandServiceImpl
+  class RecipeImportCommandServiceImpl {
+    - ingredientLookupPort: IngredientLookupPort
+    - recipeGenerationPort: RecipeGenerationPort
+    - recipeRepository: RecipeSuggestionRepository
+  }
+  class ImportRecommendationCardsCommandServiceImpl {
+    - foodItemLookupPort: FoodItemLookupPort
+    - generationPort: RecommendationCardGenerationPort
+    - cardRepository: RecommendationCardRepository
+  }
+}
+
+package "smartrecommendation.application.internal.queryservices" {
+  class RecommendationSessionQueryServiceImpl
+  class RecipeSuggestionQueryServiceImpl
+  class RecommendationCardQueryServiceImpl
+  class WeatherSnapshotQueryServiceImpl
+  class TravelContextQueryServiceImpl
+  class LocationSnapshotQueryServiceImpl
+  class PantryItemQueryServiceImpl
+}
+
+' ─── Implements ──────────────────────────────────────────────────────────────
+RecommendationSessionCommandServiceImpl ..|> RecommendationSessionCommandService
+RecipeSuggestionCommandServiceImpl ..|> RecipeSuggestionCommandService
+RecommendationCardCommandServiceImpl ..|> RecommendationCardCommandService
+WeatherSnapshotCommandServiceImpl ..|> WeatherSnapshotCommandService
+TravelContextCommandServiceImpl ..|> TravelContextCommandService
+LocationSnapshotCommandServiceImpl ..|> LocationSnapshotCommandService
+PantryItemCommandServiceImpl ..|> PantryItemCommandService
+RecipeImportCommandServiceImpl ..|> RecipeImportCommandService
+ImportRecommendationCardsCommandServiceImpl ..|> ImportRecommendationCardsCommandService
+RecommendationSessionQueryServiceImpl ..|> RecommendationSessionQueryService
+RecipeSuggestionQueryServiceImpl ..|> RecipeSuggestionQueryService
+RecommendationCardQueryServiceImpl ..|> RecommendationCardQueryService
+WeatherSnapshotQueryServiceImpl ..|> WeatherSnapshotQueryService
+TravelContextQueryServiceImpl ..|> TravelContextQueryService
+LocationSnapshotQueryServiceImpl ..|> LocationSnapshotQueryService
+PantryItemQueryServiceImpl ..|> PantryItemQueryService
+
+' ─── Uses repositories / ports ───────────────────────────────────────────────
+RecommendationSessionCommandServiceImpl --> RecommendationSessionRepository : uses >
+RecipeSuggestionCommandServiceImpl --> RecipeSuggestionRepository : uses >
+RecommendationCardCommandServiceImpl --> RecommendationCardRepository : uses >
+WeatherSnapshotCommandServiceImpl --> WeatherSnapshotRepository : uses >
+WeatherSnapshotCommandServiceImpl --> ExternalWeatherPort : uses >
+TravelContextCommandServiceImpl --> TravelContextRepository : uses >
+LocationSnapshotCommandServiceImpl --> LocationSnapshotRepository : uses >
+PantryItemCommandServiceImpl --> PantryItemRepository : uses >
+RecipeImportCommandServiceImpl --> IngredientLookupPort : uses >
+RecipeImportCommandServiceImpl --> RecipeGenerationPort : uses >
+RecipeImportCommandServiceImpl --> RecipeSuggestionRepository : uses >
+ImportRecommendationCardsCommandServiceImpl --> FoodItemLookupPort : uses >
+ImportRecommendationCardsCommandServiceImpl --> RecommendationCardGenerationPort : uses >
+ImportRecommendationCardsCommandServiceImpl --> RecommendationCardRepository : uses >
+
+RecommendationSessionQueryServiceImpl --> RecommendationSessionRepository : uses >
+RecipeSuggestionQueryServiceImpl --> RecipeSuggestionRepository : uses >
+RecommendationCardQueryServiceImpl --> RecommendationCardRepository : uses >
+WeatherSnapshotQueryServiceImpl --> WeatherSnapshotRepository : uses >
+TravelContextQueryServiceImpl --> TravelContextRepository : uses >
+LocationSnapshotQueryServiceImpl --> LocationSnapshotRepository : uses >
+PantryItemQueryServiceImpl --> PantryItemRepository : uses >
+
+' ─── Produces aggregates ─────────────────────────────────────────────────────
+RecommendationSessionCommandServiceImpl ..> RecommendationSession : produces >
+RecipeSuggestionCommandServiceImpl ..> RecipeSuggestion : produces >
+RecommendationCardCommandServiceImpl ..> RecommendationCard : produces >
+WeatherSnapshotCommandServiceImpl ..> WeatherSnapshot : produces >
+TravelContextCommandServiceImpl ..> TravelContext : produces >
+LocationSnapshotCommandServiceImpl ..> LocationSnapshot : produces >
+PantryItemCommandServiceImpl ..> PantryItem : produces >
+RecipeImportCommandServiceImpl ..> RecipeSuggestion : imports >
+ImportRecommendationCardsCommandServiceImpl ..> RecommendationCard : imports >
+
+@enduml

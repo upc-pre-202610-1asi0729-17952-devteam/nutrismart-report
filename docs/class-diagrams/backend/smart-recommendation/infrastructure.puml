@@ -1,0 +1,132 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Smart Recommendation — Infrastructure layer (nutrismart-platform)
+
+' ─── Boundary stubs: domain & application ports ──────────────────────────────
+package "smartrecommendation.domain [boundary]" {
+  class RecommendationSession <<aggregate>>
+  class RecipeSuggestion <<aggregate>>
+  class RecommendationCard <<aggregate>>
+  class WeatherSnapshot <<aggregate>>
+  class TravelContext <<aggregate>>
+  class LocationSnapshot <<aggregate>>
+  class PantryItem <<aggregate>>
+  interface RecommendationSessionRepository <<port>>
+  interface RecipeSuggestionRepository <<port>>
+  interface RecommendationCardRepository <<port>>
+  interface WeatherSnapshotRepository <<port>>
+  interface TravelContextRepository <<port>>
+  interface LocationSnapshotRepository <<port>>
+  interface PantryItemRepository <<port>>
+  enum WeatherType
+}
+package "smartrecommendation.application.ports [boundary]" {
+  interface ExternalWeatherPort <<port>>
+  interface RecipeGenerationPort <<port>>
+  interface RecommendationCardGenerationPort <<port>>
+  interface FoodItemLookupPort <<port>>
+  interface IngredientLookupPort <<port>>
+}
+package "<<nutritiontracking>> [external]" {
+  interface FoodItemRepository <<port>>
+}
+
+' ─── Persistence ─────────────────────────────────────────────────────────────
+package "smartrecommendation.infrastructure.persistence.jpa.entities" {
+  class RecommendationSessionJpaEntity <<@Entity>>
+  class RecipeSuggestionJpaEntity <<@Entity recipes>>
+  class RecommendationCardJpaEntity <<@Entity>>
+  class WeatherSnapshotJpaEntity <<@Entity>>
+  class TravelContextJpaEntity <<@Entity>>
+  class LocationSnapshotJpaEntity <<@Entity>>
+  class PantryItemJpaEntity <<@Entity pantry>>
+}
+package "smartrecommendation.infrastructure.persistence.jpa" {
+  class RecommendationSessionPersistenceAdapter
+  class RecipeSuggestionPersistenceAdapter
+  class RecommendationCardPersistenceAdapter
+  class WeatherSnapshotPersistenceAdapter
+  class TravelContextPersistenceAdapter
+  class LocationSnapshotPersistenceAdapter
+  class PantryItemPersistenceAdapter
+  class FoodItemLookupAdapter
+  class FoodIngredientLookupAdapter
+  interface SpringDataRecommendationSessionJpaRepository <<JpaRepository>>
+  interface SpringDataRecipeSuggestionJpaRepository <<JpaRepository>>
+  interface SpringDataRecommendationCardJpaRepository <<JpaRepository>>
+  interface SpringDataWeatherSnapshotJpaRepository <<JpaRepository>>
+  interface SpringDataTravelContextJpaRepository <<JpaRepository>>
+  interface SpringDataLocationSnapshotJpaRepository <<JpaRepository>>
+  interface SpringDataPantryItemJpaRepository <<JpaRepository>>
+}
+package "smartrecommendation.infrastructure.persistence.jpa.converters" {
+  class WeatherTypeAttributeConverter <<@Converter>>
+}
+
+' ─── External adapters ───────────────────────────────────────────────────────
+package "smartrecommendation.infrastructure.external" {
+  class OpenWeatherMapWeatherAdapter
+  class OpenWeatherMapClient
+  class DeepSeekRecipeGenerationAdapter
+  class DeepSeekRecipeClient
+  class DeepSeekCardGenerationAdapter
+  class DeepSeekCardClient
+}
+package "smartrecommendation.infrastructure.concurrency" {
+  class RecommendationCardGenerationLock
+}
+
+' ─── Relationships: adapters implement ports ─────────────────────────────────
+RecommendationSessionPersistenceAdapter ..|> RecommendationSessionRepository
+RecipeSuggestionPersistenceAdapter ..|> RecipeSuggestionRepository
+RecommendationCardPersistenceAdapter ..|> RecommendationCardRepository
+WeatherSnapshotPersistenceAdapter ..|> WeatherSnapshotRepository
+TravelContextPersistenceAdapter ..|> TravelContextRepository
+LocationSnapshotPersistenceAdapter ..|> LocationSnapshotRepository
+PantryItemPersistenceAdapter ..|> PantryItemRepository
+FoodItemLookupAdapter ..|> FoodItemLookupPort
+FoodIngredientLookupAdapter ..|> IngredientLookupPort
+OpenWeatherMapWeatherAdapter ..|> ExternalWeatherPort
+DeepSeekRecipeGenerationAdapter ..|> RecipeGenerationPort
+DeepSeekCardGenerationAdapter ..|> RecommendationCardGenerationPort
+
+' ─── delegates to spring-data ────────────────────────────────────────────────
+RecommendationSessionPersistenceAdapter --> SpringDataRecommendationSessionJpaRepository : delegates >
+RecipeSuggestionPersistenceAdapter --> SpringDataRecipeSuggestionJpaRepository : delegates >
+RecommendationCardPersistenceAdapter --> SpringDataRecommendationCardJpaRepository : delegates >
+WeatherSnapshotPersistenceAdapter --> SpringDataWeatherSnapshotJpaRepository : delegates >
+TravelContextPersistenceAdapter --> SpringDataTravelContextJpaRepository : delegates >
+LocationSnapshotPersistenceAdapter --> SpringDataLocationSnapshotJpaRepository : delegates >
+PantryItemPersistenceAdapter --> SpringDataPantryItemJpaRepository : delegates >
+
+SpringDataRecommendationSessionJpaRepository ..> RecommendationSessionJpaEntity : manages >
+SpringDataRecipeSuggestionJpaRepository ..> RecipeSuggestionJpaEntity : manages >
+SpringDataRecommendationCardJpaRepository ..> RecommendationCardJpaEntity : manages >
+SpringDataWeatherSnapshotJpaRepository ..> WeatherSnapshotJpaEntity : manages >
+SpringDataTravelContextJpaRepository ..> TravelContextJpaEntity : manages >
+SpringDataLocationSnapshotJpaRepository ..> LocationSnapshotJpaEntity : manages >
+SpringDataPantryItemJpaRepository ..> PantryItemJpaEntity : manages >
+
+' ─── mapping & cross-context lookup ──────────────────────────────────────────
+RecommendationSessionJpaEntity ..> RecommendationSession : maps >
+RecipeSuggestionJpaEntity ..> RecipeSuggestion : maps >
+RecommendationCardJpaEntity ..> RecommendationCard : maps >
+WeatherSnapshotJpaEntity ..> WeatherSnapshot : maps >
+TravelContextJpaEntity ..> TravelContext : maps >
+LocationSnapshotJpaEntity ..> LocationSnapshot : maps >
+PantryItemJpaEntity ..> PantryItem : maps >
+WeatherTypeAttributeConverter ..> WeatherType : converts >
+
+FoodItemLookupAdapter --> FoodItemRepository : queries >
+FoodIngredientLookupAdapter --> FoodItemRepository : queries >
+
+OpenWeatherMapWeatherAdapter --> OpenWeatherMapClient : calls >
+DeepSeekRecipeGenerationAdapter --> DeepSeekRecipeClient : calls >
+DeepSeekCardGenerationAdapter --> DeepSeekCardClient : calls >
+DeepSeekCardGenerationAdapter ..> RecommendationCardGenerationLock : guarded by >
+
+@enduml

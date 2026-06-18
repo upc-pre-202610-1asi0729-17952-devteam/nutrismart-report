@@ -1,0 +1,43 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Analytics — Interfaces layer (nutrismart-platform)
+
+' ─── Boundary stubs: application layer ───────────────────────────────────────
+package "analytics.application [boundary]" {
+  interface AnalyticsQueryService <<port>>
+  interface AnalyticsCommandService <<port>>
+}
+
+package "analytics.interfaces.rest" {
+  class AnalyticsController <<@RestController>> {
+    - queryService: AnalyticsQueryService
+    - commandService: AnalyticsCommandService
+    + getAnalytics(userId: Long): ResponseEntity<AnalyticsResource>
+    + updateDashboard(resource: UpdateDashboardResource): ResponseEntity
+  }
+}
+
+package "analytics.interfaces.rest.resources" {
+  class AnalyticsResource <<resource>>
+  class UpdateDashboardResource <<resource>>
+}
+
+package "analytics.interfaces.rest.transform" {
+  class AnalyticsResourceFromEntityAssembler <<assembler>> {
+    + {static} toResourceFromEntity(analytics: Analytics): AnalyticsResource
+  }
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+AnalyticsController --> AnalyticsQueryService : uses >
+AnalyticsController --> AnalyticsCommandService : uses >
+AnalyticsController ..> UpdateDashboardResource : consumes >
+AnalyticsController ..> AnalyticsResource : produces >
+AnalyticsController ..> AnalyticsResourceFromEntityAssembler : uses >
+AnalyticsResourceFromEntityAssembler ..> AnalyticsResource : builds >
+
+@enduml

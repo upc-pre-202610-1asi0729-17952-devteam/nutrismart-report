@@ -1,0 +1,144 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title IAM — Domain layer (nutrismart-platform)
+
+package "iam.domain.model.aggregates" {
+
+  class User <<aggregate root>> {
+    - id: Long
+    - firstName: String
+    - lastName: String
+    - email: EmailAddress
+    - passwordHash: String
+    - goal: UserGoal
+    - weight: Double
+    - height: Double
+    - activityLevel: ActivityLevel
+    - plan: UserPlan
+    - restrictions: List<DietaryRestriction>
+    - medicalConditions: List<String>
+    - dailyCalorieTarget: Double
+    - proteinTarget: Double
+    - carbsTarget: Double
+    - fatTarget: Double
+    - fiberTarget: Double
+    - streak: Integer
+    - consecutiveMisses: Integer
+    - birthday: LocalDate
+    - biologicalSex: String
+    - createdAt: LocalDate
+    - homeCity: String
+    - goalStartedAt: LocalDate
+    - planExpiresAt: LocalDate
+    --
+    + {static} create(...): User
+    + {static} rehydrate(...): User
+    - calculateMetabolicTargets(): void
+    + updateProfile(...): void
+    + updatePlan(plan: UserPlan): void
+    + changePassword(newPasswordHash: String): void
+  }
+
+  class PasswordResetToken <<aggregate root>> {
+    - id: Long
+    - token: String
+    - userId: Long
+    - expiresAt: LocalDateTime
+    - used: boolean
+    --
+    + {static} create(userId: Long): PasswordResetToken
+    + {static} rehydrate(...): PasswordResetToken
+    + isExpired(): boolean
+    + isValid(): boolean
+    + markAsUsed(): void
+  }
+}
+
+package "iam.domain.model.valueobjects" {
+
+  class EmailAddress <<value object>> {
+    + value: String
+    + EmailAddress(value: String)
+  }
+
+  enum ActivityLevel {
+    SEDENTARY (1.2)
+    MODERATE (1.375)
+    ACTIVE (1.55)
+    VERY_ACTIVE (1.725)
+    --
+    + getMultiplier(): double
+  }
+
+  enum DietaryRestriction {
+    LACTOSE_FREE
+    GLUTEN_FREE
+    VEGAN
+    VEGETARIAN
+    NUT_FREE
+    SEAFOOD_FREE
+    KOSHER
+    HALAL
+  }
+
+  enum UserGoal {
+    WEIGHT_LOSS
+    MUSCLE_GAIN
+  }
+
+  enum UserPlan {
+    BASIC
+    PRO
+    PREMIUM
+  }
+}
+
+package "iam.domain.model.repositories" {
+
+  interface UserRepository <<port>> {
+    + findById(id: Long): Optional<User>
+    + findByEmail(email: EmailAddress): Optional<User>
+    + findAll(): List<User>
+    + existsByEmail(email: EmailAddress): boolean
+    + save(user: User): User
+    + deleteById(id: Long): void
+  }
+
+  interface PasswordResetTokenRepository <<port>> {
+    + save(token: PasswordResetToken): PasswordResetToken
+    + findByToken(token: String): Optional<PasswordResetToken>
+    + deleteByUserId(userId: Long): void
+  }
+}
+
+package "iam.domain.services" {
+  interface EmailService <<domain service>> {
+    + sendPasswordResetEmail(toEmail: String, resetToken: String): void
+  }
+}
+
+package "iam.domain.model.exceptions" {
+  abstract class DomainInvalidExceptions <<exception>> {
+    # DomainInvalidExceptions(message: String)
+  }
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+User "1" *--> "1" EmailAddress : identified by >
+User "1" o--> "1" UserGoal : pursues >
+User "1" o--> "1" ActivityLevel : level >
+User "1" o--> "0..1" UserPlan : subscribed to >
+User "1" *--> "0..*" DietaryRestriction : restricted by >
+
+UserRepository ..> User : persists >
+UserRepository ..> EmailAddress : queries by >
+PasswordResetTokenRepository ..> PasswordResetToken : persists >
+PasswordResetToken ..> User : resets credentials of >
+EmailService ..> PasswordResetToken : delivers token of >
+DomainInvalidExceptions ..> EmailAddress : guards invariants of >
+
+@enduml

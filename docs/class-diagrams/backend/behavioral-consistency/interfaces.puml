@@ -1,0 +1,92 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Behavioral Consistency — Interfaces layer (nutrismart-platform)
+
+' ─── Boundary stubs: application layer ───────────────────────────────────────
+package "behavioralconsistency.application [boundary]" {
+  interface BehavioralProgressCommandService <<port>>
+  interface BehavioralProgressQueryService <<port>>
+  interface EatingBehaviorPatternCommandService <<port>>
+  interface EatingBehaviorPatternQueryService <<port>>
+  interface RecoveryPlanCommandService <<port>>
+  interface RecoveryPlanQueryService <<port>>
+}
+
+package "behavioralconsistency.interfaces.rest" {
+  class BehavioralProgressController <<@RestController>> {
+    - commandService: BehavioralProgressCommandService
+    - queryService: BehavioralProgressQueryService
+  }
+  class EatingBehaviorPatternsController <<@RestController>> {
+    - commandService: EatingBehaviorPatternCommandService
+    - queryService: EatingBehaviorPatternQueryService
+  }
+  class RecoveryPlansController <<@RestController>> {
+    - commandService: RecoveryPlanCommandService
+    - queryService: RecoveryPlanQueryService
+  }
+}
+
+package "behavioralconsistency.interfaces.rest.resources" {
+  class CreateBehavioralProgressResource <<resource>>
+  class UpdateBehavioralProgressResource <<resource>>
+  class BehavioralProgressResource <<resource>>
+  class CreateEatingBehaviorPatternResource <<resource>>
+  class UpdateEatingBehaviorPatternResource <<resource>>
+  class EatingBehaviorPatternResource <<resource>>
+  class CreateRecoveryPlanResource <<resource>>
+  class UpdateRecoveryPlanResource <<resource>>
+  class RecoveryPlanResource <<resource>>
+}
+
+package "behavioralconsistency.interfaces.rest.transform" {
+  class CreateBehavioralProgressCommandFromResourceAssembler <<assembler>>
+  class UpdateBehavioralProgressCommandFromResourceAssembler <<assembler>>
+  class BehavioralProgressResourceFromEntityAssembler <<assembler>>
+  class CreateEatingBehaviorPatternCommandFromResourceAssembler <<assembler>>
+  class UpdateEatingBehaviorPatternCommandFromResourceAssembler <<assembler>>
+  class EatingBehaviorPatternResourceFromEntityAssembler <<assembler>>
+  class CreateRecoveryPlanCommandFromResourceAssembler <<assembler>>
+  class UpdateRecoveryPlanCommandFromResourceAssembler <<assembler>>
+  class RecoveryPlanResourceFromEntityAssembler <<assembler>>
+}
+
+package "behavioralconsistency.interfaces.acl" {
+  interface BehavioralConsistencyContextFacade <<ACL>>
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+BehavioralProgressController --> BehavioralProgressCommandService : uses >
+BehavioralProgressController --> BehavioralProgressQueryService : uses >
+EatingBehaviorPatternsController --> EatingBehaviorPatternCommandService : uses >
+EatingBehaviorPatternsController --> EatingBehaviorPatternQueryService : uses >
+RecoveryPlansController --> RecoveryPlanCommandService : uses >
+RecoveryPlansController --> RecoveryPlanQueryService : uses >
+
+BehavioralProgressController ..> CreateBehavioralProgressResource : consumes >
+BehavioralProgressController ..> BehavioralProgressResource : produces >
+BehavioralProgressController ..> CreateBehavioralProgressCommandFromResourceAssembler : uses >
+BehavioralProgressController ..> BehavioralProgressResourceFromEntityAssembler : uses >
+EatingBehaviorPatternsController ..> CreateEatingBehaviorPatternResource : consumes >
+EatingBehaviorPatternsController ..> EatingBehaviorPatternResource : produces >
+EatingBehaviorPatternsController ..> CreateEatingBehaviorPatternCommandFromResourceAssembler : uses >
+EatingBehaviorPatternsController ..> EatingBehaviorPatternResourceFromEntityAssembler : uses >
+RecoveryPlansController ..> CreateRecoveryPlanResource : consumes >
+RecoveryPlansController ..> RecoveryPlanResource : produces >
+RecoveryPlansController ..> CreateRecoveryPlanCommandFromResourceAssembler : uses >
+RecoveryPlansController ..> RecoveryPlanResourceFromEntityAssembler : uses >
+
+UpdateBehavioralProgressCommandFromResourceAssembler ..> UpdateBehavioralProgressResource : reads >
+BehavioralProgressResourceFromEntityAssembler ..> BehavioralProgressResource : builds >
+UpdateEatingBehaviorPatternCommandFromResourceAssembler ..> UpdateEatingBehaviorPatternResource : reads >
+EatingBehaviorPatternResourceFromEntityAssembler ..> EatingBehaviorPatternResource : builds >
+UpdateRecoveryPlanCommandFromResourceAssembler ..> UpdateRecoveryPlanResource : reads >
+RecoveryPlanResourceFromEntityAssembler ..> RecoveryPlanResource : builds >
+
+BehavioralConsistencyContextFacade ..> BehavioralProgressQueryService : backed by >
+
+@enduml

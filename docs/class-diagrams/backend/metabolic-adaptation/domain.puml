@@ -1,0 +1,134 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Metabolic Adaptation — Domain layer (nutrismart-platform)
+
+package "metabolicadaptation.domain.model.aggregates" {
+
+  class BodyMetric <<aggregate root>> {
+    - id: Long
+    - userId: Long
+    - weightKg: Double
+    - heightCm: Double
+    - loggedAt: Instant
+    - targetWeightKg: Double
+    - projectedAchievementDate: LocalDate
+    --
+    + {static} create(...): BodyMetric
+    + {static} rehydrate(...): BodyMetric
+    + update(...): void
+    + calculateBmi(): double
+    + getBmiCategory(): BmiCategory
+  }
+
+  class BodyComposition <<aggregate root>> {
+    - id: Long
+    - userId: Long
+    - waistCm: Double
+    - neckCm: Double
+    - heightCm: Double
+    - weightKg: Double
+    - measuredAt: Instant
+    - previousBodyFatPercent: Double
+    - overrideBodyFatPercent: Double
+    --
+    + {static} create(...): BodyComposition
+    + {static} rehydrate(...): BodyComposition
+    + update(...): void
+    + calculateBodyFatPercent(): double
+  }
+
+  class ActivityLog <<aggregate root>> {
+    - id: Long
+    - userId: Long
+    - activityType: String
+    - durationMinutes: Integer
+    - caloriesBurned: Double
+    - timestamp: Instant
+    --
+    + {static} create(...): ActivityLog
+    + {static} rehydrate(...): ActivityLog
+  }
+
+  class WearableConnection <<aggregate root>> {
+    - id: Long
+    - userId: Long
+    - provider: String
+    - status: WearableStatus
+    - lastSyncedAt: Instant
+    - authorizedAt: Instant
+    --
+    + {static} create(...): WearableConnection
+    + {static} rehydrate(...): WearableConnection
+    + update(status: WearableStatus, lastSyncedAt: Instant): void
+  }
+
+  class MetabolicAdaptationLog <<aggregate root>> {
+    - id: Long
+    - userId: Long
+    - previousBMR: Double
+    - newBMR: Double
+    - previousTDEE: Double
+    - newTDEE: Double
+    - reason: String
+    - triggeredBy: MetabolicChangeTrigger
+    - previousCalories: Double
+    - newCalories: Double
+    - previousProtein/Carbs/Fat: Double
+    - newProtein/Carbs/Fat: Double
+    - changedAt: Instant
+    --
+    + {static} create(...): MetabolicAdaptationLog
+    + {static} rehydrate(...): MetabolicAdaptationLog
+  }
+}
+
+package "metabolicadaptation.domain.model.valueobjects" {
+  enum BmiCategory {
+    UNDERWEIGHT
+    NORMAL
+    OVERWEIGHT
+    OBESE
+    --
+    + {static} fromBmi(bmi: double): BmiCategory
+  }
+  enum WearableStatus {
+    CONNECTED
+    DISCONNECTED
+  }
+  enum MetabolicChangeTrigger {
+    ONBOARDING
+    PROFILE_CHANGE
+    BODY_METRICS_UPDATE
+    STAGNATION_DETECTED
+  }
+}
+
+package "metabolicadaptation.domain.model.repositories" {
+  interface BodyMetricRepository <<port>>
+  interface BodyCompositionRepository <<port>>
+  interface ActivityLogRepository <<port>>
+  interface WearableConnectionRepository <<port>>
+  interface MetabolicAdaptationLogRepository <<port>>
+}
+
+package "metabolicadaptation.domain.model.exceptions" {
+  class DomainInvalidExceptions <<exception>>
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+BodyMetric "1" ..> "1" BmiCategory : classifies via >
+WearableConnection "1" o--> "1" WearableStatus : status >
+MetabolicAdaptationLog "1" o--> "1" MetabolicChangeTrigger : triggered by >
+
+BodyMetricRepository ..> BodyMetric : persists >
+BodyCompositionRepository ..> BodyComposition : persists >
+ActivityLogRepository ..> ActivityLog : persists >
+WearableConnectionRepository ..> WearableConnection : persists >
+MetabolicAdaptationLogRepository ..> MetabolicAdaptationLog : persists >
+DomainInvalidExceptions ..> BodyMetric : guards invariants of >
+
+@enduml

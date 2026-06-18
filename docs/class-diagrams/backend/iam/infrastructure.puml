@@ -1,0 +1,109 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title IAM — Infrastructure layer (nutrismart-platform)
+
+' ─── Boundary stubs: domain layer ────────────────────────────────────────────
+package "iam.domain [boundary]" {
+  class User <<aggregate>>
+  class PasswordResetToken <<aggregate>>
+  interface UserRepository <<port>>
+  interface PasswordResetTokenRepository <<port>>
+  interface EmailService <<domain service>>
+  class EmailAddress <<value object>>
+  enum ActivityLevel
+  enum UserGoal
+  enum UserPlan
+}
+
+' ─── Persistence: JPA entities ───────────────────────────────────────────────
+package "iam.infrastructure.persistence.jpa.entities" {
+  class UserJpaEntity <<@Entity>> {
+    - firstName: String
+    - lastName: String
+    - email: String
+    - passwordHash: String
+    - goal: UserGoal
+    - weight: Double
+    - height: Double
+    - activityLevel: ActivityLevel
+    - plan: UserPlan
+    - restrictions: String
+    - medicalConditions: String
+    - dailyCalorieTarget: Double
+    - proteinTarget: Double
+    - carbsTarget: Double
+    - fatTarget: Double
+    - fiberTarget: Double
+    - streak: Integer
+    - consecutiveMisses: Integer
+    - birthday: LocalDate
+    - biologicalSex: String
+  }
+  class PasswordResetTokenJpaEntity <<@Entity>> {
+    - token: String
+    - userId: Long
+    - expiresAt: LocalDateTime
+    - used: boolean
+  }
+}
+
+' ─── Persistence: adapters & spring-data repos ───────────────────────────────
+package "iam.infrastructure.persistence.jpa" {
+  class UserPersistenceAdapter {
+    - springDataRepo: SpringDataUserJpaRepository
+  }
+  class PasswordResetTokenPersistenceAdapter {
+    - springDataRepo: SpringDataPasswordResetTokenJpaRepository
+  }
+  interface SpringDataUserJpaRepository <<JpaRepository>>
+  interface SpringDataPasswordResetTokenJpaRepository <<JpaRepository>>
+  class UserPersistenceMapper <<mapper>> {
+    + {static} toJpaEntity(user: User): UserJpaEntity
+    + {static} toDomain(entity: UserJpaEntity): User
+  }
+}
+
+' ─── Persistence: JPA converters ─────────────────────────────────────────────
+package "iam.infrastructure.persistence.jpa.converters" {
+  class EmailAddressAttributeConverter <<@Converter>>
+  class ActivityLevelAttributeConverter <<@Converter>>
+  class SubscriptionPlanAttributeConverter <<@Converter>>
+  class UserGoalAttributeConverter <<@Converter>>
+}
+
+' ─── Email adapter ───────────────────────────────────────────────────────────
+package "iam.infrastructure.email" {
+  class GmailEmailServiceAdapter {
+    - mailSender: JavaMailSender
+    - appBaseUrl: String
+    - fromEmail: String
+  }
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+UserPersistenceAdapter ..|> UserRepository : implements
+PasswordResetTokenPersistenceAdapter ..|> PasswordResetTokenRepository : implements
+GmailEmailServiceAdapter ..|> EmailService : implements
+
+UserPersistenceAdapter --> SpringDataUserJpaRepository : delegates >
+UserPersistenceAdapter --> UserPersistenceMapper : maps via >
+PasswordResetTokenPersistenceAdapter --> SpringDataPasswordResetTokenJpaRepository : delegates >
+
+SpringDataUserJpaRepository ..> UserJpaEntity : manages >
+SpringDataPasswordResetTokenJpaRepository ..> PasswordResetTokenJpaEntity : manages >
+
+UserPersistenceMapper ..> User : maps >
+UserPersistenceMapper ..> UserJpaEntity : maps >
+PasswordResetTokenPersistenceAdapter ..> PasswordResetToken : maps >
+PasswordResetTokenPersistenceAdapter ..> PasswordResetTokenJpaEntity : maps >
+
+EmailAddressAttributeConverter ..> EmailAddress : converts >
+ActivityLevelAttributeConverter ..> ActivityLevel : converts >
+SubscriptionPlanAttributeConverter ..> UserPlan : converts >
+UserGoalAttributeConverter ..> UserGoal : converts >
+
+@enduml

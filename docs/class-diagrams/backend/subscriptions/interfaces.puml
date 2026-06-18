@@ -1,0 +1,64 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Subscriptions — Interfaces layer (nutrismart-platform)
+
+' ─── Boundary stubs: application layer ───────────────────────────────────────
+package "subscriptions.application [boundary]" {
+  interface SubscriptionCommandService <<port>>
+  interface SubscriptionQueryService <<port>>
+  interface BillingRecordCommandService <<port>>
+  interface BillingRecordQueryService <<port>>
+}
+
+package "subscriptions.interfaces.rest" {
+  class SubscriptionsController <<@RestController>> {
+    - commandService: SubscriptionCommandService
+    - queryService: SubscriptionQueryService
+  }
+  class BillingHistoryController <<@RestController>> {
+    - commandService: BillingRecordCommandService
+    - queryService: BillingRecordQueryService
+  }
+}
+
+package "subscriptions.interfaces.rest.resources" {
+  class CreateSubscriptionResource <<resource>>
+  class UpdateSubscriptionResource <<resource>>
+  class SubscriptionResource <<resource>>
+  class CreateBillingRecordResource <<resource>>
+  class BillingRecordResource <<resource>>
+}
+
+package "subscriptions.interfaces.rest.transform" {
+  class SubscriptionCommandFromResourceAssembler <<assembler>>
+  class SubscriptionResourceFromEntityAssembler <<assembler>>
+  class BillingRecordCommandFromResourceAssembler <<assembler>>
+  class BillingRecordResourceFromEntityAssembler <<assembler>>
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+SubscriptionsController --> SubscriptionCommandService : uses >
+SubscriptionsController --> SubscriptionQueryService : uses >
+BillingHistoryController --> BillingRecordCommandService : uses >
+BillingHistoryController --> BillingRecordQueryService : uses >
+
+SubscriptionsController ..> CreateSubscriptionResource : consumes >
+SubscriptionsController ..> SubscriptionResource : produces >
+SubscriptionsController ..> SubscriptionCommandFromResourceAssembler : uses >
+SubscriptionsController ..> SubscriptionResourceFromEntityAssembler : uses >
+SubscriptionsController ..> UpdateSubscriptionResource : consumes >
+BillingHistoryController ..> CreateBillingRecordResource : consumes >
+BillingHistoryController ..> BillingRecordResource : produces >
+BillingHistoryController ..> BillingRecordCommandFromResourceAssembler : uses >
+BillingHistoryController ..> BillingRecordResourceFromEntityAssembler : uses >
+
+SubscriptionCommandFromResourceAssembler ..> CreateSubscriptionResource : reads >
+SubscriptionResourceFromEntityAssembler ..> SubscriptionResource : builds >
+BillingRecordCommandFromResourceAssembler ..> CreateBillingRecordResource : reads >
+BillingRecordResourceFromEntityAssembler ..> BillingRecordResource : builds >
+
+@enduml

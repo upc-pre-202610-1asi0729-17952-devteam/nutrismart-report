@@ -1,0 +1,102 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Metabolic Adaptation — Interfaces layer (nutrismart-platform)
+
+' ─── Boundary stubs: application layer ───────────────────────────────────────
+package "metabolicadaptation.application [boundary]" {
+  interface BodyMetricCommandService <<port>>
+  interface BodyMetricQueryService <<port>>
+  interface BodyCompositionCommandService <<port>>
+  interface BodyCompositionQueryService <<port>>
+  interface ActivityLogCommandService <<port>>
+  interface ActivityLogQueryService <<port>>
+  interface WearableConnectionCommandService <<port>>
+  interface WearableConnectionQueryService <<port>>
+  interface MetabolicAdaptationLogCommandService <<port>>
+  interface MetabolicAdaptationLogQueryService <<port>>
+}
+
+package "metabolicadaptation.interfaces.rest" {
+  class BodyMetricsController <<@RestController>>
+  class BodyCompositionsController <<@RestController>>
+  class ActivityLogsController <<@RestController>>
+  class WearableConnectionsController <<@RestController>>
+  class MetabolicAdaptationLogsController <<@RestController>>
+}
+
+package "metabolicadaptation.interfaces.rest.resources" {
+  class BodyMetricResource <<resource>>
+  class CreateBodyMetricResource <<resource>>
+  class UpdateBodyMetricResource <<resource>>
+  class BodyCompositionResource <<resource>>
+  class CreateBodyCompositionResource <<resource>>
+  class UpdateBodyCompositionResource <<resource>>
+  class ActivityLogResource <<resource>>
+  class CreateActivityLogResource <<resource>>
+  class WearableConnectionResource <<resource>>
+  class CreateWearableConnectionResource <<resource>>
+  class UpdateWearableConnectionResource <<resource>>
+  class MetabolicAdaptationLogResource <<resource>>
+  class CreateMetabolicAdaptationLogResource <<resource>>
+}
+
+package "metabolicadaptation.interfaces.rest.transform" {
+  class LogBodyMetricsCommandFromResourceAssembler <<assembler>>
+  class BodyMetricResourceFromEntityAssembler <<assembler>>
+  class LogBodyCompositionCommandFromResourceAssembler <<assembler>>
+  class BodyCompositionResourceFromEntityAssembler <<assembler>>
+  class LogActivityCommandFromResourceAssembler <<assembler>>
+  class ActivityLogResourceFromEntityAssembler <<assembler>>
+  class ConnectWearableCommandFromResourceAssembler <<assembler>>
+  class WearableConnectionResourceFromEntityAssembler <<assembler>>
+  class RecordMetabolicAdaptationCommandFromResourceAssembler <<assembler>>
+  class MetabolicAdaptationLogResourceFromEntityAssembler <<assembler>>
+}
+
+package "metabolicadaptation.interfaces.acl" {
+  interface MetabolicAdaptationContextFacade <<ACL>>
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+BodyMetricsController --> BodyMetricCommandService : uses >
+BodyMetricsController --> BodyMetricQueryService : uses >
+BodyCompositionsController --> BodyCompositionCommandService : uses >
+BodyCompositionsController --> BodyCompositionQueryService : uses >
+ActivityLogsController --> ActivityLogCommandService : uses >
+ActivityLogsController --> ActivityLogQueryService : uses >
+WearableConnectionsController --> WearableConnectionCommandService : uses >
+WearableConnectionsController --> WearableConnectionQueryService : uses >
+MetabolicAdaptationLogsController --> MetabolicAdaptationLogCommandService : uses >
+MetabolicAdaptationLogsController --> MetabolicAdaptationLogQueryService : uses >
+
+BodyMetricsController ..> CreateBodyMetricResource : consumes >
+BodyMetricsController ..> BodyMetricResource : produces >
+BodyMetricsController ..> LogBodyMetricsCommandFromResourceAssembler : uses >
+BodyMetricsController ..> BodyMetricResourceFromEntityAssembler : uses >
+BodyCompositionsController ..> CreateBodyCompositionResource : consumes >
+BodyCompositionsController ..> BodyCompositionResource : produces >
+BodyCompositionsController ..> LogBodyCompositionCommandFromResourceAssembler : uses >
+BodyCompositionsController ..> BodyCompositionResourceFromEntityAssembler : uses >
+ActivityLogsController ..> CreateActivityLogResource : consumes >
+ActivityLogsController ..> ActivityLogResource : produces >
+ActivityLogsController ..> LogActivityCommandFromResourceAssembler : uses >
+ActivityLogsController ..> ActivityLogResourceFromEntityAssembler : uses >
+WearableConnectionsController ..> CreateWearableConnectionResource : consumes >
+WearableConnectionsController ..> WearableConnectionResource : produces >
+WearableConnectionsController ..> ConnectWearableCommandFromResourceAssembler : uses >
+WearableConnectionsController ..> WearableConnectionResourceFromEntityAssembler : uses >
+MetabolicAdaptationLogsController ..> CreateMetabolicAdaptationLogResource : consumes >
+MetabolicAdaptationLogsController ..> MetabolicAdaptationLogResource : produces >
+MetabolicAdaptationLogsController ..> RecordMetabolicAdaptationCommandFromResourceAssembler : uses >
+MetabolicAdaptationLogsController ..> MetabolicAdaptationLogResourceFromEntityAssembler : uses >
+
+UpdateBodyMetricResource ..> BodyMetricsController : updates via <
+UpdateBodyCompositionResource ..> BodyCompositionsController : updates via <
+UpdateWearableConnectionResource ..> WearableConnectionsController : updates via <
+MetabolicAdaptationContextFacade ..> BodyMetricQueryService : backed by >
+
+@enduml

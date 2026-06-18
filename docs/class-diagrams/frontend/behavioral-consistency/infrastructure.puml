@@ -4,211 +4,75 @@ skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-' ─── Boundary stubs: shared/infrastructure ───────────────────────────────────
-package "shared/infrastructure [boundary]" {
-  abstract class BaseApi <<boundary>> {
-  }
-  interface BaseAssembler <<boundary>> {
-    + toEntityFromResource(resource: R): E
-    + toResourceFromEntity(entity: E): R
-    + toEntitiesFromResponse(response: Res): E[]
-  }
-  abstract class BaseApiEndpoint <<boundary>> {
-    + getAll(): Observable<E[]>
-    + getById(id: number): Observable<E>
-    + create(entity: E): Observable<E>
-    + update(entity: E, id: number): Observable<E>
-    + delete(id: number): Observable<void>
-  }
-}
+title Behavioral Consistency — Infrastructure layer (nutrismart-webapp)
 
-' ─── Boundary stubs: behavioral-consistency/domain ───────────────────────────
+' ─── Boundary stubs: domain layer ────────────────────────────────────────────
 package "behavioral-consistency/domain [boundary]" {
-  class BehavioralProgress <<boundary>> {
-    + id: number
-    + userId: number
-  }
-  class EatingBehaviorPattern <<boundary>> {
-    + id: number
-    + userId: number
-  }
-  class RecoveryPlan <<boundary>> {
-    + id: number
-    + userId: number
-    + isActive(): boolean
-  }
+  class BehavioralProgress <<entity>>
+  class EatingBehaviorPattern <<entity>>
+  class RecoveryPlan <<entity>>
+}
+package "shared/infrastructure [external]" {
+  class BaseApi
+  class BaseApiEndpoint
+  interface BaseAssembler
+  interface BaseResource
 }
 
-' ─── Resources ───────────────────────────────────────────────────────────────
-package "behavioral-consistency/infrastructure/resources" {
-
-  class BehavioralProgressResource <<resource>> {
-    + id: number
-    + userId: number | string
-    + adherenceStatus: string | null
-    + streak: number
-    + consecutiveMisses: number
-    + lastGoalMetDate: string | null
-    + goalMetDates: string[]
+package "behavioral-consistency/infrastructure" {
+  class BehavioralConsistencyApi <<@Injectable>> {
+    + getBehavioralProgressByUserId(userId): Observable<BehavioralProgress | undefined>
+    + createBehavioralProgress(p): Observable<BehavioralProgress>
+    + updateBehavioralProgress(p, goalMetToday): Observable<BehavioralProgress>
+    + deleteBehavioralProgress(id): Observable<void>
   }
-
-  class BehavioralProgressResponse <<resource>> {
-    + behavioralProgress: BehavioralProgressResource[]
+  class EatingBehaviorPatternApi <<@Injectable>> {
+    + getByUserId(userId): Observable<EatingBehaviorPattern | undefined>
+    + create(pattern): Observable<EatingBehaviorPattern>
+    + update(pattern): Observable<EatingBehaviorPattern>
   }
-
-  class EatingBehaviorPatternResource <<resource>> {
-    + id: number
-    + userId: number | string
-    + weeklyCompletionRate: number
-    + currentStreak: number
-    + consecutiveMisses: number
-    + patternType: string
-    + analyzedAt: string
+  class RecoveryPlanApi <<@Injectable>> {
+    + getActiveByUserId(userId): Observable<RecoveryPlan | undefined>
+    + create(plan): Observable<RecoveryPlan>
+    + update(plan): Observable<RecoveryPlan>
   }
-
-  class EatingBehaviorPatternResponse <<resource>> {
-    + eatingBehaviorPatterns: EatingBehaviorPatternResource[]
-  }
-
-  class RecoveryActionResource <<resource>> {
-    + type: string
-    + descriptionKey: string
-    + priority: number
-  }
-
-  class RecoveryPlanResource <<resource>> {
-    + id: number
-    + userId: number | string
-    + trigger: string
-    + status: string
-    + actions: RecoveryActionResource[]
-    + activatedAt: string
-    + resolvedAt: string | null
-  }
-
-  class RecoveryPlanResponse <<resource>> {
-    + recoveryPlans: RecoveryPlanResource[]
-  }
+  class BehavioralConsistencyApiEndpoint <<endpoint>>
+  class EatingBehaviorPatternApiEndpoint <<endpoint>>
+  class RecoveryPlanApiEndpoint <<endpoint>>
+  class BehavioralProgressAssembler <<assembler>>
+  class EatingBehaviorPatternAssembler <<assembler>>
+  class RecoveryPlanAssembler <<assembler>>
+  interface BehavioralProgressResource <<resource>>
+  interface EatingBehaviorPatternResource <<resource>>
+  interface RecoveryPlanResource <<resource>>
 }
 
-' ─── Assemblers ──────────────────────────────────────────────────────────────
-package "behavioral-consistency/infrastructure/assemblers" {
+' ─── Relationships ────────────────────────────────────────────────────────────
+BehavioralConsistencyApi --|> BaseApi
+EatingBehaviorPatternApi --|> BaseApi
+RecoveryPlanApi --|> BaseApi
+BehavioralConsistencyApiEndpoint --|> BaseApiEndpoint
+EatingBehaviorPatternApiEndpoint --|> BaseApiEndpoint
+RecoveryPlanApiEndpoint --|> BaseApiEndpoint
+BehavioralProgressAssembler ..|> BaseAssembler
+EatingBehaviorPatternAssembler ..|> BaseAssembler
+RecoveryPlanAssembler ..|> BaseAssembler
+BehavioralProgressResource --|> BaseResource
+EatingBehaviorPatternResource --|> BaseResource
+RecoveryPlanResource --|> BaseResource
 
-  class BehavioralProgressAssembler <<assembler>> {
-    + toEntityFromResource(resource: BehavioralProgressResource): BehavioralProgress
-    + toResourceFromEntity(entity: BehavioralProgress): BehavioralProgressResource
-    + toEntitiesFromResponse(response: BehavioralProgressResponse): BehavioralProgress[]
-  }
+BehavioralConsistencyApi --> BehavioralConsistencyApiEndpoint : via >
+EatingBehaviorPatternApi --> EatingBehaviorPatternApiEndpoint : via >
+RecoveryPlanApi --> RecoveryPlanApiEndpoint : via >
+BehavioralConsistencyApiEndpoint --> BehavioralProgressAssembler : maps via >
+EatingBehaviorPatternApiEndpoint --> EatingBehaviorPatternAssembler : maps via >
+RecoveryPlanApiEndpoint --> RecoveryPlanAssembler : maps via >
 
-  class EatingBehaviorPatternAssembler <<assembler>> {
-    + toEntityFromResource(resource: EatingBehaviorPatternResource): EatingBehaviorPattern
-    + toResourceFromEntity(entity: EatingBehaviorPattern): EatingBehaviorPatternResource
-    + toEntitiesFromResponse(response: EatingBehaviorPatternResponse): EatingBehaviorPattern[]
-  }
-
-  class RecoveryPlanAssembler <<assembler>> {
-    + toEntityFromResource(resource: RecoveryPlanResource): RecoveryPlan
-    + toResourceFromEntity(entity: RecoveryPlan): RecoveryPlanResource
-    + toEntitiesFromResponse(response: RecoveryPlanResponse): RecoveryPlan[]
-  }
-}
-
-' ─── HTTP (Endpoints + Facades) ──────────────────────────────────────────────
-package "behavioral-consistency/infrastructure/http" {
-
-  class BehavioralConsistencyApiEndpoint <<endpoint>> {
-    - assembler: BehavioralProgressAssembler
-    --
-    + getAll(): Observable<BehavioralProgress[]>
-    + getById(id: number): Observable<BehavioralProgress>
-    + create(entity: BehavioralProgress): Observable<BehavioralProgress>
-    + update(entity: BehavioralProgress, id: number): Observable<BehavioralProgress>
-    + delete(id: number): Observable<void>
-  }
-
-  class BehavioralConsistencyApi <<api>> {
-    - endpoint: BehavioralConsistencyApiEndpoint
-    --
-    + getBehavioralProgressList(): Observable<BehavioralProgress[]>
-    + getBehavioralProgress(id: number): Observable<BehavioralProgress>
-    + getBehavioralProgressByUserId(userId: number): Observable<BehavioralProgress | undefined>
-    + createBehavioralProgress(progress: BehavioralProgress): Observable<BehavioralProgress>
-    + updateBehavioralProgress(progress: BehavioralProgress): Observable<BehavioralProgress>
-    + deleteBehavioralProgress(id: number): Observable<void>
-  }
-
-  class EatingBehaviorPatternApiEndpoint <<endpoint>> {
-    - assembler: EatingBehaviorPatternAssembler
-    --
-    + getAll(): Observable<EatingBehaviorPattern[]>
-    + create(entity: EatingBehaviorPattern): Observable<EatingBehaviorPattern>
-    + update(entity: EatingBehaviorPattern, id: number): Observable<EatingBehaviorPattern>
-  }
-
-  class EatingBehaviorPatternApi <<api>> {
-    - endpoint: EatingBehaviorPatternApiEndpoint
-    --
-    + getByUserId(userId: number): Observable<EatingBehaviorPattern | undefined>
-    + create(pattern: EatingBehaviorPattern): Observable<EatingBehaviorPattern>
-    + update(pattern: EatingBehaviorPattern): Observable<EatingBehaviorPattern>
-  }
-
-  class RecoveryPlanApiEndpoint <<endpoint>> {
-    - assembler: RecoveryPlanAssembler
-    --
-    + getAll(): Observable<RecoveryPlan[]>
-    + create(entity: RecoveryPlan): Observable<RecoveryPlan>
-    + update(entity: RecoveryPlan, id: number): Observable<RecoveryPlan>
-  }
-
-  class RecoveryPlanApi <<api>> {
-    - endpoint: RecoveryPlanApiEndpoint
-    --
-    + getActiveByUserId(userId: number): Observable<RecoveryPlan | undefined>
-    + create(plan: RecoveryPlan): Observable<RecoveryPlan>
-    + update(plan: RecoveryPlan): Observable<RecoveryPlan>
-  }
-}
-
-' ─── Inheritance ─────────────────────────────────────────────────────────────
-BehavioralConsistencyApi --|> BaseApi : extends >
-EatingBehaviorPatternApi --|> BaseApi : extends >
-RecoveryPlanApi --|> BaseApi : extends >
-
-BehavioralConsistencyApiEndpoint --|> BaseApiEndpoint : extends >
-EatingBehaviorPatternApiEndpoint --|> BaseApiEndpoint : extends >
-RecoveryPlanApiEndpoint --|> BaseApiEndpoint : extends >
-
-BehavioralProgressAssembler ..|> BaseAssembler : implements >
-EatingBehaviorPatternAssembler ..|> BaseAssembler : implements >
-RecoveryPlanAssembler ..|> BaseAssembler : implements >
-
-' ─── Composition (response envelopes) ────────────────────────────────────────
-BehavioralProgressResponse "1" *--> "0..*" BehavioralProgressResource : contains >
-EatingBehaviorPatternResponse "1" *--> "0..*" EatingBehaviorPatternResource : contains >
-RecoveryPlanResponse "1" *--> "0..*" RecoveryPlanResource : contains >
-RecoveryPlanResource "1" *--> "0..*" RecoveryActionResource : contains >
-
-' ─── Assembler dependencies ──────────────────────────────────────────────────
-BehavioralProgressAssembler --> BehavioralProgressResource : reads >
-BehavioralProgressAssembler --> BehavioralProgressResponse : reads >
-BehavioralProgressAssembler ..> BehavioralProgress : produces >
-
-EatingBehaviorPatternAssembler --> EatingBehaviorPatternResource : reads >
-EatingBehaviorPatternAssembler --> EatingBehaviorPatternResponse : reads >
-EatingBehaviorPatternAssembler ..> EatingBehaviorPattern : produces >
-
-RecoveryPlanAssembler --> RecoveryPlanResource : reads >
-RecoveryPlanAssembler --> RecoveryPlanResponse : reads >
-RecoveryPlanAssembler ..> RecoveryPlan : produces >
-
-' ─── Endpoint / API wiring ───────────────────────────────────────────────────
-BehavioralConsistencyApiEndpoint --> BehavioralProgressAssembler : uses >
-EatingBehaviorPatternApiEndpoint --> EatingBehaviorPatternAssembler : uses >
-RecoveryPlanApiEndpoint --> RecoveryPlanAssembler : uses >
-
-BehavioralConsistencyApi o--> BehavioralConsistencyApiEndpoint : delegates to >
-EatingBehaviorPatternApi o--> EatingBehaviorPatternApiEndpoint : delegates to >
-RecoveryPlanApi o--> RecoveryPlanApiEndpoint : delegates to >
+BehavioralProgressAssembler ..> BehavioralProgress : builds >
+BehavioralProgressAssembler ..> BehavioralProgressResource : reads/writes >
+EatingBehaviorPatternAssembler ..> EatingBehaviorPattern : builds >
+EatingBehaviorPatternAssembler ..> EatingBehaviorPatternResource : reads/writes >
+RecoveryPlanAssembler ..> RecoveryPlan : builds >
+RecoveryPlanAssembler ..> RecoveryPlanResource : reads/writes >
 
 @enduml

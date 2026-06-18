@@ -4,197 +4,65 @@ skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-' ─── Boundary stubs: shared/infrastructure ───────────────────────────────────
-package "shared/infrastructure [boundary]" {
-  abstract class BaseApi <<boundary>> {
-  }
-  interface BaseAssembler <<boundary>> {
-    + toEntityFromResource(resource: R): E
-    + toResourceFromEntity(entity: E): R
-    + toEntitiesFromResponse(response: Res): E[]
-  }
-  abstract class BaseApiEndpoint <<boundary>> {
-    + getAll(): Observable<E[]>
-    + getById(id: number): Observable<E>
-    + create(entity: E): Observable<E>
-    + update(entity: E, id: number): Observable<E>
-    + delete(id: number): Observable<void>
-  }
-}
+title Nutrition Tracking — Infrastructure layer (nutrismart-webapp)
 
-' ─── Boundary stubs: nutrition-tracking/domain ───────────────────────────────
+' ─── Boundary stubs: domain layer ────────────────────────────────────────────
 package "nutrition-tracking/domain [boundary]" {
-  class FoodItem <<boundary>> {
-    + id: number
-  }
-  class MealRecord <<boundary>> {
-    + id: number
-  }
-  class DailyIntake <<boundary>> {
-    + id: number
-  }
-  class ScanResult <<boundary>> {
-    + id: number
-  }
+  class FoodItem <<entity>>
+  class MealRecord <<entity>>
+  class ScanResult <<entity>>
+}
+package "shared/infrastructure [external]" {
+  class BaseApi
+  class BaseApiEndpoint
+  interface BaseAssembler
+  interface BaseResource
 }
 
-' ─── Resources ───────────────────────────────────────────────────────────────
-package "nutrition-tracking/infrastructure/resources" {
+package "nutrition-tracking/infrastructure" {
+  class NutritionApi <<@Injectable>>
+  class PlateScanApi <<@Injectable>>
 
-  class FoodItemResource <<resource>> {
-    + id: number
-    + name: string
-    + nameEs: string
-    + source: string
-    + servingSize: number
-    + servingUnit: string
-    + caloriesPer100g: number
-    + proteinPer100g: number
-    + carbsPer100g: number
-    + fatPer100g: number
-    + fiberPer100g: number
-    + sugarPer100g: number
-    + restrictions: string[]
-  }
+  class FoodSearchEndpoint <<endpoint>>
+  class NutritionLogEndpoint <<endpoint>>
+  class DailyBalanceEndpoint <<endpoint>>
 
-  class FoodItemsResponse <<resource>> {
-    + foodItems: FoodItemResource[]
-  }
+  class FoodItemAssembler <<assembler>>
+  class MealRecordAssembler <<assembler>>
+  class ScanResultAssembler <<assembler>>
 
-  class MealRecordResource <<resource>> {
-    + id: number
-    + foodItemId: number
-    + foodItemName: string
-    + mealType: string
-    + quantity: number
-    + unit: string
-    + calories: number
-    + protein: number
-    + carbs: number
-    + fat: number
-    + fiber: number
-    + sugar: number
-    + loggedAt: string
-    + userId: number
-  }
-
-  class MealRecordsResponse <<resource>> {
-    + mealRecords: MealRecordResource[]
-  }
-
-  class DailyIntakeResource <<resource>> {
-    + id: number
-    + userId: number
-    + date: string
-    + dailyGoal: number
-    + consumed: number
-    + active: number
-  }
-
-  class DailyIntakeResponse <<resource>> {
-    + dailyIntakes: DailyIntakeResource[]
-  }
-
-  class PlateScanResource <<resource>> {
-    + id: number
-    + status: string
-    + imageBase64: string
-    + detectedItems: ScannedFoodItemResource[]
-    + mealType: string
-    + source: string
-    + scannedAt: string
-  }
+  interface FoodItemResource <<resource>>
+  interface MealRecordResource <<resource>>
+  interface ScannedFoodItemResource <<resource>>
+  interface ScanResultResource <<resource>>
 }
 
-' ─── Assemblers ──────────────────────────────────────────────────────────────
-package "nutrition-tracking/infrastructure/assemblers" {
+' ─── Relationships ────────────────────────────────────────────────────────────
+NutritionApi --|> BaseApi
+PlateScanApi --|> BaseApi
+FoodSearchEndpoint --|> BaseApiEndpoint
+NutritionLogEndpoint --|> BaseApiEndpoint
+DailyBalanceEndpoint --|> BaseApiEndpoint
+FoodItemAssembler ..|> BaseAssembler
+MealRecordAssembler ..|> BaseAssembler
+ScanResultAssembler ..|> BaseAssembler
+FoodItemResource --|> BaseResource
+MealRecordResource --|> BaseResource
+ScanResultResource --|> BaseResource
 
-  class FoodItemAssembler <<assembler>> {
-    + toEntityFromResource(resource: FoodItemResource): FoodItem
-    + toResourceFromEntity(entity: FoodItem): FoodItemResource
-    + toEntitiesFromResponse(response: FoodItemsResponse): FoodItem[]
-  }
+NutritionApi --> FoodSearchEndpoint : via >
+NutritionApi --> NutritionLogEndpoint : via >
+NutritionApi --> DailyBalanceEndpoint : via >
+FoodSearchEndpoint --> FoodItemAssembler : maps via >
+NutritionLogEndpoint --> MealRecordAssembler : maps via >
+PlateScanApi --> ScanResultAssembler : maps via >
 
-  class MealRecordAssembler <<assembler>> {
-    + toEntityFromResource(resource: MealRecordResource): MealRecord
-    + toResourceFromEntity(entity: MealRecord): MealRecordResource
-    + toEntitiesFromResponse(response: MealRecordsResponse): MealRecord[]
-  }
-
-  class DailyIntakeAssembler <<assembler>> {
-    + toEntityFromResource(resource: DailyIntakeResource): DailyIntake
-    + toResourceFromEntity(entity: DailyIntake): DailyIntakeResource
-    + toEntitiesFromResponse(response: DailyIntakeResponse): DailyIntake[]
-  }
-
-  class PlateScanAssembler <<assembler>> {
-    + toEntityFromResource(resource: PlateScanResource): ScanResult
-    + toResourceFromEntity(entity: ScanResult): PlateScanResource
-    + toEntitiesFromResponse(response: object): ScanResult[]
-  }
-}
-
-' ─── HTTP ────────────────────────────────────────────────────────────────────
-package "nutrition-tracking/infrastructure/http" {
-
-  class NutritionApiEndpoint <<endpoint>> {
-    - foodItemAssembler: FoodItemAssembler
-    - mealRecordAssembler: MealRecordAssembler
-    - dailyIntakeAssembler: DailyIntakeAssembler
-  }
-
-  class NutritionApi <<api>> {
-    - endpoint: NutritionApiEndpoint
-    --
-    + searchFoods(query: string, restrictions: string[]): Observable<FoodItem[]>
-    + getMealEntries(userId: number): Observable<MealRecord[]>
-    + createMealEntry(record: MealRecord): Observable<MealRecord>
-    + updateMealEntry(record: MealRecord): Observable<MealRecord>
-    + deleteMealEntry(id: number): Observable<void>
-    + getDailyBalance(userId: number, date: string): Observable<DailyIntake>
-  }
-
-  class PlateScanApi <<api>> {
-    - assembler: PlateScanAssembler
-    --
-    + analyzeImage(imageBase64: string, mealType: string): Observable<ScanResult>
-    + getScanResults(userId: number): Observable<ScanResult[]>
-  }
-}
-
-' ─── Inheritance ─────────────────────────────────────────────────────────────
-NutritionApi --|> BaseApi : extends >
-PlateScanApi --|> BaseApi : extends >
-NutritionApiEndpoint --|> BaseApiEndpoint : extends >
-
-FoodItemAssembler ..|> BaseAssembler : implements >
-MealRecordAssembler ..|> BaseAssembler : implements >
-DailyIntakeAssembler ..|> BaseAssembler : implements >
-PlateScanAssembler ..|> BaseAssembler : implements >
-
-' ─── Composition ─────────────────────────────────────────────────────────────
-FoodItemsResponse "1" *--> "0..*" FoodItemResource : contains >
-MealRecordsResponse "1" *--> "0..*" MealRecordResource : contains >
-DailyIntakeResponse "1" *--> "0..*" DailyIntakeResource : contains >
-
-' ─── Dependencies ────────────────────────────────────────────────────────────
-FoodItemAssembler --> FoodItemResource : reads >
-FoodItemAssembler ..> FoodItem : produces >
-
-MealRecordAssembler --> MealRecordResource : reads >
-MealRecordAssembler ..> MealRecord : produces >
-
-DailyIntakeAssembler --> DailyIntakeResource : reads >
-DailyIntakeAssembler ..> DailyIntake : produces >
-
-PlateScanAssembler --> PlateScanResource : reads >
-PlateScanAssembler ..> ScanResult : produces >
-
-NutritionApiEndpoint --> FoodItemAssembler : uses >
-NutritionApiEndpoint --> MealRecordAssembler : uses >
-NutritionApiEndpoint --> DailyIntakeAssembler : uses >
-
-NutritionApi o--> NutritionApiEndpoint : delegates to >
-PlateScanApi o--> PlateScanAssembler : uses >
+FoodItemAssembler ..> FoodItem : builds >
+FoodItemAssembler ..> FoodItemResource : reads/writes >
+MealRecordAssembler ..> MealRecord : builds >
+MealRecordAssembler ..> MealRecordResource : reads/writes >
+ScanResultAssembler ..> ScanResult : builds >
+ScanResultAssembler ..> ScanResultResource : reads/writes >
+ScanResultResource "1" *--> "0..*" ScannedFoodItemResource : contains >
 
 @enduml

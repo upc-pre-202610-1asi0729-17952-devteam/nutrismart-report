@@ -4,145 +4,72 @@ skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-' ─── Boundary stubs: infrastructure ─────────────────────────────────────────
-package "smart-recommendation/infrastructure [boundary]" {
-  class PantryApi <<boundary>> {
-  }
-  class RecommendationsApi <<boundary>> {
-  }
-}
+title Smart Recommendation — Application layer (nutrismart-webapp)
 
-' ─── Boundary stubs: domain ──────────────────────────────────────────────────
+' ─── Boundary stubs: domain & infrastructure ─────────────────────────────────
 package "smart-recommendation/domain [boundary]" {
-  class PantryItem <<boundary>> {
-  }
-  class RecipeSuggestion <<boundary>> {
-  }
-  class RecommendationSession <<boundary>> {
-  }
-  class IngredientCatalogItem <<boundary>> {
-  }
-  class WeatherContext <<boundary>> {
-  }
-  class TravelContext <<boundary>> {
-  }
+  class PantryItem <<entity>>
+  class RecipeSuggestion <<entity>>
+  class RecommendationSession <<entity>>
+}
+package "smart-recommendation/infrastructure [boundary]" {
+  class PantryApi <<api>>
+  class RecommendationsApi <<api>>
+}
+package "<<other contexts / shared>> [external]" {
+  class IamStore <<iam>>
+  class NutritionStore <<nutrition-tracking>>
+  class BehavioralConsistencyStore <<behavioral-consistency>>
+  class DomainEventBus <<shared>>
+  class NotificationService <<shared>>
+  class GeolocationService <<shared>>
+  class GeocodingService <<shared>>
 }
 
-' ─── Boundary stubs: shared ──────────────────────────────────────────────────
-package "shared/application [boundary]" {
-  class DomainEventBus <<boundary>> {
-    + publish(event: DomainEvent): void
-    + events$: Observable<DomainEvent>
-  }
-}
-
-package "shared/domain [boundary]" {
-  class CompatibleDishesRanked <<boundary>> {
-  }
-  class RecipeSuggested <<boundary>> {
-  }
-  class PantryUpdated <<boundary>> {
-  }
-  class ContextualTargetAdjusted <<boundary>> {
-  }
-  class BehaviorPatternAnalyzed <<boundary>> {
-  }
-  class PlanUpgraded <<boundary>> {
-  }
-}
-
-' ─── Application ─────────────────────────────────────────────────────────────
 package "smart-recommendation/application" {
-
-  class PantryStore <<store>> {
-    ' Writable signals
-    - _pantryItems: WritableSignal<PantryItem[]>
-    - _recipeSuggestions: WritableSignal<RecipeSuggestion[]>
-    - _catalog: WritableSignal<IngredientCatalogItem[]>
-    - _loading: WritableSignal<boolean>
-    - _error: WritableSignal<string | null>
-    - _searchQuery: WritableSignal<string>
-    ' Read-only signals
-    + pantryItems: Signal<PantryItem[]>
-    + recipeSuggestions: Signal<RecipeSuggestion[]>
-    + catalog: Signal<IngredientCatalogItem[]>
-    + loading: Signal<boolean>
-    + error: Signal<string | null>
-    + searchQuery: Signal<string>
-    ' Computed signals
-    + isEmpty: Signal<boolean>
+  class PantryStore <<@Injectable store>> {
+    - pantryApi: PantryApi
+    - iamStore: IamStore
+    - nutritionStore: NutritionStore
+    - eventBus: DomainEventBus
+    --
     + dailyConsumed: Signal<number>
     + dailyGoal: Signal<number>
     + remainingCalories: Signal<number>
     + remainingProtein: Signal<number>
-    + userGoal: Signal<string>
-    --
-    + fetchCatalog(): Promise<void>
-    + fetchPantryItems(userId: number): Promise<void>
-    + addPantryItem(item: PantryItem): Promise<void>
-    + deletePantryItem(id: number): Promise<void>
-    + setSearchQuery(query: string): void
+    + userGoal: Signal<...>
+    + fetchCatalog(): void
   }
-
-  class RecommendationsStore <<store>> {
-    ' Writable signals
-    - _weatherContext: WritableSignal<WeatherContext | null>
-    - _travelContext: WritableSignal<TravelContext | null>
-    - _session: WritableSignal<RecommendationSession | null>
-    - _weatherCards: WritableSignal<RecipeSuggestion[]>
-    - _travelCards: WritableSignal<RecipeSuggestion[]>
-    - _preventiveCard: WritableSignal<RecipeSuggestion | null>
-    - _interventionCard: WritableSignal<RecipeSuggestion | null>
-    - _bestDishCard: WritableSignal<RecipeSuggestion | null>
-    - _loading: WritableSignal<boolean>
-    - _locationDenied: WritableSignal<boolean>
-    - _error: WritableSignal<string | null>
-    - _demoTemperature: WritableSignal<number | null>
-    ' Read-only signals
-    + weatherContext: Signal<WeatherContext | null>
-    + travelContext: Signal<TravelContext | null>
-    + session: Signal<RecommendationSession | null>
-    + loading: Signal<boolean>
-    + locationDenied: Signal<boolean>
-    ' Computed signals
-    + isTravelMode: Signal<boolean>
-    + adjustedKcalTarget: Signal<number>
+  class RecommendationsStore <<@Injectable store>> {
+    - api: RecommendationsApi
+    - iamStore: IamStore
+    - bcStore: BehavioralConsistencyStore
+    - eventBus: DomainEventBus
+    - notificationService: NotificationService
+    - geolocation: GeolocationService
+    - geocoding: GeocodingService
+    --
     + showPreventiveCard: Signal<boolean>
     + showInterventionCard: Signal<boolean>
-    + activeCards: Signal<RecipeSuggestion[]>
-    + activeFilters: Signal<string[]>
-    --
-    + initialise(userId: number): Promise<void>
-    + setAdherenceStatus(status: AdherenceStatus, misses: number): void
-    + activateTravelMode(destination: string): void
-    + deactivateTravelMode(): void
-    + setDemoTemperature(temp: number): void
-    + denyLocation(): void
-    + allowLocation(): void
+    + activeCards: Signal<...>
   }
 }
 
-' ─── Dependencies ────────────────────────────────────────────────────────────
-PantryStore o--> PantryApi : uses >
-PantryStore o--> DomainEventBus : uses >
-RecommendationsStore o--> RecommendationsApi : uses >
-RecommendationsStore o--> DomainEventBus : uses >
-
-PantryStore ..> PantryItem : manages >
+' ─── Relationships ────────────────────────────────────────────────────────────
+PantryStore --> PantryApi : uses >
+PantryStore --> IamStore : reads user >
+PantryStore --> NutritionStore : reads intake >
+PantryStore --> DomainEventBus : publishes >
+PantryStore ..> PantryItem : holds >
 PantryStore ..> RecipeSuggestion : suggests >
-PantryStore ..> IngredientCatalogItem : catalogs >
-RecommendationsStore ..> RecommendationSession : manages >
-RecommendationsStore ..> WeatherContext : tracks >
-RecommendationsStore ..> TravelContext : tracks >
 
-' ─── Published events ────────────────────────────────────────────────────────
-PantryStore ..> PantryUpdated : publishes >
-PantryStore ..> CompatibleDishesRanked : publishes >
-RecommendationsStore ..> RecipeSuggested : publishes >
-RecommendationsStore ..> ContextualTargetAdjusted : publishes >
-
-' ─── Subscribed events ───────────────────────────────────────────────────────
-BehaviorPatternAnalyzed ..> RecommendationsStore : triggers strategy adapt >
-PlanUpgraded ..> RecommendationsStore : triggers premium unlock >
+RecommendationsStore --> RecommendationsApi : uses >
+RecommendationsStore --> IamStore : reads user >
+RecommendationsStore --> BehavioralConsistencyStore : reads adherence >
+RecommendationsStore --> DomainEventBus : subscribes/publishes >
+RecommendationsStore --> NotificationService : notifies via >
+RecommendationsStore --> GeolocationService : locates via >
+RecommendationsStore --> GeocodingService : geocodes via >
+RecommendationsStore ..> RecommendationSession : holds >
 
 @enduml

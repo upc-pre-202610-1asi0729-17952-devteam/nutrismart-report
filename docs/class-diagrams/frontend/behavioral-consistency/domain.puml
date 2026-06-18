@@ -1,0 +1,102 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Behavioral Consistency — Domain layer (nutrismart-webapp)
+
+package "behavioral-consistency/domain/model" {
+
+  enum AdherenceStatus {
+    ON_TRACK
+    AT_RISK
+    DROPPED
+  }
+  enum BehaviorPatternType {
+    WEEKDAY_ONLY
+    ..
+  }
+  enum AdherenceDropTrigger {
+    NUTRITIONAL_ABANDONMENT
+    ..
+  }
+  enum RecoveryActionType {
+    REDUCE_CALORIE_TARGET
+    ..
+  }
+  enum RecoveryPlanStatus {
+    COMPLETED
+    ..
+  }
+
+  class RecoveryAction <<value object>> {
+    + readonly type: RecoveryActionType
+    + readonly descriptionKey: string
+    + readonly priority: number
+    + toJSON(): RecoveryActionProps
+  }
+
+  class BehavioralProgress <<entity>> {
+    - _id: number
+    - _userId: number
+    - _adherenceStatus: AdherenceStatus
+    - _streak: number
+    - _consecutiveMisses: number
+    - _lastGoalMetDate: string
+    - _goalMetDates: string[]
+  }
+
+  class EatingBehaviorPattern <<entity>> {
+    - _id: number
+    - _userId: number
+    - _weeklyCompletionRate: number
+    - _currentStreak: number
+    - _consecutiveMisses: number
+    - _patternType: BehaviorPatternType
+    - _analyzedAt: string
+  }
+
+  class RecoveryPlan <<entity>> {
+    - _id: number
+    - _userId: number
+    - _trigger: AdherenceDropTrigger
+    - _status: RecoveryPlanStatus
+    - _actions: RecoveryAction[]
+    - _activatedAt: string
+    - _resolvedAt: string | null
+  }
+}
+
+package "behavioral-consistency/domain/events" {
+  class BehaviorPatternAnalyzed <<domain event>>
+  class RecoveryPlanActivated <<domain event>>
+  class RecoveryPlanCompleted <<domain event>>
+}
+
+package "shared/domain [external]" {
+  abstract class DomainEvent
+  interface BaseEntity
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+BehavioralProgress ..|> BaseEntity
+EatingBehaviorPattern ..|> BaseEntity
+RecoveryPlan ..|> BaseEntity
+BehaviorPatternAnalyzed --|> DomainEvent
+RecoveryPlanActivated --|> DomainEvent
+RecoveryPlanCompleted --|> DomainEvent
+
+BehavioralProgress "1" o--> "1" AdherenceStatus : status >
+EatingBehaviorPattern "1" o--> "1" BehaviorPatternType : pattern >
+RecoveryPlan "1" o--> "1" AdherenceDropTrigger : triggered by >
+RecoveryPlan "1" o--> "1" RecoveryPlanStatus : status >
+RecoveryPlan "1" *--> "1..*" RecoveryAction : prescribes >
+RecoveryAction "1" o--> "1" RecoveryActionType : kind >
+
+BehaviorPatternAnalyzed ..> BehaviorPatternType : carries >
+RecoveryPlanActivated ..> AdherenceDropTrigger : carries >
+RecoveryPlanActivated ..> RecoveryPlan : signals >
+RecoveryPlanCompleted ..> RecoveryPlan : signals >
+
+@enduml

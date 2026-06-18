@@ -1,0 +1,95 @@
+@startuml
+skinparam monochrome false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Restaurant Intelligence — Application layer (nutrismart-platform)
+
+' ─── Boundary stub: domain layer ─────────────────────────────────────────────
+package "restaurantintelligence.domain [boundary]" {
+  class RankedDishResult <<value object>>
+}
+
+package "restaurantintelligence.application.commandservices" {
+  interface MenuScanCommandService <<port>> {
+    + handleMenuScan(c: ScanMenuPhotoCommand): Result<List<RankedDishResult>, MenuScanFailure>
+  }
+  interface MenuScanFailure <<sealed>> {
+    InvalidImage(reason)
+    UserNotFound(userId)
+    PremiumPlanRequired()
+    ScanProcessingError(details)
+    RankingFailed(reason)
+  }
+}
+
+package "restaurantintelligence.application.commands" {
+  class ScanMenuPhotoCommand <<command>> {
+    + userId: Long
+    + imageBase64: String
+  }
+}
+
+package "restaurantintelligence.application.internal.commandservices" {
+  class MenuScanCommandServiceImpl {
+    - imageRecognitionPort: MenuImageRecognitionPort
+    - menuRankingPort: MenuRankingPort
+    - userProfileLookupPort: UserProfileLookupPort
+    - foodNutritionLookupPort: FoodNutritionLookupPort
+    - subscriptionStatusLookupPort: SubscriptionStatusLookupPort
+  }
+}
+
+' ─── Driven (output) ports ───────────────────────────────────────────────────
+package "restaurantintelligence.application.ports.output" {
+  interface MenuImageRecognitionPort <<port>> {
+    + extractMenuItems(imageBase64: String): List<MenuDishCandidate>
+  }
+  interface MenuRankingPort <<port>> {
+    + rankMenuDishes(...): List<RankedDishData>
+  }
+  interface UserProfileLookupPort <<port>> {
+    + getUserProfile(userId: Long): UserProfileData
+  }
+  interface FoodNutritionLookupPort <<port>> {
+    + findByNameKey(nameKey: String): Optional<FoodItemCandidate>
+    + findByNameContaining(name: String): List<FoodItemCandidate>
+    + existsByNameKey(nameKey: String): boolean
+    + saveNewFoodItem(data: NewFoodItemData): Long
+  }
+  interface SubscriptionStatusLookupPort <<port>> {
+    + hasPremiumAccess(userId: Long): boolean
+  }
+}
+
+package "restaurantintelligence.application.ports.output.dto" {
+  class MenuDishCandidate <<dto>>
+  class RankedDishData <<dto>>
+  class GeneratedMenuFoodData <<dto>>
+  class FoodItemCandidate <<dto>>
+  class NewFoodItemData <<dto>>
+  class UserProfileData <<dto>>
+}
+
+' ─── Relationships ────────────────────────────────────────────────────────────
+MenuScanCommandServiceImpl ..|> MenuScanCommandService
+MenuScanCommandServiceImpl --> MenuImageRecognitionPort : uses >
+MenuScanCommandServiceImpl --> MenuRankingPort : uses >
+MenuScanCommandServiceImpl --> UserProfileLookupPort : uses >
+MenuScanCommandServiceImpl --> FoodNutritionLookupPort : uses >
+MenuScanCommandServiceImpl --> SubscriptionStatusLookupPort : uses >
+MenuScanCommandServiceImpl ..> ScanMenuPhotoCommand : handles >
+MenuScanCommandServiceImpl ..> RankedDishResult : produces >
+
+MenuScanCommandService ..> MenuScanFailure : may fail with >
+MenuScanCommandService ..> RankedDishResult : returns >
+
+MenuImageRecognitionPort ..> MenuDishCandidate : returns >
+MenuRankingPort ..> RankedDishData : returns >
+UserProfileLookupPort ..> UserProfileData : returns >
+FoodNutritionLookupPort ..> FoodItemCandidate : returns >
+FoodNutritionLookupPort ..> NewFoodItemData : persists >
+RankedDishData "1" *--> "0..1" GeneratedMenuFoodData : generatedFoodData >
+
+@enduml
