@@ -12,6 +12,9 @@ package "subscriptions.application [boundary]" {
   interface SubscriptionQueryService <<port>>
   interface BillingRecordCommandService <<port>>
   interface BillingRecordQueryService <<port>>
+  interface PaymentMethodCommandService <<port>>
+  interface PaymentMethodQueryService <<port>>
+  interface PaymentCommandService <<port>>
 }
 
 package "subscriptions.interfaces.rest" {
@@ -23,6 +26,13 @@ package "subscriptions.interfaces.rest" {
     - commandService: BillingRecordCommandService
     - queryService: BillingRecordQueryService
   }
+  class PaymentMethodsController <<@RestController>> {
+    - commandService: PaymentMethodCommandService
+    - queryService: PaymentMethodQueryService
+  }
+  class PaymentsController <<@RestController>> {
+    - commandService: PaymentCommandService
+  }
 }
 
 package "subscriptions.interfaces.rest.resources" {
@@ -31,6 +41,10 @@ package "subscriptions.interfaces.rest.resources" {
   class SubscriptionResource <<resource>>
   class CreateBillingRecordResource <<resource>>
   class BillingRecordResource <<resource>>
+  class RegisterPaymentMethodResource <<resource>>
+  class PaymentMethodResource <<resource>>
+  class ProcessPaymentResource <<resource>>
+  class PaymentResultResource <<resource>>
 }
 
 package "subscriptions.interfaces.rest.transform" {
@@ -38,6 +52,8 @@ package "subscriptions.interfaces.rest.transform" {
   class SubscriptionResourceFromEntityAssembler <<assembler>>
   class BillingRecordCommandFromResourceAssembler <<assembler>>
   class BillingRecordResourceFromEntityAssembler <<assembler>>
+  class PaymentMethodCommandFromResourceAssembler <<assembler>>
+  class PaymentMethodResourceFromEntityAssembler <<assembler>>
 }
 
 ' ─── Relationships ────────────────────────────────────────────────────────────
@@ -60,5 +76,20 @@ SubscriptionCommandFromResourceAssembler ..> CreateSubscriptionResource : reads 
 SubscriptionResourceFromEntityAssembler ..> SubscriptionResource : builds >
 BillingRecordCommandFromResourceAssembler ..> CreateBillingRecordResource : reads >
 BillingRecordResourceFromEntityAssembler ..> BillingRecordResource : builds >
+
+' ─── Payment methods & payments ──────────────────────────────────────────────
+PaymentMethodsController --> PaymentMethodCommandService : uses >
+PaymentMethodsController --> PaymentMethodQueryService : uses >
+PaymentsController --> PaymentCommandService : uses >
+
+PaymentMethodsController ..> RegisterPaymentMethodResource : consumes >
+PaymentMethodsController ..> PaymentMethodResource : produces >
+PaymentMethodsController ..> PaymentMethodCommandFromResourceAssembler : uses >
+PaymentMethodsController ..> PaymentMethodResourceFromEntityAssembler : uses >
+PaymentsController ..> ProcessPaymentResource : consumes >
+PaymentsController ..> PaymentResultResource : produces >
+
+PaymentMethodCommandFromResourceAssembler ..> RegisterPaymentMethodResource : reads >
+PaymentMethodResourceFromEntityAssembler ..> PaymentMethodResource : builds >
 
 @enduml

@@ -10,33 +10,48 @@ title Subscriptions — Application layer (nutrismart-platform)
 package "subscriptions.domain [boundary]" {
   class Subscription <<aggregate>>
   class BillingRecord <<aggregate>>
+  class PaymentMethod <<aggregate>>
   interface SubscriptionRepository <<port>>
   interface BillingRecordRepository <<port>>
+  interface PaymentMethodRepository <<port>>
+  interface PaymentGateway <<domain service / port>>
 }
 package "<<iam>> [external]" {
   interface UserCommandService <<port>>
+}
+package "subscriptions.interfaces.acl [boundary]" {
+  interface SubscriptionsContextFacade <<ACL>>
 }
 
 package "subscriptions.application.commandservices" {
   interface SubscriptionCommandService <<port>>
   interface BillingRecordCommandService <<port>>
+  interface PaymentMethodCommandService <<port>>
+  interface PaymentCommandService <<port>>
   interface SubscriptionCommandFailure <<sealed>>
   interface BillingRecordCommandFailure <<sealed>>
+  interface PaymentMethodCommandFailure <<sealed>>
+  interface PaymentCommandFailure <<sealed>>
 }
 package "subscriptions.application.queryservices" {
   interface SubscriptionQueryService <<port>>
   interface BillingRecordQueryService <<port>>
+  interface PaymentMethodQueryService <<port>>
 }
 package "subscriptions.application.commands" {
   class CreateSubscriptionCommand <<command>>
   class UpdateSubscriptionCommand <<command>>
   class CreateBillingRecordCommand <<command>>
+  class RegisterPaymentMethodCommand <<command>>
+  class ProcessPaymentCommand <<command>>
 }
 package "subscriptions.application.queries" {
   class GetSubscriptionByIdQuery <<query>>
   class GetAllSubscriptionsQuery <<query>>
   class GetBillingRecordByIdQuery <<query>>
   class GetAllBillingRecordsQuery <<query>>
+  class GetPaymentMethodByIdQuery <<query>>
+  class GetPaymentMethodsByUserIdQuery <<query>>
 }
 package "subscriptions.application.internal.commandservices" {
   class SubscriptionCommandServiceImpl {
@@ -46,6 +61,13 @@ package "subscriptions.application.internal.commandservices" {
   class BillingRecordCommandServiceImpl {
     - billingRecordRepository: BillingRecordRepository
   }
+  class PaymentMethodCommandServiceImpl {
+    - paymentMethodRepository: PaymentMethodRepository
+  }
+  class PaymentCommandServiceImpl {
+    - paymentMethodRepository: PaymentMethodRepository
+    - paymentGateway: PaymentGateway
+  }
 }
 package "subscriptions.application.internal.queryservices" {
   class SubscriptionQueryServiceImpl {
@@ -53,6 +75,14 @@ package "subscriptions.application.internal.queryservices" {
   }
   class BillingRecordQueryServiceImpl {
     - billingRecordRepository: BillingRecordRepository
+  }
+  class PaymentMethodQueryServiceImpl {
+    - paymentMethodRepository: PaymentMethodRepository
+  }
+}
+package "subscriptions.application.acl" {
+  class SubscriptionsContextFacadeImpl {
+    - subscriptionRepository: SubscriptionRepository
   }
 }
 
@@ -79,5 +109,26 @@ BillingRecordQueryServiceImpl ..> GetBillingRecordByIdQuery : handles >
 BillingRecordQueryServiceImpl ..> GetAllBillingRecordsQuery : handles >
 SubscriptionCommandService ..> SubscriptionCommandFailure : may fail with >
 BillingRecordCommandService ..> BillingRecordCommandFailure : may fail with >
+
+' ─── Payment methods & payments ──────────────────────────────────────────────
+PaymentMethodCommandServiceImpl ..|> PaymentMethodCommandService
+PaymentCommandServiceImpl ..|> PaymentCommandService
+PaymentMethodQueryServiceImpl ..|> PaymentMethodQueryService
+
+PaymentMethodCommandServiceImpl --> PaymentMethodRepository : uses >
+PaymentCommandServiceImpl --> PaymentMethodRepository : uses >
+PaymentCommandServiceImpl --> PaymentGateway : charges via >
+PaymentMethodQueryServiceImpl --> PaymentMethodRepository : uses >
+
+PaymentMethodCommandServiceImpl ..> RegisterPaymentMethodCommand : handles >
+PaymentMethodCommandServiceImpl ..> PaymentMethod : produces >
+PaymentCommandServiceImpl ..> ProcessPaymentCommand : handles >
+PaymentMethodQueryServiceImpl ..> GetPaymentMethodByIdQuery : handles >
+PaymentMethodQueryServiceImpl ..> GetPaymentMethodsByUserIdQuery : handles >
+PaymentMethodCommandService ..> PaymentMethodCommandFailure : may fail with >
+PaymentCommandService ..> PaymentCommandFailure : may fail with >
+
+SubscriptionsContextFacadeImpl ..|> SubscriptionsContextFacade
+SubscriptionsContextFacadeImpl --> SubscriptionRepository : uses >
 
 @enduml
