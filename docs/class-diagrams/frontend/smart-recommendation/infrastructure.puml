@@ -13,6 +13,7 @@ package "smart-recommendation/domain [boundary]" {
   class WeatherContext <<entity>>
   class TravelContext <<entity>>
   class LocationSnapshot <<entity>>
+  class RecommendationSession <<entity>>
 }
 package "shared/infrastructure [external]" {
   class BaseApi
@@ -29,6 +30,7 @@ package "smart-recommendation/infrastructure" {
   class LocationSnapshotAssembler <<assembler>>
   class WeatherContextAssembler <<assembler>>
   class TravelContextAssembler <<assembler>>
+  class RecommendationSessionAssembler <<assembler>>
 
   interface PantryItemResource <<resource>>
   interface RecipeSuggestionResource <<resource>>
@@ -63,6 +65,10 @@ RecipeSuggestionAssembler ..> RecipeSuggestionResource : reads/writes >
 LocationSnapshotAssembler ..> LocationSnapshot : builds >
 LocationSnapshotAssembler ..> LocationSnapshotResource : reads/writes >
 RecommendationsApi ..> RecommendationSessionResource : transports >
+RecommendationsApi --> RecommendationSessionAssembler : maps via >
+RecommendationSessionAssembler ..|> BaseAssembler
+RecommendationSessionAssembler ..> RecommendationSession : builds >
+RecommendationSessionAssembler ..> RecommendationSessionResource : reads/writes >
 WeatherContextAssembler ..> WeatherContext : builds >
 WeatherContextAssembler ..> WeatherContextResource : reads/writes >
 TravelContextAssembler ..> TravelContext : builds >

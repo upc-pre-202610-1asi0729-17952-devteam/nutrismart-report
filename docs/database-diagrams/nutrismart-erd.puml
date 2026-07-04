@@ -105,6 +105,7 @@ package "Metabolic Adaptation" #EAFAF1 {
     height_cm : DOUBLE
     weight_kg : DOUBLE
     measured_at : TIMESTAMP
+    previous_body_fat_percent : DOUBLE
     override_body_fat_percent : DOUBLE
   }
   entity "activity_logs" as al {
@@ -122,14 +123,19 @@ package "Metabolic Adaptation" #EAFAF1 {
     * user_id : BIGINT <<FK>>
     * provider : VARCHAR
     status : VARCHAR
+    * auto_sync_enabled : BOOLEAN
     last_synced_at : TIMESTAMP
     authorized_at : TIMESTAMP
+    access_token : VARCHAR(2048)
+    refresh_token : VARCHAR(2048)
+    token_expires_at : TIMESTAMP
   }
   entity "metabolic_adaptation_logs" as mal {
     * id : BIGINT <<PK>>
     --
     * user_id : BIGINT <<FK>>
     triggered_by : VARCHAR
+    reason : VARCHAR
     previous_bmr / new_bmr : DOUBLE
     previous_tdee / new_tdee : DOUBLE
     previous/new calories,protein,carbs,fat : DOUBLE
@@ -147,6 +153,12 @@ package "Nutrition Tracking" #FEF9E7 {
     source : VARCHAR
     serving_size : DOUBLE
     serving_unit : VARCHAR
+    calories_per_100g : DOUBLE
+    protein_per_100g : DOUBLE
+    carbs_per_100g : DOUBLE
+    fat_per_100g : DOUBLE
+    fiber_per_100g : DOUBLE
+    sugar_per_100g : DOUBLE
     restrictions : TEXT
     name_key : VARCHAR <<UNIQUE>>
     category : VARCHAR
@@ -161,8 +173,10 @@ package "Nutrition Tracking" #FEF9E7 {
     * user_id : BIGINT <<FK>>
     food_id : BIGINT <<FK>>
     food_item_name : VARCHAR
+    food_item_name_es : VARCHAR
     meal_type : VARCHAR
     quantity : DOUBLE
+    unit : VARCHAR
     calories : DOUBLE
     protein/carbs/fat/fiber/sugar : DOUBLE
     logged_at : TIMESTAMP
@@ -258,6 +272,19 @@ package "Subscriptions" #FADBD8 {
     status : VARCHAR
     billing_cycle_start : DATE
     billing_cycle_end : DATE
+    stripe_customer_id : VARCHAR
+  }
+  entity "payment_methods" as pm {
+    * id : BIGINT <<PK>>
+    --
+    * user_id : BIGINT <<FK>>
+    last_four : VARCHAR
+    brand : VARCHAR
+    expiry_month : INT
+    expiry_year : INT
+    cardholder_name : VARCHAR
+    * stripe_payment_method_id : VARCHAR
+    stripe_customer_id : VARCHAR
   }
   entity "billing_history" as bh {
     * id : BIGINT <<PK>>
@@ -274,7 +301,7 @@ package "Subscriptions" #FADBD8 {
 ' ─── RELATIONSHIPS (cardinality) ─────────────────────────────────────────────
 ' 1:N
 users ||--o{ prt           : "1:N  has reset tokens"
-users ||--o{ recovery_plans : "1:N  follows"
+users ||--o{ rp            : "1:N  follows"
 users ||--o{ bm            : "1:N  logs"
 users ||--o{ bc            : "1:N  logs"
 users ||--o{ al            : "1:N  logs"
@@ -287,6 +314,8 @@ users ||--o{ rs            : "1:N  sessions"
 users ||--o{ tc            : "1:N  travels"
 users ||--o{ uls           : "1:N  locations"
 users ||--o{ bh            : "1:N  billed"
+users ||--o{ pm            : "1:N  pays with"
+users ||--o{ recipes       : "1:N  suggested for (by goal_type)"
 
 ' 1:1 (user_id UNIQUE)
 users ||--|| bp            : "1:1  progress"
@@ -305,10 +334,11 @@ foods ||--o{ rc            : "1:N  featured in"
 ws ||--o{ rs               : "1:N  contextualizes"
 
 note bottom of recipes
-  ** recipes has NO foreign key ** in the real schema.
+  ** recipes has NO physical foreign key ** in the real schema.
   It is a global, AI-generated catalog filtered by goal_type
-  (enum, not a table). Left unconnected per the source code —
-  reported separately rather than linked artificially.
+  (a UserGoal enum, not a table). The link to users is a
+  *logical* association: each recipe is surfaced to a user
+  whose goal matches goal_type — modelled here for completeness.
 end note
 
 note as N1

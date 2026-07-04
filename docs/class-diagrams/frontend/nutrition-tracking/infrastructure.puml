@@ -11,6 +11,7 @@ package "nutrition-tracking/domain [boundary]" {
   class FoodItem <<entity>>
   class MealRecord <<entity>>
   class ScanResult <<entity>>
+  class DailyIntake <<entity>>
 }
 package "shared/infrastructure [external]" {
   class BaseApi
@@ -30,11 +31,13 @@ package "nutrition-tracking/infrastructure" {
   class FoodItemAssembler <<assembler>>
   class MealRecordAssembler <<assembler>>
   class ScanResultAssembler <<assembler>>
+  class DailyIntakeAssembler <<assembler>>
 
   interface FoodItemResource <<resource>>
   interface MealRecordResource <<resource>>
   interface ScannedFoodItemResource <<resource>>
   interface ScanResultResource <<resource>>
+  interface DailyIntakeResource <<resource>>
 }
 
 ' ─── Relationships ────────────────────────────────────────────────────────────
@@ -46,15 +49,18 @@ DailyBalanceEndpoint --|> BaseApiEndpoint
 FoodItemAssembler ..|> BaseAssembler
 MealRecordAssembler ..|> BaseAssembler
 ScanResultAssembler ..|> BaseAssembler
+DailyIntakeAssembler ..|> BaseAssembler
 FoodItemResource --|> BaseResource
 MealRecordResource --|> BaseResource
 ScanResultResource --|> BaseResource
+DailyIntakeResource --|> BaseResource
 
 NutritionApi --> FoodSearchEndpoint : via >
 NutritionApi --> NutritionLogEndpoint : via >
 NutritionApi --> DailyBalanceEndpoint : via >
 FoodSearchEndpoint --> FoodItemAssembler : maps via >
 NutritionLogEndpoint --> MealRecordAssembler : maps via >
+DailyBalanceEndpoint --> DailyIntakeAssembler : maps via >
 PlateScanApi --> ScanResultAssembler : maps via >
 
 FoodItemAssembler ..> FoodItem : builds >
@@ -64,5 +70,7 @@ MealRecordAssembler ..> MealRecordResource : reads/writes >
 ScanResultAssembler ..> ScanResult : builds >
 ScanResultAssembler ..> ScanResultResource : reads/writes >
 ScanResultResource "1" *--> "0..*" ScannedFoodItemResource : contains >
+DailyIntakeAssembler ..> DailyIntake : builds >
+DailyIntakeAssembler ..> DailyIntakeResource : reads/writes >
 
 @enduml

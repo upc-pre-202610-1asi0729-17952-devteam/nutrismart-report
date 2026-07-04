@@ -60,6 +60,10 @@ package "metabolicadaptation.domain.model.aggregates" {
     - status: WearableStatus
     - lastSyncedAt: Instant
     - authorizedAt: Instant
+    - autoSyncEnabled: boolean
+    - accessToken: String
+    - refreshToken: String
+    - tokenExpiresAt: Instant
     --
     + {static} create(...): WearableConnection
     + {static} rehydrate(...): WearableConnection
@@ -115,6 +119,29 @@ package "metabolicadaptation.domain.model.repositories" {
   interface MetabolicAdaptationLogRepository <<port>>
 }
 
+package "metabolicadaptation.domain.model.services" {
+  interface WearableSyncProvider <<domain service / port>> {
+    + authorize(oauthCode: String): WearableAuthorization
+    + refresh(refreshToken: String): WearableAuthorization
+    + fetchActivities(accessToken, from, to): List<ImportedActivity>
+  }
+  class WearableAuthorization <<record>> {
+    + success: boolean
+    + accessToken: String
+    + refreshToken: String
+    + expiresAt: Instant
+    + failureReason: String
+    + {static} failure(reason): WearableAuthorization
+  }
+  class ImportedActivity <<record>> {
+    + activityType: String
+    + durationMinutes: int
+    + caloriesBurned: double
+    + date: LocalDate
+  }
+  class WearableSyncException <<exception>>
+}
+
 package "metabolicadaptation.domain.model.exceptions" {
   class DomainInvalidExceptions <<exception>>
 }
@@ -130,5 +157,11 @@ ActivityLogRepository ..> ActivityLog : persists >
 WearableConnectionRepository ..> WearableConnection : persists >
 MetabolicAdaptationLogRepository ..> MetabolicAdaptationLog : persists >
 DomainInvalidExceptions ..> BodyMetric : guards invariants of >
+
+WearableSyncProvider ..> WearableAuthorization : returns >
+WearableSyncProvider ..> ImportedActivity : imports >
+WearableSyncProvider ..> WearableSyncException : throws >
+WearableConnection ..> WearableSyncProvider : synced through >
+ImportedActivity ..> ActivityLog : materialized as >
 
 @enduml

@@ -21,6 +21,8 @@ package "iam.application.commandservices" {
     + handle(c: RegisterAccountCommand): Result<User, UserCommandFailure>
     + handle(c: UpdateUserCommand): Result<User, UserCommandFailure>
     + handle(c: UpdateUserPlanCommand): Result<User, UserCommandFailure>
+    + handle(c: ChangePasswordCommand): Result<User, UserCommandFailure>
+    + handle(c: UpdateNotificationPreferencesCommand): Result<User, UserCommandFailure>
     + handle(c: DeleteUserCommand): Result<Void, UserCommandFailure>
   }
   interface AuthCommandService <<port>> {
@@ -57,6 +59,8 @@ package "iam.application.commands" {
   class RegisterAccountCommand <<command>>
   class UpdateUserCommand <<command>>
   class UpdateUserPlanCommand <<command>>
+  class ChangePasswordCommand <<command>>
+  class UpdateNotificationPreferencesCommand <<command>>
   class DeleteUserCommand <<command>>
   class AuthenticateCommand <<command>>
   class RequestPasswordResetCommand <<command>>
@@ -113,6 +117,8 @@ UserCommandServiceImpl --> UserRepository : uses >
 UserCommandServiceImpl ..> RegisterAccountCommand : handles >
 UserCommandServiceImpl ..> UpdateUserCommand : handles >
 UserCommandServiceImpl ..> UpdateUserPlanCommand : handles >
+UserCommandServiceImpl ..> ChangePasswordCommand : handles >
+UserCommandServiceImpl ..> UpdateNotificationPreferencesCommand : handles >
 UserCommandServiceImpl ..> DeleteUserCommand : handles >
 UserCommandServiceImpl ..> User : produces >
 

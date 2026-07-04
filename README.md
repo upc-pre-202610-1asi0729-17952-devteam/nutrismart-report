@@ -10,7 +10,7 @@
 **Ciclo:** 5  
 **Docente:** Ivan Robles Fernández
 
-## **"Informe de trabajo: AV2"**
+## **"Informe de trabajo: TB2"**
 
 ### ***Startup:*** DevTeam
 
@@ -28,7 +28,7 @@
 | Soto Palacios, Brandon Wilder | U202315640 |
 | Villarreal Bazan, Angel Martin | U202417857 |
 
-Junio, 2026
+Julio, 2026
 
 <div style="page-break-after: always"></div>
 
@@ -39,6 +39,7 @@ Junio, 2026
 | v1.0.0| 23/04/2025 |  Del Aguila Del Aguila, Olenka Priscilla<br>Espinoza Cruz, Angela Milagros<br>Mora Rivera, Joel Fernando<br>Soto Palacios, Brandon Wilder<br> Villarreal Bazan, Angel Martin  | Se agregó: <br>Capitulo I<br>Capitulo II<br>Capitulo III<br>Capitulo IV<br>Capitulo V<br>5.2.1. Sprint 1 |
 | v2.0.0| 12/05/2025 |  Del Aguila Del Aguila, Olenka Priscilla<br>Espinoza Cruz, Angela Milagros<br>Mora Rivera, Joel Fernando<br>Soto Palacios, Brandon Wilder<br> Villarreal Bazan, Angel Martin  | Capitulo V<br>5.2.2. Sprint 2<br>5.2.2. Sprint 2 <br>5.2.2.1. Sprint Planning 2. <br>5.2.2.2. Aspect Leaders and Collaborators. <br>5.2.2.3. Sprint Backlog 2. <br>5.2.2.4. Development Evidence for Sprint Review. <br>5.2.2.5. Execution Evidence for Sprint Review. <br>5.2.2.6. Services Documentation Evidence for Sprint Review. <br>5.2.2.7. Software Deployment Evidence for Sprint Review. <br>5.2.2.8. Team Collaboration Insights during Sprint. |
 | v3.0.0| 17/06/2025 |  Del Aguila Del Aguila, Olenka Priscilla<br>Espinoza Cruz, Angela Milagros<br>Mora Rivera, Joel Fernando<br>Soto Palacios, Brandon Wilder<br> Villarreal Bazan, Angel Martin  | Capitulo V<br>5.2.3. Sprint 3<br>5.2.3.1. Sprint Planning 3. <br>5.2.3.2. Aspect Leaders and Collaborators. <br>5.2.3.3. Sprint Backlog 3. <br>5.2.3.4. Development Evidence for Sprint Review. <br>5.2.3.5. Execution Evidence for Sprint Review. <br>5.2.3.6. Services Documentation Evidence for Sprint Review. <br>5.2.3.7. Software Deployment Evidence for Sprint Review. <br>5.2.3.8. Team Collaboration Insights during Sprint.<br>5.3. Validation Interviews<br>5.3.1. Diseño de Entrevistas<br>5.3.2. Registro de Entrevistas<br>5.3.3. Evaluaciones según heurísticas<br>5.4. Video About-the-Product|
+| v4.0.0| 17/06/2025 |  Del Aguila Del Aguila, Olenka Priscilla<br>Espinoza Cruz, Angela Milagros<br>Mora Rivera, Joel Fernando<br>Soto Palacios, Brandon Wilder<br> Villarreal Bazan, Angel Martin  | Capitulo V<br>5.2.4. Sprint 4<br>5.2.4.1. Sprint Planning 4. <br>5.2.4.2. Aspect Leaders and Collaborators. <br>5.2.4.3. Sprint Backlog 4. <br>5.2.4.4. Development Evidence for Sprint Review. <br>5.2.4.5. Execution Evidence for Sprint Review. <br>5.2.4.6. Services Documentation Evidence for Sprint Review. <br>5.2.4.7. Software Deployment Evidence for Sprint Review. <br>5.2.4.8. Team Collaboration Insights during Sprint.|
 
 <div style="page-break-after: always"></div>
 
@@ -68,6 +69,9 @@ TB1:<br>
 
 AV2:<br>
 ![Report](./assets/img/report_col_av2.png)
+
+TB2:<br>
+![Report](./assets/img/report_col_tb2.png)
 
 <div style="page-break-after: always"></div>
 
@@ -264,6 +268,24 @@ AV2:<br>
       - [5.2.3.7. Software Deployment Evidence for Sprint Review](./report/15-chapter5-product-implementation.md#5237-software-deployment-evidence-for-sprint-review)
 
       - [5.2.3.8. Team Collaboration Insights during Sprint](./report/15-chapter5-product-implementation.md#5238-team-collaboration-insights-during-sprint)
+
+  - [5.2.4. Sprint 4](./report/15-chapter5-product-implementation.md#524-sprint-4)
+
+      - [5.2.4.1. Sprint Planning 4](./report/15-chapter5-product-implementation.md#5241-sprint-planning-4)
+
+      - [5.2.4.2. Aspect Leaders and Collaborators](./report/15-chapter5-product-implementation.md#5242-aspect-leaders-and-collaborators)
+
+      - [5.2.4.3. Sprint Backlog 4](./report/15-chapter5-product-implementation.md#5243-sprint-backlog-4)
+
+      - [5.2.4.4. Development Evidence for Sprint Review](./report/15-chapter5-product-implementation.md#5244-development-evidence-for-sprint-review)
+
+      - [5.2.4.5. Execution Evidence for Sprint Review](./report/15-chapter5-product-implementation.md#5245-execution-evidence-for-sprint-review)
+
+      - [5.2.4.6. Services Documentation Evidence for Sprint Review](./report/15-chapter5-product-implementation.md#5246-services-documentation-evidence-for-sprint-review)
+
+      - [5.2.4.7. Software Deployment Evidence for Sprint Review](./report/15-chapter5-product-implementation.md#5247-software-deployment-evidence-for-sprint-review)
+
+      - [5.2.4.8. Team Collaboration Insights during Sprint](./report/15-chapter5-product-implementation.md#5248-team-collaboration-insights-during-sprint)
 
 - [5.3. Validation Interviews](./report/15-chapter5-product-implementation.md#53-validation-interviews)
 

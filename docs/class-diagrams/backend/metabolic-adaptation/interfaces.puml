@@ -38,8 +38,9 @@ package "metabolicadaptation.interfaces.rest.resources" {
   class ActivityLogResource <<resource>>
   class CreateActivityLogResource <<resource>>
   class WearableConnectionResource <<resource>>
-  class CreateWearableConnectionResource <<resource>>
+  class ConnectWearableConnectionResource <<resource>>
   class UpdateWearableConnectionResource <<resource>>
+  class SetAutoSyncResource <<resource>>
   class MetabolicAdaptationLogResource <<resource>>
   class CreateMetabolicAdaptationLogResource <<resource>>
 }
@@ -85,7 +86,8 @@ ActivityLogsController ..> CreateActivityLogResource : consumes >
 ActivityLogsController ..> ActivityLogResource : produces >
 ActivityLogsController ..> LogActivityCommandFromResourceAssembler : uses >
 ActivityLogsController ..> ActivityLogResourceFromEntityAssembler : uses >
-WearableConnectionsController ..> CreateWearableConnectionResource : consumes >
+WearableConnectionsController ..> ConnectWearableConnectionResource : consumes >
+WearableConnectionsController ..> SetAutoSyncResource : consumes >
 WearableConnectionsController ..> WearableConnectionResource : produces >
 WearableConnectionsController ..> ConnectWearableCommandFromResourceAssembler : uses >
 WearableConnectionsController ..> WearableConnectionResourceFromEntityAssembler : uses >

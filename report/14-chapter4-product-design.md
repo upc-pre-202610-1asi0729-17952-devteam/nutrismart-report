@@ -85,12 +85,13 @@ Esta disposición expone primero la información que impulsa la conversión y de
 
 **Web Application**
 
-Dentro de la aplicación se combinan tres esquemas según la naturaleza de cada módulo. Se aplica organización secuencial (step-by-step) en los flujos de onboarding:
+Dentro de la aplicación se combinan tres esquemas según la naturaleza de cada módulo. Se aplica organización secuencial (step-by-step) en el flujo de onboarding, implementado como un stepper de cinco pasos:
 
-1. Configuración de meta
-2. Datos físicos
-3. Restricciones alimentarias
-4. Confirmación
+1. Configuración de meta (perder peso / ganar músculo)
+2. Datos físicos (peso, talla, fecha de nacimiento, sexo biológico y nivel de actividad)
+3. Restricciones alimentarias y condiciones médicas
+4. Vista previa de objetivos (BMI, BMR, TDEE y distribución de macros)
+5. Selección de plan (Basic / Pro / Premium)
 
 Y en el registro de comidas:
 
@@ -124,8 +125,9 @@ Las etiquetas empleadas en NutriSmart priorizan la brevedad y la claridad, evita
 | Smart Scan | Análisis visual de platos y menús |
 | Recommendations | Sugerencias contextuales (clima, viaje) |
 | Pantry | Ingredientes disponibles y recetas |
-| Body Tracking | Registro de peso, talla, BMI y TDEE |
-| Wearable| Conexión con Google Fit |
+| Body Progress | Registro de peso, talla, BMI, BMR, TDEE y composición corporal |
+| Activity | Registro manual de actividad física con estimación MET |
+| Wearable | Sincronización con Google Health |
 | Analytics | Historial y reportes de progreso |
 | Profile| Datos personales, restricciones, suscripción |
 | Subscriptions | Planes y facturación |
@@ -192,20 +194,21 @@ El sistema de búsqueda de NutriSmart está presente principalmente dentro de la
 
 Al registrar una comida, el usuario accede a una barra de búsqueda con las siguientes capacidades:
 
-- *Búsqueda por nombre*: el usuario escribe el nombre del alimento y el sistema muestra resultados en tiempo real desde la base de datos nutricional.
-- *Historial de recientes*: los últimos alimentos registrados se muestran debajo del campo de búsqueda para agilizar el reingreso de comidas habituales.
+- *Búsqueda por nombre con debounce*: el usuario escribe el nombre del alimento y, aplicando un retardo de 400 ms, el sistema muestra resultados en tiempo real desde la base de datos nutricional (endpoint `GET /api/v1/foods`).
+- *Marcado de restricciones*: los alimentos incompatibles con el perfil del usuario se señalan con un chip de restricción (⚠) y su indicador de riesgo nutricional (`NutritionalRiskLevel`: LOW / MEDIUM / HIGH).
+- *Entrada manual*: cuando la búsqueda no arroja resultados, se presenta un estado vacío con la opción de registro manual del alimento.
 
-Tras la búsqueda, cada resultado muestra: nombre del alimento, calorías por porción estándar, macros principales (P / C / G) y una opción para ajustar la cantidad antes de guardar.
+Tras la búsqueda, cada resultado muestra: nombre del alimento, tamaño de porción, calorías y una opción para ajustar la cantidad —que reescala los macros en tiempo real— antes de guardar. Si el alimento contiene un ingrediente restringido, en lugar del modal de alta se abre el modal `RestrictedItemBlocked` con la restricción en conflicto.
 
 **Pantry**
 
 El usuario puede buscar ingredientes disponibles en su despensa. El sistema cruza los ingredientes registrados con la base de recetas y filtra las sugerencias por: restricciones alimentarias del perfil (aplicadas automáticamente) y objetivo nutricional (alto en proteína, bajo en carbohidratos, equilibrado).
 
-Los resultados se presentan como tarjetas con: nombre de la receta, imagen referencial, tiempo estimado de preparación, calorías por porción y compatibilidad con el perfil del usuario.
+Los resultados se presentan como tarjetas de receta con: nombre de la receta, calorías, lista de ingredientes, badges de macros y badge de tipo de objetivo, ordenadas por el macronutriente más deficitario del usuario (proteína para ganancia muscular, menor densidad calórica para pérdida de peso). Las recetas que contienen ingredientes restringidos se excluyen automáticamente de las sugerencias.
 
 **Analytics**
 
-En la pantalla de análisis, el usuario puede filtrar su historial por: rango de fechas (última semana, último mes, rango personalizado), métrica a visualizar (calorías, proteínas, carbohidratos, grasas, peso corporal) y tipo de vista (gráfico de líneas, gráfico de barras, tabla de datos). Los filtros aplicados se muestran como chips activos sobre el gráfico, con opción de eliminarlos individualmente.
+En la pantalla de análisis, el usuario alterna entre tres periodos mediante un selector (7 / 30 / 90 días) que recalcula las visualizaciones. La vista presenta cuatro tarjetas de métricas, un gráfico de barras de calorías diarias (barras en rojo cuando se supera la meta y en color teal cuando está en objetivo), un panel de promedio de macros y un gráfico de líneas de evolución del peso. Para el periodo de 30 días se añade una línea de tiempo de adherencia que muestra los días en estado ON_TRACK / AT_RISK / DROPPED / RECOVERED en colores diferenciados. La exportación del reporte en PDF está disponible para usuarios del plan Premium.
 
 ### 4.2.5. Navigation Systems
 
@@ -216,7 +219,7 @@ La navegación del Landing Page se articula mediante una barra fija en la parte 
   <img src="../assets/img/information-architecture/landing.png" alt="nav-system of landing"/>
 </div>
 
-La Web Application utiliza una barra lateral de navegación persistente (sidebar) que organiza los módulos en dos bloques: acciones principales en la parte superior (Dashboard, Nutrition Log, Smart Scan, Recommendations, Pantry, Body Tracking) y configuración en la parte inferior (Analytics, Wearable, Profile, Subscriptions), permitiendo al usuario acceder a cualquier módulo en un solo clic desde cualquier pantalla. 
+La Web Application utiliza una barra lateral de navegación persistente (sidebar) que organiza los módulos en dos bloques: acciones principales en la parte superior (Dashboard, Nutrition Log, Smart Scan, Recommendations, Pantry, Body Progress, Activity) y configuración en la parte inferior (Analytics, Wearable con sincronización a Google Health, Profile, Subscriptions), permitiendo al usuario acceder a cualquier módulo en un solo clic desde cualquier pantalla. 
 
 <div align="center">
   <img src="../assets/img/information-architecture/webapp.png" alt="nav-system of webapp"/>
@@ -691,7 +694,7 @@ Diseño Inclusivo
 | **Priorizar el contenido (P6)** | En Dashboard, las tres tarjetas superiores (Calories Consumed, Calories Remaining, Net Balance) presentan los datos más relevantes para el seguimiento diario del usuario en la parte más visible de la pantalla, antes que cualquier otro contenido. Los valores numéricos en tamaño grande priorizan el dato sobre su contexto. |
 | **Proporciona experiencias comparables (P1)** | El panel de búsqueda de alimentos en Daily Log incluye un campo de texto con placeholder descriptivo ("E.g.: rice, chicken breast, yogurt...") que orienta al usuario sobre el tipo de entrada esperada, ofreciendo una experiencia de búsqueda accesible tanto para usuarios que conocen los nombres exactos como para quienes buscan por categoría general. |
 | **Deja al usuario mandar (P4)** | En Body Progress, el usuario puede editar su meta de peso y actualizar su altura en cualquier momento desde el panel lateral. En Analytics, el botón "Export to PDF" da al usuario control sobre sus propios datos, permitiéndole exportarlos cuando lo considere necesario. |
-| **Agrega valor (P7)** | El bloque "Active Streak" en Dashboard muestra el número de días consecutivos con registro completo, agregando valor motivacional más allá del simple registro de datos. La integración con Google Fit que descuenta calorías activas del balance diario ("Active (Google Fit): -300 kcal") agrega valor contextual que una app de nutrición estándar no ofrece. |
+| **Agrega valor (P7)** | El bloque "Active Streak" en Dashboard muestra el número de días consecutivos con registro completo, agregando valor motivacional más allá del simple registro de datos. La integración con Google Health que descuenta calorías activas del balance diario ("Active (Google Health): -300 kcal") agrega valor contextual que una app de nutrición estándar no ofrece. |
 
 **Recommendations, SmartScan, Suscription & Pantry**
 
@@ -837,9 +840,9 @@ Diseño Inclusivo
 | **Task Flow** |
 |---|
 | 1. El buscador saludable accede a la sección Wearable. |
-| 2. El buscador saludable selecciona la opción *"Connect to Google Fit"*. |
-| 3. La conexión con Google Fit se completa exitosamente. |
-| 4. El buscador saludable visualiza el dashboard completo con los datos sincronizados desde Google Fit. |
+| 2. El buscador saludable selecciona la opción *"Connect to Google Health"*. |
+| 3. La conexión con Google Health se completa exitosamente. |
+| 4. El buscador saludable visualiza el dashboard completo con los datos sincronizados desde Google Health. |
 
 | <center>**Wireflow** |
 |---|
@@ -913,7 +916,7 @@ Diseño Inclusivo
 
 | Principio | Justificación |
 |---|---|
-| **Agrega valor (P7)** | El gráfico donut en Dashboard agrega valor visual respecto a la presentación de barras del wireframe, permitiendo al usuario ver la proporción relativa de cada macronutriente dentro del total consumido y no solo los valores absolutos. La etiqueta "-300 Google Fit" en el Dashboard comunica que la actividad física real del usuario ya está descontada del balance calórico, un nivel de personalización que agrega valor diferencial. |
+| **Agrega valor (P7)** | El gráfico donut en Dashboard agrega valor visual respecto a la presentación de barras del wireframe, permitiendo al usuario ver la proporción relativa de cada macronutriente dentro del total consumido y no solo los valores absolutos. La etiqueta "-300 Google Health" en el Dashboard comunica que la actividad física real del usuario ya está descontada del balance calórico, un nivel de personalización que agrega valor diferencial. |
 | **Priorizar el contenido (P6)** | En Analytics, las cuatro tarjetas de métricas superiores (calorías, proteínas, racha, peso) presentan el dato más relevante en tamaño grande con una etiqueta de estado debajo, priorizando la información de desempeño antes de mostrar los gráficos detallados. El usuario puede entender su situación semanal leyendo solo la fila superior. |
 | **Proporciona experiencias comparables (P1)** | El sistema de color semántico (verde para positivo, rosado para alerta) se aplica de forma consistente en Daily Log, Dashboard y Analytics, garantizando que un usuario que aprende el significado de los colores en una sección pueda interpretarlos correctamente en cualquier otra vista de la aplicación. |
 | **Deja al usuario mandar (P4)** | En Body Progress, el enlace "Edit goal →" permite al usuario modificar su meta de peso en cualquier momento sin necesidad de contactar soporte ni navegar a configuración. En Analytics, el botón "Export to PDF" y los filtros de rango temporal dan al usuario control completo sobre cómo y cuándo accede a sus propios datos históricos. |
@@ -1168,9 +1171,9 @@ Diseño Inclusivo
 |---|---|
 | **Happy Path** | 1. El buscador saludable accede a la sección Wearable. |
 | | 2. El buscador saludable tiene Plan Premium. |
-| | 3. El buscador saludable visualiza las opciones: *"Connect to Google Fit"* y *"Manual log activity"*. |
-| | 4. La conexión con Google Fit es exitosa. |
-| | 5. El buscador saludable visualiza el dashboard completo con los datos sincronizados desde Google Fit. |
+| | 3. El buscador saludable visualiza las opciones: *"Connect to Google Health"* y *"Manual log activity"*. |
+| | 4. La conexión con Google Health es exitosa. |
+| | 5. El buscador saludable visualiza el dashboard completo con los datos sincronizados desde Google Health. |
 
 | | |
 |---|---|
@@ -1182,8 +1185,8 @@ Diseño Inclusivo
 |---|---|
 | **Unhappy Path 2** | 1. El buscador saludable accede a la sección Wearable. |
 | | 2. El buscador saludable tiene Plan Premium. |
-| | 3. La conexión con Google Fit no se completa correctamente. |
-| | 4. El buscador saludable visualiza el error de sincronización *"Google Fit sync error"* con los datos del último sync disponible. |
+| | 3. La conexión con Google Health no se completa correctamente. |
+| | 4. El buscador saludable visualiza el error de sincronización *"Google Health sync error"* con los datos del último sync disponible. |
 | | 5. El buscador saludable selecciona la opción *"Manual log activity"*. |
 | | 6. El buscador saludable ingresa un valor inválido al registrar la actividad. |
 | | 7. El buscador saludable visualiza el mensaje de advertencia de valor incorrecto. |
@@ -1249,36 +1252,38 @@ Diseño Inclusivo
 
 ## 4.6. Domain-Driven Software Architecture
 
-La arquitectura de NutriSmart se basa en Domain-Driven Design (DDD), centrando el diseño en los procesos críticos de salud y nutrición. El sistema se organiza en 8 Bounded Contexts independientes, lo que garantiza una separación clara de responsabilidades y un lenguaje común entre el equipo técnico y el negocio. Este enfoque modular permite que funcionalidades clave, como el análisis de imágenes y el motor de recomendaciones, sean altamente escalables, facilitando un mantenimiento eficiente y una evolución alineada con los requerimientos del dominio.
+La arquitectura de NutriSmart se basa en Domain-Driven Design (DDD), centrando el diseño en los procesos críticos de salud y nutrición. El sistema se organiza en 8 Bounded Contexts independientes, cada uno implementado como un paquete autónomo con las capas `domain`, `application`, `infrastructure` e `interfaces`. La comunicación entre contextos ocurre por dos mecanismos: **eventos de dominio** publicados de forma síncrona mediante el `ApplicationEventPublisher` de Spring (`@EventListener`) y **Anti-Corruption Layers (ACL)** que exponen fachadas y adaptadores para consultas cross-context. Este enfoque modular permite que funcionalidades clave —como el reconocimiento de imágenes de platos y el motor de recomendaciones— evolucionen de forma aislada, apoyándose en proveedores de IA externos (Gemini Vision y DeepSeek).
 
-A continuación, se identifican y describen los contextos delimitados que componen la solución:
+A continuación, se identifican y describen los contextos delimitados que componen la solución, con los módulos y agregados realmente implementados en el backend:
 
 ### Nivel Core
 
-| Bounded Context | Descripción | Módulos incluidos |
+| Bounded Context | Descripción | Agregados / Módulos implementados |
 | :--- | :--- | :--- |
-| **Metabolic Adaptation** | Cálculo de métricas corporales (BMI, BMR, TDEE), metas calóricas y sincronización con wearables. | Body Tracking, Wearable Sync, Activity Log |
-| **Nutrition Tracking** | Registro y análisis de alimentos mediante logs y Smart Scan. | Nutrition Log, Smart Scan, Dietary Restrictions |
-| **Behavioral Consistency** | Seguimiento de adherencia, detección de caídas conductuales y gestión de rachas. | Adherence Tracking, Streak Engine |
+| **Metabolic Adaptation** | Registro de métricas corporales (BMI calculado en el dominio; BMR/TDEE/macros registrados como bitácora de cambios), composición corporal, actividad física y sincronización con wearables. | `BodyMetric`, `BodyComposition`, `ActivityLog`, `WearableConnection`, `MetabolicAdaptationLog` |
+| **Nutrition Tracking** | Registro y análisis de alimentos mediante logs, catálogo de alimentos y Smart Scan de platos por foto. | `MealRecord`, `DailyIntake`, `FoodItem` |
+| **Behavioral Consistency** | Seguimiento de adherencia (estado `ON_TRACK`/`AT_RISK`/`DROPPED`), rachas, patrones de conducta alimentaria y planes de recuperación. | `BehavioralProgress`, `EatingBehaviorPattern`, `RecoveryPlan` |
 
 ### Nivel Supporting
 
-| Bounded Context | Descripción | Módulos incluidos |
+| Bounded Context | Descripción | Agregados / Módulos implementados |
 | :--- | :--- | :--- |
-| **Restaurant Intelligence** | Análisis de menús físicos mediante foto y ranking de platos compatibles con el perfil del usuario. | Menu Scan, Dish Ranking |
-| **Smart Recommendations** | Motor de sugerencias personalizadas según contexto, clima, despensa y estado conductual. | Recommendations Engine, Travel Mode, Pantry |
-| **Analytics & Reporting** | Generación de dashboards, progreso visual y reportes en PDF. | Dashboard & Analytics |
+| **Restaurant Intelligence** | Análisis de menús físicos por foto y ranking de platos compatibles con el perfil del usuario. Flujo dirigido por eventos, sin agregado persistente propio. | Eventos `MenuPhotoProcessed`, `RestrictedDishFlagged`, `CompatibleDishesRanked` |
+| **Smart Recommendations** | Motor de sugerencias personalizadas según contexto: sesiones, cards, recetas, despensa, modo viaje, clima y ubicación. | `RecommendationSession`, `RecommendationCard`, `RecipeSuggestion`, `PantryItem`, `TravelContext`, `WeatherSnapshot`, `LocationSnapshot` |
+| **Analytics & Reporting** | Consumidor central de eventos de dominio; consolida progreso, dashboards y summaries mediante ACLs de lectura. | `Analytics` (+ ACLs `NutritionSummary`, `BodyMetricsSummary`, `BehavioralSummary`, `UserData`) |
 
 ### Nivel Genéricos
 
-| Bounded Context | Descripción | Módulos incluidos |
+| Bounded Context | Descripción | Agregados / Módulos implementados |
 | :--- | :--- | :--- |
-| **Subscriptions & Billing** | Gestión de planes, facturación y control de features Premium. | Subscriptions, Stripe Integration |
-| **Identity & Access** | Gestión de autenticación, autorización y perfiles de usuario. | User & Auth, Onboarding |
+| **Subscriptions & Billing** | Gestión de planes (Basic / Pro / Premium), facturación, métodos de pago e integración con Stripe. | `Subscription`, `BillingRecord`, `PaymentMethod` |
+| **Identity & Access** | Gestión de autenticación, registro con onboarding, perfil, plan del usuario y recuperación de contraseña. | `User`, `PasswordResetToken` |
 
 ### 4.6.1. Design-Level EventStorming
 
-En esta sección se presenta el modelado del comportamiento del sistema mediante la técnica de EventStorming a nivel de diseño. Este proceso permitió identificar los eventos de dominio, los comandos que disparan la lógica de negocio y las políticas automáticas que rigen la reactividad del sistema en cada Bounded Context.
+En esta sección se presenta el modelado del comportamiento del sistema mediante la técnica de EventStorming a nivel de diseño, **reflejando los comandos, políticas y eventos de dominio efectivamente implementados en el backend**. Cada Bounded Context expone comandos que aplican reglas de negocio sobre sus agregados y publican eventos de dominio; otros contextos reaccionan a esos eventos mediante `@EventListener` o los consultan de forma síncrona a través de ACLs.
+
+> **Nota sobre los proveedores externos.** El reconocimiento de imágenes (platos y menús) se realiza con **Gemini Vision**; el enriquecimiento nutricional, el ranking de platos y la generación de cards/recetas con **DeepSeek**; la búsqueda de alimentos con **USDA FoodData Central**; el clima con **OpenWeatherMap**; la sincronización de actividad con **Google Health**; y los pagos con **Stripe**.
 
 ---
  
@@ -1288,115 +1293,76 @@ En esta sección se presenta el modelado del comportamiento del sistema mediante
  
 ### Metabolic Adaptation
  
-Este contexto calcula y mantiene actualizados los targets metabólicos del usuario. Consta de 5 swimlanes.
+Este contexto registra y mantiene la información metabólica y de actividad del usuario. Consta de cinco agregados.
  
-#### Initial Metabolic Calculation
+#### Body Metrics Recording
  
-Disparado por `OnboardingCompleted` (desde IAM), el sistema ejecuta `CalculateInitialTargets`. El cálculo sigue la secuencia: **BMI → BMR (Mifflin-St Jeor) → TDEE**. Según el objetivo:
+El usuario ejecuta `LogBodyMetricsCommand` / `UpdateBodyMetricCommand` (peso, talla, edad, sexo). El agregado `BodyMetric` calcula el **BMI** y su categoría (`BmiCategory.fromBmi`). Al persistir, se publica el evento de dominio `BodyMetricsRecordedEvent`, consumido por **Analytics**.
  
-- `lose_weight` → `SetCaloricDeficitTarget`: `TDEE - 500 kcal`, macros P30%/C40%/F30%
-- `gain_muscle` → `SetCaloricSurplusTarget`: `TDEE + 300 kcal`, macros P35%/C45%/F20%
-El evento `MetabolicTargetSet` notifica a **Nutrition Tracking** para inicializar los objetivos diarios.
+#### Body Composition Logging
  
-#### Body Metrics Update
+Con `LogBodyCompositionCommand` / `UpdateBodyCompositionCommand`, el usuario registra composición corporal (grasa, masa muscular) en el agregado `BodyComposition`.
  
-El usuario ejecuta `UpdateBodyMetrics` (nuevo peso/talla). Las políticas de validación de entrada preceden la emisión de `BodyMetricsUpdated`, que recalcula BMI, BMR y TDEE. El evento `MetabolicTargetsRecalculated` propaga actualizaciones hacia **Nutrition Tracking** y **Behavioral Consistency**.
+#### Metabolic Adaptation Log
  
-#### Stagnation Detection
- 
-El sistema evalúa diariamente el progreso. Si transcurren **14 días consecutivos sin avance**, ejecuta `DetectWeightPlateau`, emitiendo `StagnationDetected`, que activa en **Smart Recommendation** el comando `SuggestStrategyAdjustment`.
- 
-#### Wearable Sync *(requiere Premium)*
- 
-Habilitado por `BenefitsEnabled` (Premium), el usuario conecta Google Fit con `ConnectGoogleFit`. Una vez activo, el sistema sincroniza cada hora mediante `SyncWearableActivity`, emitiendo `ActivitySynced`. La política subsecuente ejecuta `AdjustDailyCalorieTarget`, que emite `CaloricTargetAdjusted` y actualiza el objetivo neto en **Nutrition Tracking**.
+El comando `RecordMetabolicAdaptationCommand` **registra** los valores previos y nuevos de BMR, TDEE y objetivos de macronutrientes junto con la causa del cambio (`MetabolicChangeTrigger`). El agregado `MetabolicAdaptationLog` actúa como bitácora de auditoría de la adaptación metabólica; el cálculo de estos valores se realiza fuera del dominio y se persiste aquí.
  
 #### Manual Activity Log
  
-El usuario registra actividad manualmente con `LogManualActivity`. La política calcula las calorías activas con la fórmula `MET × peso_kg × horas`, emitiendo `ActiveCaloriesCalculated`, y ajusta el balance calórico diario del mismo modo que el wearable.
+El usuario registra actividad con `LogActivityCommand` (y la elimina con `DeleteActivityLogCommand`). Al persistir la actividad en el agregado `ActivityLog`, se publica `ActivityLoggedEvent`, consumido por **Analytics**.
+ 
+#### Wearable Sync
+ 
+El usuario conecta un proveedor con `ConnectWearableCommand`, configura auto-sync con `SetWearableAutoSyncCommand` y sincroniza con `SyncWearableConnectionCommand`. La integración se realiza contra **Google Health** (`GoogleHealthSyncProvider`), gestionando el estado de la conexión (`WearableStatus`) en el agregado `WearableConnection`.
  
 ---
 
 ### Nutrition Tracking
  
-Este contexto centraliza el registro de alimentos y la validación diaria de macros. Consta de 8 swimlanes.
+Este contexto centraliza el registro de alimentos y el seguimiento del consumo diario. Consta de tres agregados.
  
-#### Dietary Restrictions Registration
+#### Food Catalog Management
  
-Disparado por `OnboardingCompleted`, el sistema ejecuta `RegisterDietaryRestrictions`, activando la lista de restricciones que filtrará todo registro posterior.
- 
-#### Food Search
- 
-El usuario busca alimentos con `SearchFoodItem`, consultando las APIs **Open Food Facts** y **USDA FoodData Central**. El evento `FoodSearchExecuted` presenta la vista **Food Results List** con valores nutricionales por ítem.
+El sistema mantiene un catálogo de alimentos (`FoodItem`) mediante `RegisterFoodItemCommand`, `UpdateFoodItemCommand`, `DeleteFoodItemCommand` e `ImportFoodItemsCommand`. La búsqueda nutricional se apoya en **USDA FoodData Central** y en enriquecimiento por IA vía **DeepSeek**.
  
 #### Meal Logging
  
-El usuario registra una comida con `LogMealEntry`. La política **CheckDietaryRestrictions** bloquea el registro si el alimento contiene algún ingrediente restringido, emitiendo `RestrictedItemBlocked` con notificación push. Si pasa la validación, se emite `MealRecorded`, actualizando el **Daily Macro Summary** y notificando a **Behavioral Consistency**.
+El usuario registra una comida con `LogMealCommand`. El agregado `MealRecord` persiste el ítem con sus macros y se publica `MealLoggedEvent`, consumido por **Analytics**. La edición (`UpdateMealEntryCommand`) publica `MealEntryUpdatedEvent` y la eliminación (`DeleteMealLogCommand`) publica `MealEntryRemovedEvent`; ambos también son consumidos por **Analytics**.
  
-#### Daily Macro Validation
+#### Daily Intake & Goal Tracking
  
-Cada vez que se emite `MealRecorded`, la política **ValidateDailyMacros** compara el consumo total contra el objetivo:
+El consumo diario se consolida en el agregado `DailyIntake` mediante `CreateDailyIntakeCommand` / `UpdateDailyIntakeCommand`. La **política `publishIfGoalReached`** delega la regla en el agregado (`hasReachedGoal()`): cuando el registro diario alcanza la meta calórica, se publica `DailyGoalReachedEvent`, que reacciona en **Behavioral Consistency** (`RegisterSuccessfulDayCommand`) y en **Analytics**.
  
-- Consumo ≤ objetivo → `DailyProgressUpdated` (estado: `on_track`)
-- Consumo > objetivo → `DailyGoalExceeded` con notificación push y desvío reportado a **Behavioral Consistency**
-#### End of Day Evaluation
+#### Smart Scan — Food Plate Photo
  
-A las 23:59, el sistema evalúa si el usuario completó el día dentro del ±10% de su objetivo calórico. Si se cumple, emite `DailyGoalMet`, propagándose hacia **Behavioral Consistency** y **Analytics**. Si una ventana horaria de comida (desayuno 06-10h / almuerzo 11-15h / cena 18-22h) pasa sin registro, se emite `MealSkipped` con notificación push y se notifica a **Behavioral Consistency**.
- 
-#### Edit and Delete Meal Entry
- 
-El usuario puede corregir un registro con `EditMealEntry` (emite `MealEntryUpdated`) o eliminarlo con `DeleteMealEntry` (emite `MealEntryRemoved`). Ambos eventos relanzan automáticamente la política **ValidateDailyMacros**.
- 
-#### Smart Scan — Food Plate Photo *(Pro / Premium)*
- 
-El usuario escanea un plato con `ScanMealPhoto`. La imagen se procesa mediante **Google Cloud Vision API** y **Open Food Facts API**. La política **Image Valid** rechaza imágenes que no sean de comida. El evento `MealPhotoAnalyzed` presenta la vista **Scan Preview Card** con ítems y macros estimados. El usuario confirma con `ConfirmScanResult`, emitiendo `MealRecorded` (fuente: `smart_scan`), que sigue el mismo flujo que el log manual.
- 
-#### Incoming Events *(receptores)*
- 
-Este swimlane recibe eventos de otros contextos:
- 
-| Evento entrante | Origen | Comando disparado |
-| :--- | :--- | :--- |
-| `MetabolicTargetSet` | Metabolic Adaptation | `SetDailyNutritionalTargets` |
-| `CaloricTargetAdjusted` | Metabolic Adaptation | `UpdateNetDailyTarget` |
-| `CompatibleDishesRanked` | Restaurant Intelligence | [Read Model] Menu Analysis Result |
+El usuario escanea un plato con `ScanPlateCommand` y confirma el resultado con `ConfirmPlateScanCommand`. La imagen se procesa con **Gemini Vision** (`GeminiVisionAdapter`) y se enriquece con **DeepSeek** (`DeepSeekPlateMatchAdapter` / `DeepSeekFoodEnrichmentAdapter`). El comando `ScanMenuCommand` cubre el escaneo de menús desde este contexto. Al confirmar, el flujo desemboca en el mismo `LogMealCommand`.
  
 ---
 
 ### Behavioral Consistency
  
-Este contexto evalúa la adherencia conductual del usuario y escala respuestas ante desviaciones. Consta de 7 swimlanes.
+Este contexto evalúa la adherencia conductual del usuario. Consta de tres agregados.
  
 #### Behavioral Tracking Initialization
  
-Disparado por `OnboardingCompleted`, el sistema ejecuta `InitializeBehavioralTracking`, estableciendo el estado inicial: `adherence_status: ON_TRACK`, `streak: 0`, `consecutive_misses: 0`.
+Al recibir `UserRegisteredEvent` (IAM), el handler ejecuta `CreateBehavioralProgressCommand`, inicializando el agregado `BehavioralProgress` en estado `adherence_status: ON_TRACK`, `streak: 0`, `consecutive_misses: 0`.
  
-#### Daily Adherence Evaluation
+#### Successful Day Registration
  
-Ante cada `MealRecorded` o `DailyGoalMet` desde Nutrition Tracking, el sistema evalúa el estado de adherencia. Si todo está en orden, emite `AdherenceUpdated` (`status: ON_TRACK`, `streak +1`).
+Al recibir `DailyGoalReachedEvent` (Nutrition Tracking), el handler ejecuta `RegisterSuccessfulDayCommand`. El agregado ejecuta `registerSuccessfulDay(date)`, incrementa la racha y publica `SuccessfulDayRegisteredEvent`, consumido por **Analytics**.
  
-#### Behavioral Drop Detection
+#### Adherence Status Evaluation
  
-Si `MealSkipped` o `DailyGoalExceeded` ocurren durante **3 días consecutivos**, la política dispara `DetectBehavioralDrop`, emitiendo `BehavioralDropDetected` (`status: AT_RISK`). Se envía una notificación push motivacional y se activa en **Smart Recommendation** el comando `GeneratePreventiveRecommendation`.
+La regla de adherencia vive en el propio agregado (`calculateAdherenceStatus`): `consecutive_misses == 0 → ON_TRACK`; `≤ 2 → AT_RISK`; `≥ 3 → DROPPED`. El estado se recalcula al actualizar el progreso (`UpdateBehavioralProgressCommand`).
  
-#### Abandonment Risk Escalation
+#### Eating Behavior Patterns
  
-Si tras `BehavioralDropDetected` no hay recuperación en los siguientes **4 días** (total: 7 días sin adherencia), el sistema ejecuta `EscalateAbandonmentRisk`, emitiendo `NutritionalAbandonmentRisk` (`status: DROPPED`). Se envía una notificación push empática y se activa `RequestInterventionRecommendation` en **Smart Recommendation**.
+Con `CreateEatingBehaviorPatternCommand` / `UpdateEatingBehaviorPatternCommand`, el sistema mantiene el agregado `EatingBehaviorPattern` con los patrones de conducta alimentaria detectados.
  
-#### Consistency Recovery
+#### Recovery Plans
  
-Cuando el usuario vuelve a registrar una comida luego de estar en estado `AT_RISK` o `DROPPED`, la política detecta la recuperación y ejecuta `RegisterConsistencyRecovery`, emitiendo `ConsistencyRecovered`. Se envía notificación positiva y se notifica a **Analytics** para actualizar el historial de adherencia.
+El comando `CreateRecoveryPlanCommand` inicia un plan de recuperación (`RecoveryPlan`) ante una caída de adherencia, publicando `RecoveryPlanStartedEvent`. Al marcarlo como completado vía `UpdateRecoveryPlanCommand` (estado `COMPLETED`), se publica `RecoveryPlanCompletedEvent`. Ambos eventos son consumidos por **Analytics**.
  
-#### Streak Milestone
- 
-Cuando `DailyGoalMet` se acumula **7 días consecutivos**, el sistema ejecuta `RegisterStreakMilestone`, emitiendo `StreakMilestoneReached` (hitos: 7 / 14 / 21 / 30 días). El usuario recibe una notificación de celebración y se actualiza la vista **Streak Badge**.
- 
-#### Strategy Consistency Evaluation
- 
-Disparado por `MetabolicTargetsRecalculated` (desde Metabolic Adaptation), el sistema evalúa si el nuevo objetivo es compatible con el historial de adherencia del usuario:
- 
-- Compatible → `StrategyConsistencyConfirmed`
-- Muy agresivo → `StrategyMismatchDetected` → **Smart Recommendation**: `SuggestGradualAdjustment`
-
 ---
  
 ## Nivel Supporting
@@ -1405,99 +1371,78 @@ Disparado por `MetabolicTargetsRecalculated` (desde Metabolic Adaptation), el si
 
 ### Restaurant Intelligence
  
-Este contexto analiza menús de restaurantes y rankea platos compatibles con el perfil del usuario. Consta de 4 swimlanes. Requiere plan **Premium**.
+Este contexto analiza menús de restaurantes y rankea platos compatibles con el perfil del usuario. Está dirigido por eventos y no persiste un agregado propio; toda su lógica reside en `MenuScanCommandServiceImpl`, orquestando un único comando y varias políticas.
  
 #### Menu Photo Scan
  
-Habilitado por `BenefitsEnabled` (Premium), el usuario escanea un menú con `ScanMenuPhoto`. La imagen se procesa mediante **Google Cloud Vision API**. La política **Image Valid** rechaza imágenes ilegibles, y se emite `MenuPhotoProcessed` con el texto extraído y los ítems detectados.
+El usuario escanea un menú con `ScanMenuPhotoCommand`. Antes de procesar se aplican dos políticas de guardia:
  
-#### Menu Items Analysis
+- **Premium Plan Required**: se valida el acceso mediante el ACL `SubscriptionStatusLookupPort` (`hasPremiumAccess`); si no es Premium, falla con `PremiumPlanRequired`.
+- **Image Valid**: rechaza imágenes vacías (`InvalidImage`).
  
-La política **When MenuPhotoProcessed** dispara `AnalyzeMenuItems`, que consulta la **Open Food Facts API** y la **USDA FoodData Central** para estimar macros de cada plato, emitiendo `RestaurantMealAnalyzed`.
+La imagen se procesa con **Gemini Vision** (`extractMenuItems`) y, tras extraer los platos, se publica `MenuPhotoProcessed` (con el número de platos detectados).
+ 
+#### Menu Items Analysis & Ranking
+ 
+El perfil del usuario se obtiene por el ACL `UserProfileLookupPort` y los alimentos existentes por `FoodNutritionLookupPort`. El comando de análisis rankea los platos con **DeepSeek** (`MenuRankingPort.rankMenuDishes`), ordenándolos por `compatibilityScore`. Los platos nuevos se persisten en el catálogo compartido (`saveNewFoodItem`, fuente *AI-Estimated (Menu Scan)*).
  
 #### Dietary Restrictions Filter
  
-La política **CheckDishRestrictions** cruza cada plato con las restricciones del usuario. Los platos incompatibles emiten `RestrictedDishFlagged` con la razón (alergia o condición médica).
+La **política CheckDishRestrictions** (`computeConflicts`) cruza cada plato con las restricciones del usuario; los platos con conflictos publican `RestrictedDishFlagged` (usuario, plato, restricciones en conflicto).
  
 #### Compatible Dishes Ranking
  
-Los platos sin restricciones se rankean según el criterio del objetivo del usuario:
+Al finalizar, se publica `CompatibleDishesRanked` (usuario, total de platos y `best_dish` en primera posición). Estos tres eventos son manejados por `MenuScanEventHandler`, que actualmente los **registra en log** dentro del propio contexto (no propaga comandos cross-context).
  
-- `lose_weight` → menor densidad calórica
-- `gain_muscle` → mayor contenido proteico (>20g)
-Se emite `CompatibleDishesRanked` con el ranking completo y el `best_dish` en la primera posición. La vista **Menu Analysis Result** presenta el resultado al usuario. El evento propaga hacia **Smart Recommendation** (`SuggestBestDish`) y **Nutrition Tracking** (el usuario puede loggear el plato elegido).
-
 ---
  
 ### Smart Recommendations
  
-Este contexto centraliza la generación de sugerencias personalizadas basadas en el contexto del usuario. Consta de 9 swimlanes.
+Este contexto genera sugerencias personalizadas. Consta de siete agregados y expone comandos CRUD por cada uno.
  
-#### Preventive Recommendation
+#### Recommendation Session Lifecycle
  
-Disparado por `BehavioralDropDetected`, el sistema ejecuta `GeneratePreventiveRecommendation`, emitiendo `PreventiveRecommendationGenerated` con una sugerencia de comida simple y alcanzable acorde al perfil. Se envía notificación push y se presenta la vista **Active Recommendation Card**.
+El comando `CreateRecommendationSessionCommand` abre una sesión (`RecommendationSession`) tomando el `AdherenceStatus` y `consecutiveMisses` del usuario; al crearla se publica `RecommendationSessionStartedEvent`. Si existía una sesión activa previa, se cierra y se publica `RecommendationSessionCompletedEvent`. La actualización (`UpdateRecommendationSessionCommand`) que desactiva la sesión también publica `RecommendationSessionCompletedEvent`, consumido por **Analytics**.
  
-#### Intervention Recommendation
+#### Recommendation Cards & Recipes
  
-Disparado por `NutritionalAbandonmentRisk`, el sistema ejecuta `RequestInterventionRecommendation`, emitiendo `InterventionRecommendationGenerated` con un plan simplificado de reactivación gradual.
+Los comandos `CreateRecommendationCardCommand` / `ImportRecommendationCardsCommand` y `CreateRecipeSuggestionCommand` / `ImportRecipeSuggestionsCommand` gestionan las cards (`RecommendationCard`) y recetas (`RecipeSuggestion`), generadas con **DeepSeek** (`DeepSeekCardGenerationAdapter`, `DeepSeekRecipeGenerationAdapter`).
  
-#### Strategy Adjustment Recommendation
+#### Pantry Management
  
-Disparado por `StagnationDetected` (desde Metabolic Adaptation), el sistema ejecuta `SuggestStrategyAdjustment`, emitiendo `StrategyAdjustmentSuggested` con una nueva distribución de macros sugerida. Si el usuario acepta, se propaga `RecalculateMetabolicTargets` hacia **Metabolic Adaptation**.
+El usuario registra ingredientes disponibles con `AddPantryItemCommand` (y los elimina con `DeletePantryItemCommand`) en el agregado `PantryItem`, base para las sugerencias de recetas.
  
-#### Gradual Adjustment Suggestion
+#### Weather & Location Context
  
-Disparado por `StrategyMismatchDetected` (desde Behavioral Consistency), el sistema ejecuta `SuggestGradualAdjustment`, emitiendo `GradualAdjustmentSuggested` con un objetivo más suave acorde al historial de adherencia.
+El agregado `WeatherSnapshot` se sincroniza con **OpenWeatherMap** (`SyncWeatherSnapshotCommand`, `CreateWeatherSnapshotCommand`, `UpdateWeatherSnapshotCommand`); el agregado `LocationSnapshot` (`CreateLocationSnapshotCommand`) captura la ubicación para adaptar las sugerencias por clima.
  
-#### Best Dish Suggestion
+#### Travel Mode
  
-Disparado por `CompatibleDishesRanked` (desde Restaurant Intelligence), el sistema ejecuta `SuggestBestDish`, emitiendo `BestDishRecommended` con el plato y su justificación nutricional (e.g., *"Este plato cubre el 80% de tu proteína restante del día"*).
- 
-#### Weather-Based Recommendation *(Pro / Premium)*
- 
-El usuario activa la detección de ubicación mediante la **Geolocation API**. Tras obtener `LocationDetected`, el sistema consulta la **OpenWeatherMap API**. Según la temperatura, la política aplica el criterio:
- 
-- > 28°C → sugerencia ligera/hidratante
-- < 12°C → sugerencia cálida/densa
-Se emite `WeatherAdaptedMealSuggested` con las restricciones activas aplicadas.
- 
-#### Travel Mode *(Pro / Premium)*
- 
-El usuario activa el Travel Mode manualmente o por detección automática de ubicación. El evento `TravelModeActivated` desencadena `GenerateTravelRecommendation`, que filtra platos locales de la ciudad según las restricciones del perfil y emite `LocalDishesRecommended` para la vista **Local Dishes Card**.
- 
-#### Pantry & Recipe Suggestions *(Pro / Premium)*
- 
-El usuario registra ingredientes disponibles con `RegisterPantryItems`, emitiendo `PantryUpdated`. La política **Macro Deficit Check** prioriza recetas que cubran el macro más deficitario del día, aplicando además el filtro de restricciones. Se emite `RecipeSuggested` con la vista **Recipe Card**, y el usuario puede loggear directamente la receta en **Nutrition Tracking**.
- 
-#### Premium Features Lock / Unlock
- 
-| Evento entrante | Origen | Comando | Evento emitido |
-| :--- | :--- | :--- | :--- |
-| `BenefitsEnabled` | Subscriptions & Billing | `UnlockPremiumFeatures` | `PremiumFeaturesUnlocked` |
-| `BenefitsDisabled` | Subscriptions & Billing | `LockPremiumFeatures` | `PremiumFeaturesLocked` |
+El agregado `TravelContext` (`CreateTravelContextCommand` / `UpdateTravelContextCommand`) habilita el modo viaje y el contexto geográfico para recomendar platos locales acordes al perfil.
  
 ---
  
 ### Analytics & Reporting
  
-Este contexto centraliza la generación de dashboards, métricas de progreso y reportes. Consta de 4 swimlanes.
+Este contexto es el **consumidor central de eventos de dominio** del sistema. Su `AnalyticsEventHandler` reacciona (vía `@EventListener`) a eventos de todos los demás contextos y consolida el agregado `Analytics`. El diseño es aislado (nunca lanza excepciones hacia el publicador) y tolerante a fallos.
  
-#### Dashboard Update *(consumidor pasivo)*
+#### Event-Driven Dashboard Update
  
-El dashboard se actualiza automáticamente ante los siguientes eventos entrantes: `MealRecorded`, `DailyGoalMet`, `DailyGoalExceeded`, `CaloricTargetAdjusted`, `ConsistencyRecovered` y `MetabolicTargetsRecalculated`. El comando `UpdateDailyDashboard` emite `DashboardUpdated` con el resumen calórico, macros y estado de adherencia actualizados.
+El handler consume los siguientes eventos y ejecuta `UpdateDailyDashboardCommand` / `UpdateAdherenceProgressCommand`:
  
-#### View Dashboard
+| Evento entrante | Contexto origen |
+| :--- | :--- |
+| `UserRegisteredEvent`, `ProfileUpdatedEvent`, `UserPlanUpdatedEvent` | Identity & Access |
+| `MealLoggedEvent`, `MealEntryUpdatedEvent`, `MealEntryRemovedEvent`, `DailyGoalReachedEvent` | Nutrition Tracking |
+| `BodyMetricsRecordedEvent`, `ActivityLoggedEvent` | Metabolic Adaptation |
+| `SuccessfulDayRegisteredEvent`, `RecoveryPlanStartedEvent`, `RecoveryPlanCompletedEvent` | Behavioral Consistency |
+| `RecommendationSessionCompletedEvent` | Smart Recommendations |
+| `SubscriptionActivatedEvent` | Subscriptions & Billing |
  
-El usuario consulta el dashboard con `ViewDashboard`, emitiendo `DashboardViewed` y presentando la vista **Progress Summary** (resumen diario, semanal y mensual). La política subsecuente ejecuta `UpdateUsageStreak`, actualizando la vista **Streak Badge**.
+#### Summary ACL Adapters
  
-#### Export PDF Report *(Premium)*
+Para componer los reportes, Analytics consulta de forma síncrona a otros contextos mediante ACLs de lectura: `NutritionSummaryAdapter`, `BodyMetricsSummaryAdapter`, `BehavioralSummaryAdapter` y `UserDataAdapter`.
  
-El usuario exporta un reporte con `ExportReportPDF` (rango de fechas). La política **Premium Plan Required** valida el acceso antes de emitir `PDFReportGenerated`, que incluye resúmenes calóricos diarios, promedios de macros, evolución de peso, historial de adherencia y datos de actividad.
- 
-#### Adherence Progress Update
- 
-Disparado por `ConsistencyRecovered` (desde Behavioral Consistency), el sistema ejecuta `UpdateAdherenceProgress`, emitiendo `AdherenceProgressUpdated` y actualizando la sección de adherencia en la vista **Progress Summary**.
-
 ---
  
 ## Nivel Genéricos
@@ -1506,95 +1451,66 @@ Disparado por `ConsistencyRecovered` (desde Behavioral Consistency), el sistema 
 
 ### Subscriptions & Billing
  
-Este contexto gestiona los planes de suscripción y la integración con Stripe. Consta de 3 swimlanes.
+Este contexto gestiona los planes de suscripción y la integración con Stripe. Consta de tres agregados.
  
 #### Plan Selection and Payment
  
-El usuario selecciona un plan con `SelectSubscriptionPlan` (Basic / Pro / Premium). La política **Valid Plan Selected** valida la elección, emite `PlanSelected` y encadena automáticamente `SubmitPayment` hacia **Stripe API**. Tras el pago exitoso (`PaymentSuccessful`), se ejecuta `ActivateSubscription`, que emite `SubscriptionActivated`. A continuación, la política **When SubscriptionActivated** ejecuta `EnablePlanFeatures`, desbloqueando las funcionalidades según el plan:
+El usuario registra un método de pago (`RegisterPaymentMethodCommand`) y procesa el pago (`ProcessPaymentCommand`) contra **Stripe** (`StripePaymentGateway`). Con `CreateSubscriptionCommand` se activa la suscripción (`Subscription`); la operación es **idempotente** (upsert sobre la suscripción activa) y sincroniza el plan del usuario en IAM mediante `UpdateUserPlanCommand`. Al activarse, se publica `SubscriptionActivatedEvent`, consumido por **Analytics**.
  
-| Plan | Funcionalidades |
-| :--- | :--- |
-| **Basic** | NutritionLog, BasicDashboard, BMI/BMR/TDEE |
-| **Pro** | + SmartScan, TravelMode, WeatherRecs, Pantry |
-| **Premium** | + WearableSync, RestaurantMenuAnalysis, UnlimitedHistory, PDFReports |
+#### Plan Change / Cancellation
  
-El evento `BenefitsEnabled` propaga habilitaciones hacia:
+`UpdateSubscriptionCommand` recalcula el ciclo de facturación. Si la suscripción queda `ACTIVE`, se re-sincroniza el plan en IAM y se publica `SubscriptionActivatedEvent`; en caso contrario se publica `SubscriptionCancelledEvent`.
  
-- **Smart Recommendation** → `UnlockPremiumFeatures`
-- **Restaurant Intelligence** → `EnableMenuScan` (solo Premium)
-- **Metabolic Adaptation** → `EnableWearableSync` (solo Premium)
-#### Unsubscribe
+#### Billing Records
  
-El usuario ejecuta `CancelSubscription` (validado contra **Stripe API**), emitiendo `SubscriptionCancelled`. La política subsecuente ejecuta `DisablePlanFeatures`, lo que emite `BenefitsDisabled` y propaga bloqueos hacia Smart Recommendation, Restaurant Intelligence y Metabolic Adaptation.
- 
-#### Automatic Renewal
- 
-El sistema ejecuta `RenewSubscription` de forma programada a través de **Stripe API**. Al emitirse `SubscriptionRenewed`, se reactiva automáticamente `EnablePlanFeatures` y vuelve a propagarse `BenefitsEnabled` hacia Smart Recommendation.
+El comando `CreateBillingRecordCommand` registra los movimientos de facturación en el agregado `BillingRecord`.
  
 ---
 
 ### Identity & Access Management
  
-Este contexto gestiona el ciclo de vida de la sesión y el perfil del usuario. Consta de 5 swimlanes.
+Este contexto gestiona el ciclo de vida de la cuenta, el perfil y el plan del usuario. Su agregado central es `User`.
  
-#### User Registration
+#### Registration & Onboarding
  
-El visitante ejecuta el comando `RegisterAccount`. Las políticas **Unique Email Validation** y **Strong Password Validation** bloquean el registro si el email ya existe o la contraseña es débil. Si ambas se cumplen, se emite el evento `AccountCreated`, que genera la vista **Welcome Screen** y activa, dentro del mismo contexto, el flujo de onboarding.
+El visitante ejecuta `RegisterAccountCommand` aportando credenciales y datos de onboarding (objetivo, peso, talla, nivel de actividad, restricciones, condiciones médicas, plan). Tras persistir el `User`, se publica `UserRegisteredEvent`, que **cruza contextos** y dispara:
  
-#### Onboarding
+- **Behavioral Consistency** → `CreateBehavioralProgressCommand` (inicializa el tracking)
+- **Nutrition Tracking** → `CreateDailyIntakeCommand` (siembra el registro diario)
+- **Analytics** → alta del usuario en el dashboard
  
-El usuario recién registrado ejecuta `SubmitOnboardingProfile` con sus datos físicos (peso, talla, objetivo, nivel de actividad, restricciones dietéticas). Las políticas **Valid Weight Input** y **Valid Height Input** validan los datos antes de emitir `OnboardingCompleted`. Este evento cruza contextos y dispara:
+El comando `SubmitOnboardingProfileCommand` complementa los datos del perfil de onboarding.
  
-- **Metabolic Adaptation** → `CalculateInitialTargets`
-- **Behavioral Consistency** → `InitializeBehavioralTracking`
-- **Nutrition Tracking** → `RegisterDietaryRestrictions`
-#### Log In
+#### Authentication
  
-El usuario ejecuta `LoginToAccount`. La política **Valid Credentials** bloquea temporalmente la cuenta tras 5 intentos fallidos. Si las credenciales son correctas, se emite `SessionStarted`.
+El usuario se autentica con `AuthenticateCommand` (emisión de token). La gestión de contraseña incluye `ChangePasswordCommand`, `RequestPasswordResetCommand` y `ResetPasswordCommand` (agregado `PasswordResetToken`, con envío de correo vía el módulo `infrastructure/email`).
  
-#### Log Out
+#### Profile & Plan Management
  
-El usuario ejecuta `LogoutFromAccount`, lo que emite `SessionTerminated` y expone la vista **Session Ended**.
- 
-#### Profile Settings
- 
-El usuario actualiza su perfil mediante `UpdateProfile`. Al emitirse `ProfileUpdated`, si el nivel de actividad cambió, se notifica a **Metabolic Adaptation** para disparar `RecalculateMetabolicTargets`.
+`UpdateUserCommand` actualiza el perfil y publica `ProfileUpdatedEvent`. `UpdateUserPlanCommand` (invocado desde Subscriptions al activar/cambiar plan) actualiza el plan y publica `UserPlanUpdatedEvent`. `UpdateNotificationPreferencesCommand` gestiona preferencias, y `DeleteUserCommand` publica `AccountDeletedEvent`. Todos los eventos de perfil/plan son consumidos por **Analytics**.
  
 ---
 
-## Mapa de interdependencias entre niveles
- 
-| Evento (Origen) | Contexto Origen | Comando (Destino) | Contexto Destino |
+## Mapa de interdependencias entre contextos
+
+La siguiente tabla resume las integraciones cross-context **efectivamente cableadas** en el backend, ya sea por evento de dominio (`@EventListener`) o por ACL síncrono:
+
+| Origen | Mecanismo | Evento / Puerto | Destino y reacción |
 | :--- | :--- | :--- | :--- |
-| `OnboardingCompleted` | IAM | `CalculateInitialTargets` | Metabolic Adaptation |
-| `OnboardingCompleted` | IAM | `InitializeBehavioralTracking` | Behavioral Consistency |
-| `OnboardingCompleted` | IAM | `RegisterDietaryRestrictions` | Nutrition Tracking |
-| `ProfileUpdated` | IAM | `RecalculateMetabolicTargets` | Metabolic Adaptation |
-| `BenefitsEnabled` | Subscriptions & Billing | `UnlockPremiumFeatures` | Smart Recommendation |
-| `BenefitsEnabled` | Subscriptions & Billing | `EnableMenuScan` | Restaurant Intelligence |
-| `BenefitsEnabled` | Subscriptions & Billing | `EnableWearableSync` | Metabolic Adaptation |
-| `BenefitsDisabled` | Subscriptions & Billing | `LockPremiumFeatures` | Smart Recommendation |
-| `BenefitsDisabled` | Subscriptions & Billing | `DisableMenuScan` | Restaurant Intelligence |
-| `BenefitsDisabled` | Subscriptions & Billing | `DisableWearableSync` | Metabolic Adaptation |
-| `MetabolicTargetSet` | Metabolic Adaptation | `SetDailyNutritionalTargets` | Nutrition Tracking |
-| `MetabolicTargetsRecalculated` | Metabolic Adaptation | `UpdateDailyTargets` | Nutrition Tracking |
-| `MetabolicTargetsRecalculated` | Metabolic Adaptation | `EvaluateStrategyConsistency` | Behavioral Consistency |
-| `CaloricTargetAdjusted` | Metabolic Adaptation | `UpdateNetDailyTarget` | Nutrition Tracking |
-| `StagnationDetected` | Metabolic Adaptation | `SuggestStrategyAdjustment` | Smart Recommendation |
-| `MealRecorded` | Nutrition Tracking | `EvaluateAdherenceStatus` | Behavioral Consistency |
-| `DailyGoalMet` | Nutrition Tracking | `EvaluateAdherenceStatus` | Behavioral Consistency |
-| `DailyGoalMet` | Nutrition Tracking | `UpdateDailyDashboard` | Analytics & Reporting |
-| `DailyGoalExceeded` | Nutrition Tracking | `RegisterDeviation` | Behavioral Consistency |
-| `MealSkipped` | Nutrition Tracking | `EvaluateAdherenceImpact` | Behavioral Consistency |
-| `BehavioralDropDetected` | Behavioral Consistency | `GeneratePreventiveRecommendation` | Smart Recommendation |
-| `NutritionalAbandonmentRisk` | Behavioral Consistency | `RequestInterventionRecommendation` | Smart Recommendation |
-| `ConsistencyRecovered` | Behavioral Consistency | `UpdateAdherenceProgress` | Analytics & Reporting |
-| `StrategyMismatchDetected` | Behavioral Consistency | `SuggestGradualAdjustment` | Smart Recommendation |
-| `CompatibleDishesRanked` | Restaurant Intelligence | `SuggestBestDish` | Smart Recommendation |
-| `CompatibleDishesRanked` | Restaurant Intelligence | [Read Model] Menu Analysis Result | Nutrition Tracking |
-| `StrategyAdjustmentSuggested` | Smart Recommendation | `RecalculateMetabolicTargets` | Metabolic Adaptation |
- 
----
+| Identity & Access | Evento | `UserRegisteredEvent` | Behavioral Consistency (`CreateBehavioralProgressCommand`), Nutrition Tracking (`CreateDailyIntakeCommand`), Analytics |
+| Identity & Access | Evento | `ProfileUpdatedEvent`, `UserPlanUpdatedEvent` | Analytics |
+| Nutrition Tracking | Evento | `DailyGoalReachedEvent` | Behavioral Consistency (`RegisterSuccessfulDayCommand`), Analytics |
+| Nutrition Tracking | Evento | `MealLoggedEvent`, `MealEntryUpdatedEvent`, `MealEntryRemovedEvent` | Analytics |
+| Metabolic Adaptation | Evento | `BodyMetricsRecordedEvent`, `ActivityLoggedEvent` | Analytics |
+| Behavioral Consistency | Evento | `SuccessfulDayRegisteredEvent`, `RecoveryPlanStartedEvent`, `RecoveryPlanCompletedEvent` | Analytics |
+| Smart Recommendations | Evento | `RecommendationSessionCompletedEvent` | Analytics |
+| Subscriptions & Billing | Evento | `SubscriptionActivatedEvent` | Analytics |
+| Subscriptions & Billing | Llamada directa | `UpdateUserPlanCommand` | Identity & Access (sincroniza el plan del usuario) |
+| Restaurant Intelligence | ACL | `SubscriptionStatusLookupPort` | Subscriptions & Billing (valida acceso Premium) |
+| Restaurant Intelligence | ACL | `UserProfileLookupPort`, `FoodNutritionLookupPort` | Identity & Access / Nutrition Tracking (perfil y catálogo) |
+| Analytics & Reporting | ACL | `NutritionSummary`, `BodyMetricsSummary`, `BehavioralSummary`, `UserData` | Consulta de summaries a los contextos respectivos |
+
+> Los eventos internos de Restaurant Intelligence (`MenuPhotoProcessed`, `RestrictedDishFlagged`, `CompatibleDishesRanked`) se manejan dentro del propio contexto (`MenuScanEventHandler`) y actualmente no propagan comandos hacia otros Bounded Contexts.
 
 **EventStorming**
 
@@ -1614,7 +1530,7 @@ El Diagrama de Contexto (Nivel 1 del modelo C4) representa a NutriSmart como un 
  - **External Systems:**
 	- `Google Cloud Vision API:` Procesa las imágenes para el análisis de alimentos.
 	- `Nutrition Data Providers:` Fuentes de consulta para información calórica y macronutrientes.
-	- `Google Fit API:` Sincroniza datos de actividad física y gasto energético.
+	- `Google Health API:` Sincroniza datos de actividad física y gasto energético.
 	- `OpenWeatherMap:` Provee datos climáticos para ajustar las sugerencias de comidas.
 	- `Stripe:` Gestiona de forma segura los pagos y el estado de las suscripciones.
 	- `Geolocation API:` Provee la ubicación actual del usuario para el Modo Viaje y las recomendaciones contextuales(plan Pro/Premium).
@@ -1717,7 +1633,7 @@ Para apreciar la separación por capas Domain-Driven Design de cada Bounded Cont
 
    ![Nutrition Backend Diagram](../assets/img/artifacts/15nutrismart-NutritionBackendDiagram.png)
 
- - **Metabolic Adaptation:** Calcula BMI, BMR y TDEE, gestiona los objetivos calóricos y sincroniza datos de actividad desde Google Fit (Premium).
+ - **Metabolic Adaptation:** Calcula BMI, BMR y TDEE, gestiona los objetivos calóricos y sincroniza datos de actividad desde Google Health (Premium).
 
    ![Metabolic Backend Diagram](../assets/img/artifacts/16nutrismart-MetabolicBackendDiagram.png)
 
