@@ -161,8 +161,12 @@ SmartScanCommandServiceImpl ..> ConfirmPlateScanCommand : handles >
 NutritionTrackingContextFacadeImpl --> DailyIntakeQueryService : uses >
 NutritionTrackingContextFacadeImpl --> MealRecordQueryService : uses >
 
-' Note: the legacy menu-scan ports/commands have no active wiring in the
-' current code; they are intentionally left unconnected (see note above)
-' rather than linked artificially.
+' ─── Relationships (legacy menu-scan use case — superseded, no active service) ─
+' These types once formed the in-context menu-scan flow before it was
+' extracted into the restaurantintelligence BC. Wired here to show the
+' original use-case shape; no @Service handles them anymore.
+ScanMenuCommand ..> ImageRecognitionPort : (legacy) dishes detected via >
+ScanMenuCommand ..> MenuRankingPort : (legacy) ranked via >
+ScanMenuCommand ..> UserProfileLookupPort : (legacy) profiled via >
 
 @enduml

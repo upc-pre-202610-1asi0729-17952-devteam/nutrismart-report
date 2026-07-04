@@ -18,6 +18,8 @@ package "metabolicadaptation.domain [boundary]" {
   interface ActivityLogRepository <<port>>
   interface WearableConnectionRepository <<port>>
   interface MetabolicAdaptationLogRepository <<port>>
+  interface WearableSyncProvider <<domain service / port>>
+  class ImportedActivity <<record>>
   enum WearableStatus
   enum MetabolicChangeTrigger
 }
@@ -53,6 +55,11 @@ package "metabolicadaptation.infrastructure.persistence.jpa.converters" {
   class MetabolicChangeTriggerAttributeConverter <<@Converter>>
 }
 
+package "metabolicadaptation.infrastructure.external.googlehealth" {
+  class GoogleHealthSyncProvider <<@Component>>
+  class GoogleHealthConfig <<@ConfigurationProperties>>
+}
+
 ' ─── Relationships ────────────────────────────────────────────────────────────
 BodyMetricPersistenceAdapter ..|> BodyMetricRepository
 BodyCompositionPersistenceAdapter ..|> BodyCompositionRepository
@@ -85,5 +92,9 @@ MetabolicAdaptationLogPersistenceMapper ..> MetabolicAdaptationLogJpaEntity : ma
 
 WearableStatusAttributeConverter ..> WearableStatus : converts >
 MetabolicChangeTriggerAttributeConverter ..> MetabolicChangeTrigger : converts >
+
+GoogleHealthSyncProvider ..|> WearableSyncProvider
+GoogleHealthSyncProvider --> GoogleHealthConfig : configured by >
+GoogleHealthSyncProvider ..> ImportedActivity : produces >
 
 @enduml
