@@ -36,8 +36,18 @@ package "subscriptions/infrastructure" {
   class SimulatedPaymentGateway <<@Injectable>> {
     + processPayment(intent: PaymentIntent, method: PaymentMethod): Observable<PaymentResult>
   }
+  class StripePaymentGateway <<@Injectable>> {
+    + processPayment(intent: PaymentIntent, method: PaymentMethod): Observable<PaymentResult>
+  }
+  class PaymentMethodApi <<@Injectable>> {
+    + register(resource: RegisterPaymentMethodResource): Observable<PaymentMethod>
+    + getByUser(userId: number): Observable<PaymentMethod[]>
+    + delete(id: number): Observable<void>
+  }
   interface SubscriptionResource <<resource>>
   interface BillingHistoryResource <<resource>>
+  interface PaymentMethodResource <<resource>>
+  interface RegisterPaymentMethodResource <<resource>>
   interface NewBillingRecord <<dto>>
 }
 
@@ -55,5 +65,13 @@ SimulatedPaymentGateway ..> PaymentIntent : charges >
 SimulatedPaymentGateway ..> PaymentMethod : with method >
 BillingHistoryApi ..> NewBillingRecord : accepts >
 SimulatedPaymentGateway ..> PaymentResult : returns >
+
+StripePaymentGateway --|> PaymentGatewayPort
+StripePaymentGateway ..> PaymentIntent : charges >
+StripePaymentGateway ..> PaymentMethod : with method >
+StripePaymentGateway ..> PaymentResult : returns >
+PaymentMethodApi ..> PaymentMethod : returns >
+PaymentMethodApi ..> PaymentMethodResource : reads >
+PaymentMethodApi ..> RegisterPaymentMethodResource : accepts >
 
 @enduml
