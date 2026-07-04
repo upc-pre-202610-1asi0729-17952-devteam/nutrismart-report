@@ -32,6 +32,22 @@ package "subscriptions.domain.model.aggregates" {
     + {static} create(userId, plan, amount, ...): BillingRecord
     + {static} rehydrate(...): BillingRecord
   }
+  class PaymentMethod <<aggregate root>> {
+    - id: Long
+    - userId: Long
+    - lastFour: String
+    - brand: String
+    - expiryMonth: Integer
+    - expiryYear: Integer
+    - cardholderName: String
+    - stripePaymentMethodId: String
+    - stripeCustomerId: String
+    - createdAt: Instant
+    --
+    + {static} create(userId, lastFour, brand, ...): PaymentMethod
+    + {static} rehydrate(...): PaymentMethod
+    + applyStripeCustomer(stripeCustomerId: String): void
+  }
 }
 
 package "subscriptions.domain.model.valueobjects" {
@@ -59,6 +75,28 @@ package "subscriptions.domain.model.repositories" {
     + findAll(): List<BillingRecord>
     + save(r: BillingRecord): BillingRecord
   }
+  interface PaymentMethodRepository <<port>> {
+    + findById(id: Long): Optional<PaymentMethod>
+    + findByUserId(userId: Long): List<PaymentMethod>
+    + findAnyStripeCustomerIdByUserId(userId: Long): Optional<String>
+    + save(pm: PaymentMethod): PaymentMethod
+    + existsById(id: Long): boolean
+    + deleteById(id: Long): void
+  }
+}
+
+package "subscriptions.domain.model.services" {
+  interface PaymentGateway <<domain service / port>> {
+    + ensureCustomer(userId, existingCustomerId, stripePaymentMethodId): String
+    + charge(stripeCustomerId, stripePaymentMethodId, amount, currency): PaymentResult
+  }
+  class PaymentResult <<record>> {
+    + success: boolean
+    + transactionId: String
+    + failureReason: String
+    + {static} ok(transactionId): PaymentResult
+    + {static} failed(reason): PaymentResult
+  }
 }
 
 package "subscriptions.domain.model.exceptions" {
@@ -73,6 +111,9 @@ BillingRecord "0..*" ..> "1" Subscription : settles >
 
 SubscriptionRepository ..> Subscription : persists >
 BillingRecordRepository ..> BillingRecord : persists >
+PaymentMethodRepository ..> PaymentMethod : persists >
+PaymentGateway ..> PaymentResult : returns >
+PaymentGateway ..> PaymentMethod : charges via stripeId of >
 DomainInvalidExceptions ..> Subscription : guards invariants of >
 
 @enduml
