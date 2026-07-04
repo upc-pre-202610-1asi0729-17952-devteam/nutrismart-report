@@ -72,12 +72,6 @@ package "nutrition-tracking/domain/model" {
   enum NutritionalRiskLevel
 }
 
-note bottom of NutritionalRiskLevel
-  Declared in the model but unused by entities in
-  the current code — kept for completeness, reported
-  separately rather than linked artificially.
-end note
-
 package "nutrition-tracking/domain/events" {
   class DailyTargetsSet <<domain event>>
   class NetTargetUpdated <<domain event>>
@@ -112,6 +106,8 @@ ScannedFoodItem "1" o--> "0..*" DietaryRestriction : flagged for >
 PreLogGuardrail "1" o--> "1" GuardrailType : kind >
 PreLogGuardrail "1" o--> "1" GuardrailSeverity : severity >
 MacroWarning ..> MacronutrientDistribution : derived from >
+MacronutrientDistribution ..> NutritionalRiskLevel : classifyRisk() >
+MealRecord ..> NutritionalRiskLevel : classifyNutritionalRisk() >
 DietaryRestrictionsRegistered ..> DietaryRestriction : carries >
 
 @enduml

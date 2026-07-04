@@ -113,5 +113,8 @@ GeminiVisionAdapter --> GeminiVisionClient : calls >
 DeepSeekMenuRankingAdapter ..|> MenuRankingPort
 UserProfileLookupAdapter ..|> UserProfileLookupPort
 DeepSeekMenuRankingAdapter --> DeepSeekClient : calls >
+' ImageRecognitionPort has no implementor — it was the menu-scan predecessor
+' of the active PlateImageRecognitionPort (plate scanning).
+ImageRecognitionPort ..> PlateImageRecognitionPort : superseded by >
 
 @enduml

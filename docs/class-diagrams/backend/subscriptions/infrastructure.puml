@@ -10,14 +10,18 @@ title Subscriptions — Infrastructure layer (nutrismart-platform)
 package "subscriptions.domain [boundary]" {
   class Subscription <<aggregate>>
   class BillingRecord <<aggregate>>
+  class PaymentMethod <<aggregate>>
   interface SubscriptionRepository <<port>>
   interface BillingRecordRepository <<port>>
+  interface PaymentMethodRepository <<port>>
+  interface PaymentGateway <<domain service / port>>
   enum SubscriptionStatus
 }
 
 package "subscriptions.infrastructure.persistence.jpa.entities" {
   class SubscriptionJpaEntity <<@Entity subscriptions>>
   class BillingRecordJpaEntity <<@Entity billing_history>>
+  class PaymentMethodJpaEntity <<@Entity payment_methods>>
 }
 package "subscriptions.infrastructure.persistence.jpa" {
   class SubscriptionPersistenceAdapter {
@@ -26,13 +30,22 @@ package "subscriptions.infrastructure.persistence.jpa" {
   class BillingRecordPersistenceAdapter {
     - springDataRepo: SpringDataBillingRecordJpaRepository
   }
+  class PaymentMethodPersistenceAdapter {
+    - springDataRepo: SpringDataPaymentMethodJpaRepository
+  }
   interface SpringDataSubscriptionJpaRepository <<JpaRepository>>
   interface SpringDataBillingRecordJpaRepository <<JpaRepository>>
+  interface SpringDataPaymentMethodJpaRepository <<JpaRepository>>
   class SubscriptionPersistenceMapper <<mapper>>
   class BillingRecordPersistenceMapper <<mapper>>
+  class PaymentMethodPersistenceMapper <<mapper>>
 }
 package "subscriptions.infrastructure.persistence.jpa.converters" {
   class SubscriptionStatusAttributeConverter <<@Converter>>
+}
+package "subscriptions.infrastructure.external.stripe" {
+  class StripePaymentGateway <<@Component>>
+  class StripeProperties <<@ConfigurationProperties>>
 }
 
 ' ─── Relationships ────────────────────────────────────────────────────────────
@@ -51,5 +64,14 @@ BillingRecordPersistenceMapper ..> BillingRecord : maps >
 BillingRecordPersistenceMapper ..> BillingRecordJpaEntity : maps >
 
 SubscriptionStatusAttributeConverter ..> SubscriptionStatus : converts >
+
+PaymentMethodPersistenceAdapter ..|> PaymentMethodRepository
+PaymentMethodPersistenceAdapter --> SpringDataPaymentMethodJpaRepository : delegates >
+SpringDataPaymentMethodJpaRepository ..> PaymentMethodJpaEntity : manages >
+PaymentMethodPersistenceMapper ..> PaymentMethod : maps >
+PaymentMethodPersistenceMapper ..> PaymentMethodJpaEntity : maps >
+
+StripePaymentGateway ..|> PaymentGateway
+StripePaymentGateway --> StripeProperties : configured by >
 
 @enduml

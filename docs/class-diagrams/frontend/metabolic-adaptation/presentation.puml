@@ -31,6 +31,9 @@ package "metabolic-adaptation/presentation/views" {
   class WeightHistoryView <<@Component view>> {
     # store: MetabolicStore
   }
+  class OAuthHealthCallbackView <<@Component view>> {
+    # store: WearableStore
+  }
 }
 
 package "metabolic-adaptation/presentation/components" {
@@ -42,6 +45,7 @@ package "metabolic-adaptation/presentation/components" {
   class SyncFailedBanner <<@Component>>
   class WearableChip <<@Component>>
   class WearableConnectedCard <<@Component>>
+  class WearableSyncModal <<@Component>>
 }
 
 package "metabolic-adaptation/presentation [routes]" {
@@ -66,10 +70,14 @@ PhysicalActivityView *--> ManualActivityModal : composes >
 PhysicalActivityView *--> SyncFailedBanner : composes >
 PhysicalActivityView *--> WearableChip : composes >
 PhysicalActivityView *--> WearableConnectedCard : composes >
+PhysicalActivityView *--> WearableSyncModal : composes >
+
+OAuthHealthCallbackView --> WearableStore : uses >
 
 BodyProgressRoutes ..> BodyProgressView : routes to >
 BodyProgressRoutes ..> GoalSelectionScreen : routes to >
 BodyProgressRoutes ..> WeightHistoryView : routes to >
 WearableRoutes ..> PhysicalActivityView : routes to >
+WearableRoutes ..> OAuthHealthCallbackView : routes to >
 
 @enduml

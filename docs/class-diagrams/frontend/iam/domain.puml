@@ -65,6 +65,14 @@ package "iam/domain/model" {
     + isStrict(): boolean
   }
 
+  interface NotificationPreferences <<value object>> {
+    + dailyLogReminder: boolean
+    + weeklyProgressReport: boolean
+    + mealSuggestions: boolean
+    + streakAlerts: boolean
+    + marketingEmails: boolean
+  }
+
   class User <<entity>> {
     - _id: number
     - _firstName: string
@@ -91,6 +99,11 @@ package "iam/domain/model" {
     - _consecutiveMisses: number
     - _token: string
     - _planExpiresAt: string | null
+    - _notifDailyLogReminder: boolean
+    - _notifWeeklyProgressReport: boolean
+    - _notifMealSuggestions: boolean
+    - _notifStreakAlerts: boolean
+    - _notifMarketingEmails: boolean
     --
     + constructor(props: UserProps)
     .. accessors (get/set) for every field ..
@@ -135,5 +148,6 @@ end note
 
 User ..> MetabolicTargets : applies >
 User ..> MedicalDietaryWarning : exposes >
+User "1" *--> "1" NotificationPreferences : notification prefs >
 
 @enduml

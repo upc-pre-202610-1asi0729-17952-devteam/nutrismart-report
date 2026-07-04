@@ -104,14 +104,15 @@ package "nutritiontracking.domain.model.exceptions" {
 }
 
 note bottom of NutritionalRiskLevel
-  Defined in the domain but not referenced
-  by any aggregate. Only persisted through
+  Classification VO persisted through
   NutritionalRiskLevelAttributeConverter
-  (see infrastructure.puml).
+  (see infrastructure.puml). Logically
+  qualifies the health risk of a FoodItem.
 end note
 
 ' ─── Relationships ────────────────────────────────────────────────────────────
 FoodItem "1" *--> "0..*" FoodRestriction : tagged with >
+FoodItem "1" ..> "0..1" NutritionalRiskLevel : risk classified as >
 MealRecord "1" o--> "1" MealType : meal type >
 MealRecord "0..*" ..> "1" FoodItem : references foodId >
 

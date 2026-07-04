@@ -9,6 +9,17 @@ title Restaurant Intelligence — Application layer (nutrismart-platform)
 ' ─── Boundary stub: domain layer ─────────────────────────────────────────────
 package "restaurantintelligence.domain [boundary]" {
   class RankedDishResult <<value object>>
+  class MenuPhotoProcessed <<domain event>>
+  class RestrictedDishFlagged <<domain event>>
+  class CompatibleDishesRanked <<domain event>>
+}
+
+package "restaurantintelligence.application.internal.eventhandlers" {
+  class MenuScanEventHandler <<@Component>> {
+    + on(event: MenuPhotoProcessed): void
+    + on(event: RestrictedDishFlagged): void
+    + on(event: CompatibleDishesRanked): void
+  }
 }
 
 package "restaurantintelligence.application.commandservices" {
@@ -91,5 +102,9 @@ UserProfileLookupPort ..> UserProfileData : returns >
 FoodNutritionLookupPort ..> FoodItemCandidate : returns >
 FoodNutritionLookupPort ..> NewFoodItemData : persists >
 RankedDishData "1" *--> "0..1" GeneratedMenuFoodData : generatedFoodData >
+
+MenuScanEventHandler ..> MenuPhotoProcessed : @EventListener >
+MenuScanEventHandler ..> RestrictedDishFlagged : @EventListener >
+MenuScanEventHandler ..> CompatibleDishesRanked : @EventListener >
 
 @enduml
