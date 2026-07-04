@@ -18,6 +18,7 @@ package "metabolicadaptation.domain [boundary]" {
   interface ActivityLogRepository <<port>>
   interface WearableConnectionRepository <<port>>
   interface MetabolicAdaptationLogRepository <<port>>
+  interface WearableSyncProvider <<domain service / port>>
 }
 
 package "metabolicadaptation.application.commandservices" {
@@ -46,6 +47,8 @@ package "metabolicadaptation.application.commands" {
   class ConnectWearableCommand <<command>>
   class UpdateWearableConnectionCommand <<command>>
   class DeleteWearableConnectionCommand <<command>>
+  class SyncWearableConnectionCommand <<command>>
+  class SetWearableAutoSyncCommand <<command>>
   class RecordMetabolicAdaptationCommand <<command>>
 }
 
@@ -106,7 +109,11 @@ ActivityLogCommandServiceImpl ..> ActivityLog : produces >
 WearableConnectionCommandServiceImpl ..> ConnectWearableCommand : handles >
 WearableConnectionCommandServiceImpl ..> UpdateWearableConnectionCommand : handles >
 WearableConnectionCommandServiceImpl ..> DeleteWearableConnectionCommand : handles >
+WearableConnectionCommandServiceImpl ..> SyncWearableConnectionCommand : handles >
+WearableConnectionCommandServiceImpl ..> SetWearableAutoSyncCommand : handles >
 WearableConnectionCommandServiceImpl ..> WearableConnection : produces >
+WearableConnectionCommandServiceImpl --> WearableSyncProvider : syncs via >
+WearableConnectionCommandServiceImpl --> ActivityLogRepository : imports activities into >
 MetabolicAdaptationLogCommandServiceImpl ..> RecordMetabolicAdaptationCommand : handles >
 MetabolicAdaptationLogCommandServiceImpl ..> MetabolicAdaptationLog : produces >
 

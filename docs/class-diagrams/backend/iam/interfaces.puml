@@ -34,6 +34,8 @@ package "iam.interfaces.rest" {
     + getUserById(id: Long): ResponseEntity<UserResource>
     + createUser(resource: CreateUserResource): ResponseEntity
     + updateUser(id: Long, resource: UpdateUserResource): ResponseEntity
+    + changePassword(id: Long, resource: ChangePasswordResource): ResponseEntity
+    + updateNotificationPreferences(id: Long, resource: NotificationPreferencesResource): ResponseEntity
     + deleteUser(id: Long): ResponseEntity
   }
 }
@@ -45,6 +47,8 @@ package "iam.interfaces.rest.resources" {
   class ResetPasswordResource <<resource>>
   class CreateUserResource <<resource>>
   class UpdateUserResource <<resource>>
+  class ChangePasswordResource <<resource>>
+  class NotificationPreferencesResource <<resource>>
   class UserResource <<resource>>
   class AuthResponse <<resource>>
 }
@@ -84,6 +88,8 @@ UsersController --> UserCommandService : uses >
 UsersController --> UserQueryService : uses >
 UsersController ..> CreateUserResource : consumes >
 UsersController ..> UpdateUserResource : consumes >
+UsersController ..> ChangePasswordResource : consumes >
+UsersController ..> NotificationPreferencesResource : consumes >
 UsersController ..> UserResource : produces >
 UsersController ..> CreateUserCommandFromResourceAssembler : uses >
 UsersController ..> UpdateUserCommandFromResourceAssembler : uses >
