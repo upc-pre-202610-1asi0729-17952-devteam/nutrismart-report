@@ -34,6 +34,11 @@ package "iam.domain.model.aggregates" {
     - homeCity: String
     - goalStartedAt: LocalDate
     - planExpiresAt: LocalDate
+    - notifDailyLogReminder: Boolean
+    - notifWeeklyProgressReport: Boolean
+    - notifMealSuggestions: Boolean
+    - notifStreakAlerts: Boolean
+    - notifMarketingEmails: Boolean
     --
     + {static} create(...): User
     + {static} rehydrate(...): User
@@ -41,6 +46,7 @@ package "iam.domain.model.aggregates" {
     + updateProfile(...): void
     + updatePlan(plan: UserPlan): void
     + changePassword(newPasswordHash: String): void
+    + updateNotificationPreferences(...): void
   }
 
   class PasswordResetToken <<aggregate root>> {

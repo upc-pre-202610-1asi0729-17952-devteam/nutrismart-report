@@ -78,7 +78,7 @@ package "nutritiontracking.interfaces.rest.resources [legacy / unused]" #EEEEEE 
 note bottom of "nutritiontracking.interfaces.rest.resources [legacy / unused]"
   No longer referenced by any controller — the menu-scan
   endpoint moved to restaurantintelligence (MenuScanController).
-  Left unconnected rather than linked artificially.
+  Shown as the original request→result pair of that use case.
 end note
 
 ' ─── Relationships ────────────────────────────────────────────────────────────
@@ -112,5 +112,8 @@ UpdateFoodItemResource ..> FoodItemCommandFromResourceAssembler : read by <
 UpdateMealRecordResource ..> MealRecordCommandFromResourceAssembler : read by <
 DailyBalanceController ..> DailyIntakeResource : produces >
 NutritionTrackingContextFacade ..> DailyIntakeQueryService : backed by >
+
+' Legacy menu-scan endpoint pair (superseded by restaurantintelligence)
+ScanMenuRequest ..> ScanMenuResultResource : (legacy) produced >
 
 @enduml
